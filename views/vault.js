@@ -27,7 +27,7 @@ define([
             </select>\
           </div>\
           <div class='col-xs-2'>\
-            <button type='button' class='btn btn-primary'>Random</button>\
+            <button type='button' class='btn btn-primary btn-random'>Random</button>\
           </div>\
         </div>\
         <div class='form-group row'>\
@@ -38,10 +38,22 @@ define([
             <input type='text' class='form-control' name='email' placeholder='Enter your email/salt here' />\
           </div>\
         </div>\
-        <button type='button' class='btn btn-primary'>Generate Vault</button>\
+        <button type='button' class='btn btn-primary btn-generate'>Generate Vault</button>\
     ",
+    events: {
+      'click .btn-random': 'random',
+      'click .btn-generate': 'generate'
+    },
     render: function() {
       this.$el.html(_.template(this.template));
+    },
+    random: function() {
+      // TODO: random words
+      console.log('Generating random words');
+    },
+    generate: function() {
+      // TODO: generate vault
+      console.log('Generating Vault');
     }
   });
 

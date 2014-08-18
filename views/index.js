@@ -73,7 +73,7 @@ define([
     events: {
       'click .btn-visualize': 'visualize',
       'click .btn-sign': 'sign'
-    }
+    },
     render: function() {
       this.$el.html(_.template(this.template));
     },
