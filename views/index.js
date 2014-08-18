@@ -47,7 +47,7 @@ define([
             <input type='text' class='form-control' readonly value='...' />\
           </div>\
           <div class='col-xs-4 text-right'>\
-            <button type='button' class='btn btn-primary'>Visualize Transaction</button>\
+            <button type='button' class='btn btn-primary btn-visualize'>Visualize Transaction</button>\
           </div>\
         </div>\
         <hr />\
@@ -67,11 +67,21 @@ define([
             <input type='text' class='form-control' name='salt' placeholder='Type your email or other salt here' />\
           </div>\
         </div>\
-        <button type='button' class='btn btn-primary'>Sign Transaction</button>\
+        <button type='button' class='btn btn-primary btn-sign'>Sign Transaction</button>\
       </form>\
     ",
+    events: {
+      'click .btn-visualize': 'visualize',
+      'click .btn-sign': 'sign'
+    }
     render: function() {
       this.$el.html(_.template(this.template));
+    },
+    visualize: function() {
+      // TODO: visualize a transaction
+    },
+    sign: function() {
+      // TODO: sign a transaction
     }
   });
 
