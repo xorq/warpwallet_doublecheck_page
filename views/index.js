@@ -11,16 +11,22 @@ define([
           <div class='col-xs-2'>\
             <label>From</label> \
           </div>\
-          <div class='col-xs-10'>\
+          <div class='col-xs-9'>\
             <input type='text' class='form-control' name='from' placeholder='Enter sender name or Bitcoin address' />\
+          </div>\
+          <div class='col-xs-1'>\
+            <img style='display: none' class='thumb-from' width='32' /> \
           </div>\
         </div>\
         <div class='form-group row'>\
           <div class='col-xs-2'>\
             <label>To</label>\
           </div>\
-          <div class='col-xs-10'>\
+          <div class='col-xs-9'>\
             <input type='text' class='form-control' name='to' placeholder='Enter recipient name or Bitcoin address' />\
+          </div>\
+          <div class='col-xs-1'>\
+            <img style='display: none' class='thumb-to' width='32' /> \
           </div>\
         </div>\
         <div class='form-group row'>\
@@ -72,7 +78,9 @@ define([
     ",
     events: {
       'click .btn-visualize': 'visualize',
-      'click .btn-sign': 'sign'
+      'click .btn-sign': 'sign',
+      'blur input[name=from]': 'lookupFrom',
+      'blur input[name=to]': 'lookupTo'
     },
     render: function() {
       this.$el.html(_.template(this.template));
@@ -82,6 +90,20 @@ define([
     },
     sign: function() {
       // TODO: sign a transaction
+    },
+    lookupFrom: function() {
+      $.getJSON('https://onename.io/' + $('input[name=from]', this.$el).val() + '.json', function(data) {
+        if (data && data.avatar) {
+          $('.thumb-from', this.$el).attr({ src: data.avatar.url }).show();
+        }
+      });
+    },
+    lookupTo: function() {
+      $.getJSON('https://onename.io/' + $('input[name=to]', this.$el).val() + '.json', function(data) {
+        if (data && data.avatar) {
+          $('.thumb-to', this.$el).attr({ src: data.avatar.url }).show();
+        }
+      });
     }
   });
 
