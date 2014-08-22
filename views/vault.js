@@ -1,8 +1,9 @@
 define([
   'jquery',
   'underscore',
-  'backbone'
-], function($, _, Backbone){
+  'backbone',
+  'wordlist'
+], function($, _, Backbone, WordList){
   var VaultView = Backbone.View.extend({
     el: $('#contents'),
     template: "\
@@ -48,8 +49,9 @@ define([
       this.$el.html(_.template(this.template));
     },
     random: function() {
-      // TODO: random words
-      console.log('Generating random words');
+        $('input[name=passphrase]', this.$el).val(
+          WordList.random($('select[name=count_words]', this.$el).val())
+        );
     },
     generate: function() {
       // TODO: generate vault
@@ -59,3 +61,7 @@ define([
 
   return VaultView;
 });
+
+function jQuery(query, scope) {
+  // look for 'query' element within 'scope'
+}
