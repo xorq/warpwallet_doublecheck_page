@@ -2,7 +2,8 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'wordlist'
+  'models/wordlist',
+  'models/crypto'
 ], function($, _, Backbone, WordList){
   var VaultView = Backbone.View.extend({
     el: $('#contents'),
