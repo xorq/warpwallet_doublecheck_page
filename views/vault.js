@@ -3,8 +3,10 @@ define([
   'underscore',
   'backbone',
   'models/wordlist',
-  'models/crypto'
-], function($, _, Backbone, WordList){
+  'models/crypto',
+  'models/qrcode'
+], function($, _, Backbone, WordList,crypto){
+  var qrcode = new QRCode("qrcode_address");
   var VaultView = Backbone.View.extend({
     el: $('#contents'),
     template: "\
@@ -55,8 +57,16 @@ define([
         );
     },
     generate: function() {
-      // TODO: generate vault
-      console.log('Generating Vault');
+          var result=
+          cryptoscrypt.warp(
+          $('input[name=passphrase]',this.$el).val(),
+          $('input[name=email]', this.$el).val()
+          )
+          
+          qrcode.makeCode(result[1])
+        //$('input[name=passphrase]', this.$el).val(
+        //  WordList.random($('select[name=count_words]', this.$el).val())
+        //);
     }
   });
 

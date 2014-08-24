@@ -8,38 +8,36 @@ define([
 
 	return window.cryptoscrypt = cryptoscrypt = {
 
-		scrypto: function() {
+		scrypto: function(passphrase,salt) {
 
 			var result = scrypt.to_hex(
 				scrypt.crypto_scrypt(
-					scrypt.encode_utf8("ER8FT+HFjk0" + String.fromCharCode(0x01)),
-					scrypt.encode_utf8("7DpniYifN6c" + String.fromCharCode(0x01)),
+					scrypt.encode_utf8(passphrase + String.fromCharCode(0x01)),
+					scrypt.encode_utf8(salt + String.fromCharCode(0x01)),
 					Math.pow(2, 18), 8, 1, 32
 				)
 			);
-
 			return result
 		},
 
-		pbkdf2o: function() {
+		pbkdf2o: function(passphrase,salt) {
 			var res = sjcl.misc.pbkdf2(
-				'ER8FT+HFjk0' + String.fromCharCode(0x02),
-				'7DpniYifN6c' + String.fromCharCode(0x02), 
+				passphrase + String.fromCharCode(0x02),
+				salt + String.fromCharCode(0x02), 
 				Math.pow(2, 16), 256
 			);
 			return sjcl.codec.hex.fromBits(res);
 		},
 
-		warp: function() {
-			var hex1 = cryptoscrypt.scrypto();
-			var hex2 = cryptoscrypt.pbkdf2o();
+		warp: function(passphrase,salt) {
+			var hex1 = cryptoscrypt.scrypto(passphrase,salt);
+			var hex2 = cryptoscrypt.pbkdf2o(passphrase,salt);
 			var out = '';
 			for (var i = 0; i < 64; ++i) {
 				out += (parseInt(hex1[i], 16) ^ parseInt(hex2[i], 16)).toString(16);
 			}
-			console.log(out);
 			key = new Bitcoin.ECKey(BigInteger.fromHex(out), false);
-			return key.toWIF();
+			return [key.toWIF(),key.pub.getAddress().toString()];
 		}
 	}
 });
