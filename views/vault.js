@@ -43,24 +43,23 @@ define([
 					</div>\
 				</div>\
 				<button type='button' class='btn btn-primary btn-generate'>Generate Vault</button>\
-				</div>\
 				<br>\
 				<br>\
-				<div class='text-left' id='label_address'></div>\
-				<div class='text-left' id='label_privkey'></div>\
+				<div class='text-left' id='label-address'></div>\
+				<div class='text-left' id='label-privkey'></div>\
 				<div class='row text-center'>\
-					<div class='col-xs-6 h3 text-center' id='text_address'></div>\
-					<div class='col-xs-6 h3 text-center' id='text_privatekey'></div>\
-					<div class='col-xs-6 text-center' id='qrcode_address_image'></div>\
-					<div class='col-xs-6 text-center' id='qrcode_privkey_image'></div>\
+					<div class='col-xs-6 h3' id='text-address'></div>\
+					<div class='col-xs-6 h3' id='text-privatekey'></div>\
+					<div class='col-xs-6' id='qrcode-address-image'></div>\
+					<div class='col-xs-6' id='qrcode-privkey-image'></div>\
 				</div>\
-				</div>\
+			</form>\
 		",
 		events: {
 			'click .btn-random': 'random',
 			'click .btn-generate': 'generate',
-			'keyup input[name=passphrase]': 'delete_if_changed',
-			'keyup input[name=email]': 'delete_if_changed'
+			'keyup input[name=passphrase]': 'deleteIfChanged',
+			'keyup input[name=email]': 'deleteIfChanged'
 		},
 		render: function() {
 			this.$el.html(_.template(this.template));
@@ -70,29 +69,29 @@ define([
 					WordList.random($('select[name=count_words]', this.$el).val())
 				);
 		},
-		delete_results: function() {
-			$('div[id=qrcode_address_image]').text('');
-			$('div[id=qrcode_privkey_image]').text('');
-			$('div[id=label_address]').text('');
-			$('div[id=label_privkey]').text('');
-			$('div[id=text_address]').text('');
-			$('div[id=text_privatekey]').text('');
+		deleteResults: function() {
+			$('div[id=qrcode-address-image]').text('');
+			$('div[id=qrcode-privkey-image]').text('');
+			$('div[id=label-address]').text('');
+			$('div[id=label-privkey]').text('');
+			$('div[id=text-address]').text('');
+			$('div[id=text-privatekey]').text('');
 		},
-		delete_if_changed: function() {
+		deleteIfChanged: function() {
 			if (
-				this.passphrase_memory!=$('input[name=passphrase]',this.$el).val() |
-				this.salt_memory!=$('input[name=email]',this.$el).val()
+				this.passphraseMemory!=$('input[name=passphrase]',this.$el).val() |
+				this.saltMemory!=$('input[name=email]',this.$el).val()
 				){
-					this.delete_results()
+					this.deleteResults()
 				}
 		},
 		generate: function() {
-			this.passphrase_memory = $('input[name=passphrase]',this.$el).val()
-			this.salt_memory = $('input[name=passphrase]',this.$el).val()
+			this.passphraseMemory = $('input[name=passphrase]',this.$el).val()
+			this.saltMemory = $('input[name=passphrase]',this.$el).val()
 
-			this.delete_results()
-			var qrcode = new QRCode("qrcode_address_image",{width: 160,height: 160});
-			var qrcode2 = new QRCode("qrcode_privkey_image",{width: 160,height: 160});
+			this.deleteResults()
+			var qrcode = new QRCode("qrcode-address-image",{width: 160,height: 160});
+			var qrcode2 = new QRCode("qrcode-privkey-image",{width: 160,height: 160});
 
 			var result = cryptoscrypt.warp(
 				$('input[name=passphrase]',this.$el).val(),
@@ -102,10 +101,10 @@ define([
 			qrcode.makeCode(result[1]);
 			qrcode2.makeCode(result[0]);
 
-			$('div[id=label_address]').text('Public Bitcoin Address: '+result[1]);
-			$('div[id=label_privkey]').text('Secret Private key: '+result[0]);
-			$('div[id=text_address]').text("Address");
-			$('div[id=text_privatekey]').text("Private Key");
+			$('div[id=label-address]').text('Public Bitcoin Address: '+result[1]);
+			$('div[id=label-privkey]').text('Secret Private key: '+result[0]);
+			$('div[id=text-address]').text("Address");
+			$('div[id=text-privatekey]').text("Private Key");
 		}
 	});
 

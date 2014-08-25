@@ -1,7 +1,7 @@
 define([
   'jquery',
   'underscore',
-  'backbone'
+  'backbone',
 ], function($, _, Backbone){
   var IndexView = Backbone.View.extend({
     el: $('#contents'),
@@ -95,17 +95,28 @@ define([
       $.getJSON('https://onename.io/' + $('input[name=from]', this.$el).val() + '.json', function(data) {
         if (data && data.avatar) {
           $('.thumb-from', this.$el).attr({ src: data.avatar.url }).show();
+          this.btcFrom=$('input[name=from]',this.$el).val();
+          $('input[name=from]',this.$el).val(data.bitcoin.address);
         }
+      })
+      .done(function(data){
+        this.btcFrom=data.bitcoin.address;
+        $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + this.btcFrom, function(dat2) {
+        })
+        .done(function(dat2){
+          this.balance=(dat2.data.balance)
+        });
       });
     },
     lookupTo: function() {
       $.getJSON('https://onename.io/' + $('input[name=to]', this.$el).val() + '.json', function(data) {
         if (data && data.avatar) {
           $('.thumb-to', this.$el).attr({ src: data.avatar.url }).show();
+          this.btcTo=data.bitcoin.address
+         $('input[name=to]',this.$el).val(this.btcTo)
         }
       });
     }
   });
-
   return IndexView;
 });
