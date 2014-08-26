@@ -5,7 +5,6 @@ define([
 	'models/biginteger'
 ], function(Scrypt, PBKDF2, Bitcoin, BigInteger) {
 	var scrypt = scrypt_module_factory(Math.pow(2,29));
-
 	return window.cryptoscrypt = cryptoscrypt = {
 
 		scrypto: function(passphrase,salt) {
@@ -36,8 +35,18 @@ define([
 			for (var i = 0; i < 64; ++i) {
 				out += (parseInt(hex1[i], 16) ^ parseInt(hex2[i], 16)).toString(16);
 			}
+			console.log(out);
 			key = new Bitcoin.ECKey(BigInteger.fromHex(out), false);
 			return [key.toWIF(),key.pub.getAddress().toString()];
+		},
+		validAddress: function(address){
+			try{
+				Bitcoin.Address.fromBase58Check(address);
+				return true;
+			}
+			catch(err){
+				return false;
+			}
 		}
 	}
 });
