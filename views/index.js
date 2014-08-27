@@ -5,11 +5,9 @@ define([
   'models/bitcoin'
 ], function($, _, Backbone,Bitcoin){
   var balance = '';
-  var btcFrom = '';
-  var btcTo = '';
-  var alias = '';
-  //var master = this;
-
+  var addressFrom = '';
+  var addressTo = '';
+  var alias = ''; 
   var IndexView = Backbone.View.extend({
     el: $('#contents'),
     template: "\
@@ -91,88 +89,101 @@ define([
       'blur input[name=from]': 'lookupFrom',
       'blur input[name=to]': 'lookupTo',
     },
-    render: function() {
+
+    render : function() {
       this.$el.html(_.template(this.template));
     },
-    visualize: function() {
+
+    visualize : function() {
       // TODO: visualize a transaction
     },
-    sign: function() {
+
+    sign : function() {
       // TODO: sign a transaction
     },
-    doFeedback: function(aim,result) {
 
-      success = ['has-success','glyphicon glyphicon-ok form-control-feedback'];
-      failure = ['has-error','glyphicon glyphicon-remove form-control-feedback'];
+    doFeedback : function(aim,result) {
 
-      var toAdd = (result=='ok') ? success:failure;
-      var toRemove = (result=='ok') ? failure:success;
+      success = ['has-success', 'glyphicon glyphicon-ok form-control-feedback'];
+      failure = ['has-error', 'glyphicon glyphicon-remove form-control-feedback'];
+      neutral = ['has-error has-success', 'glyphicon glyphicon-ok glyphicon-remove form-control-feedback'];
 
-      $('div[name=div-'+aim+']',this.$el).removeClass(toRemove[0]).addClass(toAdd[0]);
-      $('span[name=glyphicon-'+aim+']',this.$el).removeClass(toRemove[1]).addClass(toAdd[1]);
-      
+      var toAdd = (result == 'ok') ? success : (result == 'problem') ? failure : ['',''];
+      var toRemove = (result == 'ok') ? failure : (result == 'problem') ? failure : neutral;
+
+      $('div[name = div-' + aim + ']', this.$el).removeClass(toRemove[0]).addClass(toAdd[0]);
+      $('span[name=glyphicon-' + aim + ']', this.$el).removeClass(toRemove[1]).addClass(toAdd[1]);
+
     },
 
-    lookupFrom: function() {
+    lookupFrom : function() {
 
-      master = this
-      if (master.btcFrom!=$('input[name=from]',this.$el).val().trim()){
-        $('.thumb-from', master.$el).removeAttr('src');
-        master.btcFrom=($('input[name=from]',master.$el).val()).trim();
-        if (cryptoscrypt.validAddress(master.btcFrom) == false && master.btcFrom != ''){
-          $.getJSON('https://onename.io/' + $('input[name=from]', master.$el).val().trim() + '.json', function(data) {
+      var master = this;
+      var inputFrom = $('input[name=from]',master.$el)
+      var inputFromValue = inputFrom.val().trim();
+      var thumbFrom = $('.thumb-from', master.$el);
+
+      if (master.addressFrom!=inputFromValue){
+        thumbFrom.removeAttr('src');
+        master.addressFrom=inputFromValue;
+        if (cryptoscrypt.validAddress(master.addressFrom) == false && master.addressFrom != ''){
+          $.getJSON('https://onename.io/' + inputFromValue + '.json', function(data) {
             if (data && data.avatar) {
-              $('.thumb-from', master.$el).attr({ src: data.avatar.url }).show();
-              master.btcFrom=data.bitcoin.address;
-              $('input[name=from]',master.$el).val(master.btcFrom);
-            };
+              thumbFrom.attr({ src : data.avatar.url }).show();
+              master.addressFrom = data.bitcoin.address;
+              inputFrom.val(master.addressFrom);
+              inputFromValue = data.bitcoin.address;
+            } else {master.addressFrom = (data) ? data.bitcoin.address : ''; inputFrom.val(master.addressFrom) };
           })
           .error(function(){
             master.doFeedback('from','problem');
           })
           .done(function(){
-            if (cryptoscrypt.validAddress($('input[name=from]',master.$el).val().trim()) == true){
+            if (cryptoscrypt.validAddress(master.addressFrom) == true){
               master.doFeedback('from','ok');
-
-              $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.btcFrom, function(dat2) {
+              $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.addressFrom, function(dat2) {
               }).done(function(dat2){
-                master.balance=(dat2.data.balance)
-              });
+                master.balance=(dat2.data.balance);
+              }).error(function(){console.log('error');});
             } else {
               master.doFeedback('from','problem');
             } 
-          })
+          });
         } else {
-          master.feedback('from','ok');
-        };
+            if (master.addressFrom == ''){
+            master.doFeedback('from','neutral')};
+          };
       };
     },
 
-    lookupTo: function() {
+    lookupTo : function() {
 
       master = this
+      inputTo = $('input[name=to]',master.$el);
+      inputToValue = inputTo.val().trim()
 
-      if (btcTo!=$('input[name=to]',this.$el).val().trim()){
+      if (master.addressTo!=inputToValue){
         $('.thumb-to', master.$el).removeAttr('src');
-        btcTo=($('input[name=to]',master.$el).val()).trim();
-        if (cryptoscrypt.validAddress(btcTo) == false && btcTo != ''){
-          $.getJSON('https://onename.io/' + $('input[name=to]', master.$el).val().trim() + '.json', function(data) {
+        master.addressTo=(inputTo.val()).trim();
+        if (cryptoscrypt.validAddress(master.addressTo) == false && master.addressTo != ''){
+          $.getJSON('https://onename.io/' + inputToValue + '.json', function(data) {
             if (data && data.avatar) {
               $('.thumb-to', master.$el).attr({ src: data.avatar.url }).show();
-              btcTo=data.bitcoin.address;
-              $('input[name=to]',master.$el).val(btcTo);    
-            };
+              master.addressTo = data.bitcoin.address;
+              inputTo.val(master.addressTo);    
+            } else {master.addressTo = (data) ? data.bitcoin.address : ''; inputTo.val(master.addressTo) };
           })
           .error(function(){master.doFeedback('to','problem');})
           .done(function(){
-            if (cryptoscrypt.validAddress($('input[name=to]',master.$el).val().trim()) == true){
+            if (cryptoscrypt.validAddress(master.addressTo) == true){
               master.doFeedback('to','ok');
             } else {
               master.doFeedback('to','problem');
             }
           })
         } else {
-          master.doFeedback('to','ok');
+          if (master.addressFrom == ''){
+            master.doFeedback('to','neutral')};
         };
       };
     }
