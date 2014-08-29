@@ -5,9 +5,9 @@ define([
   'models/bitcoin'
 ], function($, _, Backbone,Bitcoin){
   var balance = '';
-  var addressFrom = '';
-  var addressTo = '';
-  var alias = ''; 
+  var addresses = {"From":"","To":""};
+  var alias = 'z'; 
+  //var imageBitcoinData = [];
   var IndexView = Backbone.View.extend({
     el: $('#contents'),
     template: "\
@@ -86,15 +86,17 @@ define([
     events: {
       'click .btn-visualize': 'visualize',
       'click .btn-sign': 'sign',
-      'blur input[name=from]': 'lookupFrom',
-      'blur input[name=to]': 'lookupTo',
+      'blur input[name=from]': 'lookup',
+      'blur input[name=to]': 'lookup',
+      'focus input[name=from]': 'initialData',
+      'focus input[name=to]': 'initialData'
     },
 
     render : function() {
       this.$el.html(_.template(this.template));
     },
 
-    visualize : function() {
+    visualize : function(ev) {
       // TODO: visualize a transaction
     },
 
@@ -108,84 +110,71 @@ define([
       failure = ['has-error', 'glyphicon glyphicon-remove form-control-feedback'];
       neutral = ['has-error has-success', 'glyphicon glyphicon-ok glyphicon-remove form-control-feedback'];
 
-      var toAdd = (result == 'ok') ? success : (result == 'problem') ? failure : ['',''];
+      var toAdd = (result == 'ok') ? success : (result == 'problem') ? failure : ['', ''];
       var toRemove = (result == 'ok') ? failure : (result == 'problem') ? failure : neutral;
 
       $('div[name = div-' + aim + ']', this.$el).removeClass(toRemove[0]).addClass(toAdd[0]);
       $('span[name=glyphicon-' + aim + ']', this.$el).removeClass(toRemove[1]).addClass(toAdd[1]);
 
+      return;
     },
 
-    lookupFrom : function() {
+    initialData: function(ev) {
+      var field = ev.currentTarget.name;
+      addresses[field] = $('input[name=' + field + ']',this.$el).val().trim();
+    },
 
+    lookup : function(ev) {
+
+      var field = ev.currentTarget.name
       var master = this;
-      var inputFrom = $('input[name=from]',master.$el)
-      var inputFromValue = inputFrom.val().trim();
-      var thumbFrom = $('.thumb-from', master.$el);
+      var input = $('input[name=' + field + ']',master.$el)
+      var inputValue = input.val().trim();
+      var thumb = $('.thumb-' + field , master.$el);
+      var address = inputValue;
 
-      if (master.addressFrom!=inputFromValue){
-        thumbFrom.removeAttr('src');
-        master.addressFrom=inputFromValue;
-        if (cryptoscrypt.validAddress(master.addressFrom) == false && master.addressFrom != ''){
-          $.getJSON('https://onename.io/' + inputFromValue + '.json', function(data) {
-            if (data && data.avatar) {
-              thumbFrom.attr({ src : data.avatar.url }).show();
-              master.addressFrom = data.bitcoin.address;
-              inputFrom.val(master.addressFrom);
-              inputFromValue = data.bitcoin.address;
-            } else {master.addressFrom = (data) ? data.bitcoin.address : ''; inputFrom.val(master.addressFrom) };
-          })
-          .error(function(){
-            master.doFeedback('from','problem');
-          })
-          .done(function(){
-            if (cryptoscrypt.validAddress(master.addressFrom) == true){
-              master.doFeedback('from','ok');
-              $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.addressFrom, function(dat2) {
-              }).done(function(dat2){
-                master.balance=(dat2.data.balance);
-              }).error(function(){console.log('error');});
-            } else {
-              master.doFeedback('from','problem');
-            } 
-          });
-        } else {
-            if (master.addressFrom == ''){
-            master.doFeedback('from','neutral')};
-          };
+      if (inputValue == addresses[field]){
+        return;
       };
-    },
 
-    lookupTo : function() {
+      thumb.removeAttr('src');
 
-      master = this
-      inputTo = $('input[name=to]',master.$el);
-      inputToValue = inputTo.val().trim()
+      if (cryptoscrypt.validAddress(address) == true){
+        master.doFeedback(field,'ok');
+        return;
+      };
 
-      if (master.addressTo!=inputToValue){
-        $('.thumb-to', master.$el).removeAttr('src');
-        master.addressTo=(inputTo.val()).trim();
-        if (cryptoscrypt.validAddress(master.addressTo) == false && master.addressTo != ''){
-          $.getJSON('https://onename.io/' + inputToValue + '.json', function(data) {
-            if (data && data.avatar) {
-              $('.thumb-to', master.$el).attr({ src: data.avatar.url }).show();
-              master.addressTo = data.bitcoin.address;
-              inputTo.val(master.addressTo);    
-            } else {master.addressTo = (data) ? data.bitcoin.address : ''; inputTo.val(master.addressTo) };
-          })
-          .error(function(){master.doFeedback('to','problem');})
-          .done(function(){
-            if (cryptoscrypt.validAddress(master.addressTo) == true){
-              master.doFeedback('to','ok');
-            } else {
-              master.doFeedback('to','problem');
-            }
-          })
-        } else {
-          if (master.addressFrom == ''){
-            master.doFeedback('to','neutral')};
+      if (address == ''){
+        master.doFeedback(field,'neutral');
+        return;
+      };
+ 
+      $.getJSON('https://onename.io/' + inputValue + '.json', function(data) {
+
+        if (data.avatar) {
+          thumb.attr({ src : data.avatar.url }).show();
         };
-      };
+      }).error(function(){
+        master.doFeedback(field,'problem');
+      }).done(function(data){
+
+        address = data.bitcoin.address ? data.bitcoin.address : '';
+        input.val(address);
+
+        if (cryptoscrypt.validAddress(address) == true){
+          master.doFeedback(field,'ok');
+        } else {
+          master.doFeedback(field,'problem');
+          return;
+        };
+
+        if (field == 'from'){
+          $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + address, function(dat2) {
+          }).done(function(dat2){
+            master.balance = (dat2.data.balance);
+          });
+        };
+      });
     }
   });
   return IndexView;
