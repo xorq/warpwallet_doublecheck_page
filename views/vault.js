@@ -1,14 +1,14 @@
 define([
-	'jquery',
-	'underscore',
-	'backbone',
-	'models/wordlist',
-	'models/crypto',
+	'jquery', 
+	'underscore', 
+	'backbone', 
+	'models/wordlist', 
+	'models/crypto', 
 	'models/qrcode'
-], function($, _, Backbone, WordList,crypto){
+], function($, _, Backbone, WordList, crypto){
 
 	var VaultView = Backbone.View.extend({
-		el: $('#contents'),
+		el: $('#contents'), 
 		template: "\
 			<form role='form'>\
 				<div class='form-group row'>\
@@ -54,21 +54,21 @@ define([
 					<div class='col-xs-6' id='qrcode-privkey-image'></div>\
 				</div>\
 			</form>\
-		",
+		", 
 		events: {
-			'click .btn-random': 'random',
-			'click .btn-generate': 'generate',
-			'keyup input[name=passphrase]': 'deleteIfChanged',
+			'click .btn-random': 'random', 
+			'click .btn-generate': 'generate', 
+			'keyup input[name=passphrase]': 'deleteIfChanged', 
 			'keyup input[name=email]': 'deleteIfChanged'
-		},
+		}, 
 		render: function() {
 			this.$el.html(_.template(this.template));
-		},
+		}, 
 		random: function() {
 				$('input[name=passphrase]', this.$el).val(
 					WordList.random($('select[name=count_words]', this.$el).val())
 				);
-		},
+		}, 
 		deleteResults: function() {
 			$('div[id=qrcode-address-image]').text('');
 			$('div[id=qrcode-privkey-image]').text('');
@@ -76,25 +76,25 @@ define([
 			$('div[id=label-privkey]').text('');
 			$('div[id=text-address]').text('');
 			$('div[id=text-privatekey]').text('');
-		},
+		}, 
 		deleteIfChanged: function() {
 			if (
-				this.passphraseMemory!=$('input[name=passphrase]',this.$el).val() |
-				this.saltMemory!=$('input[name=email]',this.$el).val()
+				this.passphraseMemory!=$('input[name=passphrase]', this.$el).val() |
+				this.saltMemory!=$('input[name=email]', this.$el).val()
 				){
 					this.deleteResults()
 				}
-		},
+		}, 
 		generate: function() {
-			this.passphraseMemory = $('input[name=passphrase]',this.$el).val()
-			this.saltMemory = $('input[name=passphrase]',this.$el).val()
+			this.passphraseMemory = $('input[name=passphrase]', this.$el).val()
+			this.saltMemory = $('input[name=passphrase]', this.$el).val()
 
 			this.deleteResults()
-			var qrcode = new QRCode("qrcode-address-image",{width: 160,height: 160});
-			var qrcode2 = new QRCode("qrcode-privkey-image",{width: 160,height: 160});
+			var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160});
+			var qrcode2 = new QRCode("qrcode-privkey-image", {width: 160, height: 160});
 
 			var result = cryptoscrypt.warp(
-				$('input[name=passphrase]',this.$el).val(),
+				$('input[name=passphrase]', this.$el).val(), 
 				$('input[name=email]', this.$el).val()
 			);    
 

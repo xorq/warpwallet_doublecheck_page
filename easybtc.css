@@ -3,6 +3,7 @@
 }
 #contents {
 	padding: 20px;
+    margin-bottom: 50px;
 }
 .has-feedback .form-control-feedback {
     position: absolute;
