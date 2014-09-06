@@ -90,8 +90,8 @@ define([
 			this.saltMemory = $('input[name=passphrase]', this.$el).val()
 
 			this.deleteResults()
-			var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160});
-			var qrcode2 = new QRCode("qrcode-privkey-image", {width: 160, height: 160});
+			var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160,correctLevel : QRCode.CorrectLevel.L});
+			var qrcode2 = new QRCode("qrcode-privkey-image", {width: 160, height: 160, correctLevel : QRCode.CorrectLevel.L});
 
 			var result = cryptoscrypt.warp(
 				$('input[name=passphrase]', this.$el).val(), 

@@ -12,6 +12,7 @@ define([
   var unspentValues = [];
   var inputsCount = 0;
   var tx = new Bitcoin.Transaction();
+  var outputList = {};
   var IndexView = Backbone.View.extend({
     el: $('#contents'),
     template: "\
@@ -25,29 +26,33 @@ define([
             <span class='col-xs-9 add-on name='amount-balance-from' id='amount-balance-from'></span>\
             <span class='col-xs-9 glyphicon form-control-feedback' name='glyphicon-from' id='glyphicon-from'></span>\
           </div>\
-          <div class='col-xs-1'>\
+          <div class='col-xs'>\
             <img style='display: none' class='thumb-from' width='64' /> \
           </div>\
         </div>\
-        <div class='form-group row'>\
+        <div class='form-group row form-group-to0'>\
           <div class='col-xs-2'>\
             <label>To</label>\
           </div>\
-          <div class='col-xs-9 form-group has-feedback' name='div-to'>\
-            <input type='text' class='col-xs-9 form-control' name='to' placeholder='Enter recipient name or Bitcoin address' />\
-            <span class='col-xs-9' name='glyphicon-to'></span>\
+          <div class='col-xs-5 form-group has-feedback input-field-to0' name='div-to0'>\
+            <input type='text' class='col-xs-5 form-control' name='to0' placeholder='Enter recipient name or Bitcoin address' />\
+            <span class='col-xs-5' name='glyphicon-to0'></span>\
+          </div>\
+          <div class='col-xs-2'>\
+            <input type='text' class='form-control' name='amount0' placeholder='Enter BTC amount to send' />\
+          </div>\
+          <div class='col-xs-2'>\
+            <button type='button' class='btn btn-primary btn-remove' name='btn-remove0'>Remove</button>\
           </div>\
           <div class='col-xs-1'>\
-            <img style='display: none' class='thumb-to' width='64' /> \
+            <img style='display: none' class='thumb-to0' width='50' /> \
           </div>\
         </div>\
-        <div class='form-group row'>\
-          <div class='col-xs-2'>\
-            <label>Amount</label>\
-          </div>\
-          <div class='col-xs-10'>\
-            <input type='text' class='form-control' name='amount' placeholder='Enter amount of Bitcoins to send' />\
-          </div>\
+        <div class='col-xs-12 text-right'>\
+          <button type='button' class='btn btn-primary btn-visualize'>Add recipient</button>\
+        </div>\
+        <div class='col-xs-12 text-right'>\
+        <br>\
         </div>\
         <div class='form-group row'>\
           <div class='col-xs-2'>\
@@ -63,9 +68,6 @@ define([
           </div>\
           <div class='col-xs-6'>\
             <input type='text' class='form-control' readonly value='...' />\
-          </div>\
-          <div class='col-xs-4 text-right'>\
-            <button type='button' class='btn btn-primary btn-visualize'>Visualize Transaction</button>\
           </div>\
         </div>\
         <hr />\
@@ -98,27 +100,61 @@ define([
       <br>\
     ",
     events: {
-      'click .btn-visualize': 'visualize',
+      'click .btn-visualize': 'addOutput',
       'click .btn-sign': 'sign',
       'blur input[name=from]': 'lookup',
-      'blur input[name=to]': 'lookup',
+      'blur input[name^=to]': 'lookup',
       'focus input[name=from]': 'initialData',
-      'focus input[name=to]': 'initialData',
-      'keydown input[name=amount]': 'makeTx',
-      'keydown input[name=fee]': 'makeTx'
+      'focus input[name^=to]': 'initialData',
+      'keydown input[name^=amount]': 'outputsToJson',
+      'click button[name^=btn-remove]': 'removeLine'
     },
 
     render : function() {
       this.$el.html(_.template(this.template));
+    },    
+
+    removeLine : function(ev) { 
+      if ($('input[name^=amount]', this.$el).length > 1) {
+        var fieldNumber = (ev.currentTarget.name).slice(-1);
+        $(".form-group-to"+fieldNumber ).remove();
+      }
     },
 
-    visualize : function() {
+    addOutput : function() {
 
-    //$('div[id=label-qrcode]').text('0100000001f7e4a3501be5c0090760405042934c3e9e8bb04085c462e51393f52c1faf0c0d010000008a4730440220397038dc3cfe556b720a0b785610542e7b4f1a1d41a66f65965b03e77736aaa80220561539e4145a0cbfac88ddc0de6e73c5ef8add8b03a90e852312f23e921f4c0f0141049ad6fc1c79a15ce6c84fbf28a6507da5972df0bb8c8d2687a6462c80f15abf04596ada4bdf30d5e93d43161f4e783f05c848303f7ff98c9a9f6e6ee89ff7739fffffffff02a0860100000000001976a9145f6dd575c0cf174dd3e60774f3fb3054f54cf6ba88acf9350e00000000001976a91405d3984a91e60d677b32145a1b5ad586da50a7ae88ac00000000');
+      var lastFieldNumber = $('input[name^=amount]', this.$el).length;
+      var index = parseInt($('input[name^=amount]',this.$el)[lastFieldNumber - 1]['name'].slice(-1));
+
+      var outputsFieldsNumber = index + 1;
+
+      var init = outputsFieldsNumber - 1
+      $(".form-group-to"+ init ).after("\
+      <div class='form-group row form-group-to" + outputsFieldsNumber + "'>\
+        <div class='col-xs-2'>\
+          <label>To</label>\
+        </div>\
+        <div class='col-xs-5 form-group has-feedback field-to" + outputsFieldsNumber + "' name='div-to" + outputsFieldsNumber + "'>\
+          <input type='text' class='col-xs-5 form-control' name='to" + outputsFieldsNumber + "' placeholder='Enter recipient name or Bitcoin address' />\
+          <span class='col-xs-5' name='glyphicon-to" + outputsFieldsNumber + "'></span>\
+        </div>\
+        <div class='col-xs-2'>\
+          <input type='text' class='form-control' name='amount" + outputsFieldsNumber + "' placeholder='Enter BTC amount to send' />\
+        </div>\
+        <div class='col-xs-2'>\
+          <button type='button' class='btn btn-primary btn-remove" + outputsFieldsNumber + "' name='btn-remove" + outputsFieldsNumber + "'>Remove</button>\
+        </div>\
+        <div class='col-xs-1'>\
+          <img style='display: none' class='thumb-to" + outputsFieldsNumber + "' width='50' /> \
+        </div>\
+      </div>\
+       ");
     },
 
     sign : function() {
-      // TODO: sign a transaction
+
+      this.makeTx();
+      
       pkey = Bitcoin.ECKey.fromWIF(cryptoscrypt.warp(
         $('input[name=passphrase]', this.$el).val(),
         $('input[name=salt]', this.$el).val()
@@ -130,26 +166,33 @@ define([
       $('div[id=qrcode]').text('');
       $('div[id=label-qrcode]').text('');
       $('div[id=label-qrcode]').text('Full Transaction :');
-      var qrcode = new QRCode("qrcode", {width: 350, height: 350});
+      var qrcode = new QRCode("qrcode", { width: 350, height: 350, correctLevel : QRCode.CorrectLevel.L } );
       qrcode.makeCode(this.tx.toHex().toString());
       $('label-qrcode', this.$el).text(this.tx.toHex().toString());
 
       console.log(this.tx.toHex());
+      
     },
 
     makeTx : function() {
+      this.outputsToJson();
+      outputAddresses = [ ];
+      outputAmounts = [ ];
+      for ( var i = 0 ; i < $('input[name^=amount]', this.$el).length ; i++ ) {
+        outputAddresses[i] = (outputList[i].address) ;
+        outputAmounts[i] = (outputList[i].value) ;
+      };
       var transaction = cryptoscrypt.buildTx(
         this.unspentHashs,
         this.unspentHashsIndex,
         this.unspentValues,
-        $('input[name=to]', this.$el).val(),
+        outputAddresses,
         $('input[name=from]', this.$el).val(),
-        parseInt(100000000 * $('input[name=amount]', this.$el).val()),
+        outputAmounts,
         parseInt(100000000 * $('input[name=fee]', this.$el).val())
         );
       this.tx = transaction[0];
       this.inputsCount = transaction[1];
-      console.log(this.tx.toHex());
     },
 
     doFeedback : function(aim,result) {
@@ -171,6 +214,14 @@ define([
       addresses[field] = $('input[name=' + field + ']', this.$el).val().trim();
     },
 
+    outputsToJson: function() {
+
+      for (var i = 0; i < $('input[name^=amount]').length ; i++) {
+        var index = $('input[name^=amount]',this.$el)[i]['name'].slice(-1);
+        outputList[i] = {'address' :  $('input[name=to' + index + ']', this.$el).val().trim() ,'value' : 100000000 * $('input[name=amount' + index + ']', this.$el).val().trim()};
+      };
+    },
+
     lookup : function(ev) {
 
       var field = ev.currentTarget.name
@@ -184,6 +235,7 @@ define([
         return;
       };
 
+      $('span[id=amount-balance-from]', master.$el).text('');
       thumb.removeAttr('src');
       $('span[name=glyphicon-from]', this.$el).text('');
 
@@ -209,7 +261,7 @@ define([
         input.val(address);
 
         //Possibly unnecessary double check if Onename.io already checks that the bitcoin address is valid
-        if (cryptoscrypt.validAddress(address) == true){
+        if (cryptoscrypt.validAddress(address) == true) {
           if (field == 'from') {
             $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + address, function(data) {
             }).done(function(data) {
@@ -226,9 +278,8 @@ define([
                 master.unspentHashsIndex.push( parseInt( obj.transaction_index ) );
                 master.unspentValues.push(obj.value);              
               });
-              console.log( master.unspentHashs );
             });
-          };
+          }
           master.doFeedback(field, 'ok');
         } else {
           master.doFeedback(field, 'problem');

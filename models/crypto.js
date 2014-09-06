@@ -98,20 +98,25 @@ define([
 			return result;
 		},
 
-		buildTx: function (unspentHashs,unspentHashsIndex,unspentValues,toAddress,fromAddress,amount,fee) {
+		buildTx: function (unspentHashs,unspentHashsIndex,unspentValues,toAddresses,fromAddress,amounts,fee) {
+
+			var totalRequested = 0;
 
 			tx = new Bitcoin.Transaction();
-			tx.addOutput(toAddress, amount);
+			for (var i = 0 ; i < toAddresses.length ; i++) {
+				tx.addOutput(toAddresses[i], amounts[i]);
+				totalRequested += amounts[i]
+			}
 			var totalRedeemed = 0;
-			selectedComb = cryptoscrypt.bestCombination(unspentValues, amount);
+			selectedComb = cryptoscrypt.bestCombination(unspentValues, totalRequested);
 
 			$.each(selectedComb,function( idx, obj ){
 		        tx.addInput( unspentHashs[ obj ],unspentHashsIndex[ obj ]);
 		        totalRedeemed += parseInt( unspentValues[ obj ]);
 	      	});
 
-			if ( totalRedeemed > amount + fee ) {
-				tx.addOutput(fromAddress,totalRedeemed - ( amount + fee ));
+			if ( totalRedeemed > totalRequested + fee ) {
+				tx.addOutput(fromAddress,totalRedeemed - ( totalRequested + fee ));
 			};
 
 	        return [tx,selectedComb.length]
