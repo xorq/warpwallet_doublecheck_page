@@ -106,15 +106,14 @@ define([
       'blur input[name^=to]': 'lookup',
       'focus input[name=from]': 'initialData',
       'focus input[name^=to]': 'initialData',
-      'keydown input[name^=amount]': 'outputsToJson',
-      'click button[name^=btn-remove]': 'removeLine'
+      'click button[name^=btn-remove]': 'removeOutput'
     },
 
     render : function() {
       this.$el.html(_.template(this.template));
     },    
 
-    removeLine : function(ev) { 
+    removeOutput : function(ev) { 
       if ($('input[name^=amount]', this.$el).length > 1) {
         var fieldNumber = (ev.currentTarget.name).slice(-1);
         $(".form-group-to"+fieldNumber ).remove();
@@ -128,7 +127,7 @@ define([
 
       var outputsFieldsNumber = index + 1;
 
-      var init = outputsFieldsNumber - 1
+      var init = index;
       $(".form-group-to"+ init ).after("\
       <div class='form-group row form-group-to" + outputsFieldsNumber + "'>\
         <div class='col-xs-2'>\
@@ -153,15 +152,42 @@ define([
 
     sign : function() {
 
-      this.makeTx();
+      // Collect addresses and amounts;
+
+      var outputAddresses = [];
+      var outputAmounts = [];
+      for ( var i = 0 ; i < $('input[name^=amount]', this.$el).length ; i++ ) {
+        var index = $('input[name^=amount]',this.$el)[i]['name'].slice(-1);    
+        outputAddresses[i] = $('input[name=to' + index + ']', this.$el).val().trim() ;
+        outputAmounts[i] = 100000000 * $('input[name=amount' + index + ']', this.$el).val().trim() ;
+      };
+
+      // Build the unsigned transaction;
+
+      this.tx = cryptoscrypt.buildTx(
+        this.unspentHashs,
+        this.unspentHashsIndex,
+        this.unspentValues,
+        outputAddresses,
+        $('input[name=from]', this.$el).val(),
+        outputAmounts,
+        parseInt(100000000 * $('input[name=fee]', this.$el).val())
+      );
       
+      // Calculate the private key;
+
       pkey = Bitcoin.ECKey.fromWIF(cryptoscrypt.warp(
         $('input[name=passphrase]', this.$el).val(),
         $('input[name=salt]', this.$el).val()
       )[0]);
+
+      // Perform the signatures
+
       for ( var i = 0; i < this.inputsCount; i++){
         this.tx.sign(i,pkey);
-      }
+      };
+
+      //Create the QR code
 
       $('div[id=qrcode]').text('');
       $('div[id=label-qrcode]').text('');
@@ -170,29 +196,10 @@ define([
       qrcode.makeCode(this.tx.toHex().toString());
       $('label-qrcode', this.$el).text(this.tx.toHex().toString());
 
+      // Show the transaction Hex
+
       console.log(this.tx.toHex());
       
-    },
-
-    makeTx : function() {
-      this.outputsToJson();
-      outputAddresses = [ ];
-      outputAmounts = [ ];
-      for ( var i = 0 ; i < $('input[name^=amount]', this.$el).length ; i++ ) {
-        outputAddresses[i] = (outputList[i].address) ;
-        outputAmounts[i] = (outputList[i].value) ;
-      };
-      var transaction = cryptoscrypt.buildTx(
-        this.unspentHashs,
-        this.unspentHashsIndex,
-        this.unspentValues,
-        outputAddresses,
-        $('input[name=from]', this.$el).val(),
-        outputAmounts,
-        parseInt(100000000 * $('input[name=fee]', this.$el).val())
-        );
-      this.tx = transaction[0];
-      this.inputsCount = transaction[1];
     },
 
     doFeedback : function(aim,result) {
@@ -212,14 +219,6 @@ define([
     initialData: function(ev) {
       var field = ev.currentTarget.name;
       addresses[field] = $('input[name=' + field + ']', this.$el).val().trim();
-    },
-
-    outputsToJson: function() {
-
-      for (var i = 0; i < $('input[name^=amount]').length ; i++) {
-        var index = $('input[name^=amount]',this.$el)[i]['name'].slice(-1);
-        outputList[i] = {'address' :  $('input[name=to' + index + ']', this.$el).val().trim() ,'value' : 100000000 * $('input[name=amount' + index + ']', this.$el).val().trim()};
-      };
     },
 
     lookup : function(ev) {

@@ -119,8 +119,26 @@ define([
 				tx.addOutput(fromAddress,totalRedeemed - ( totalRequested + fee ));
 			};
 
-	        return [tx,selectedComb.length]
-    	}
+	        return tx
+    	},
 		
+		makeTx : function() {
+
+			outputAddresses = [ ];
+			outputAmounts = [ ];
+
+			var transaction = cryptoscrypt.buildTx(
+				this.unspentHashs,
+				this.unspentHashsIndex,
+				this.unspentValues,
+				outputAddresses,
+				$('input[name=from]', this.$el).val(),
+				outputAmounts,
+				parseInt(100000000 * $('input[name=fee]', this.$el).val())
+			);
+
+			return transaction;
+		},
+
 	}
 });
