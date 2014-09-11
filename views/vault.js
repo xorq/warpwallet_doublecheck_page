@@ -4,8 +4,9 @@ define([
 	'backbone', 
 	'models/wordlist', 
 	'models/crypto', 
-	'models/qrcode'
-], function($, _, Backbone, WordList, crypto){
+	'models/qrcode',
+	'models/bitcoin'
+], function($, _, Backbone, WordList, crypto, Bitcoin){
 
 	var VaultView = Backbone.View.extend({
 		el: $('#contents'), 
@@ -86,8 +87,11 @@ define([
 				}
 		}, 
 		generate: function() {
+
 			this.passphraseMemory = $('input[name=passphrase]', this.$el).val()
 			this.saltMemory = $('input[name=passphrase]', this.$el).val()
+
+			if (cryptoscrypt.validPkey(this.passphraseMemory)) { return };
 
 			this.deleteResults()
 			var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160,correctLevel : QRCode.CorrectLevel.L});

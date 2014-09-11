@@ -47,6 +47,17 @@ define([
 				return false;
 			}
 		},
+
+		validPkey: function(data){
+			try{
+				Bitcoin.ECKey.fromWIF(data);
+				return true;
+			}
+			catch(err){
+				return false;
+			}
+		},
+
 		sumArray: function(a) {
 			var result = 0;
 			for (i = 0; i < a.length; i++) {
@@ -119,7 +130,7 @@ define([
 				tx.addOutput(fromAddress,totalRedeemed - ( totalRequested + fee ));
 			};
 
-	        return tx
+	        return [tx,selectedComb.length];		
     	},
 		
 		makeTx : function() {

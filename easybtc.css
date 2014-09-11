@@ -2,7 +2,9 @@
 	margin-top: 20px;
 }
 #contents {
-	padding: 20px;
+    padding-top: 20px;
+	padding-left: 0px;
+    padding-right: 0px;
 }
 .has-feedback .form-control-feedback {
     position: absolute;
@@ -13,4 +15,7 @@
     height: 34px;
     line-height: 34px;
     text-align: center;
+}
+.radio {
+    top: -12px;
 }
