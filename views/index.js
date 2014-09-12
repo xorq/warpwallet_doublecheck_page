@@ -150,7 +150,6 @@ define([
     },
 
     addOutput : function() {
-
       var lastFieldNumber = $('input[name^=amount]', this.$el).length;
       var index = parseInt($('input[name^=amount]',this.$el)[lastFieldNumber - 1]['name'].slice(-1));
 

@@ -10,14 +10,21 @@ define([
       '': 'index',
       'vault': 'vault'
     },
+    currentView: false,
     index: function() {
-      var indexView = new IndexView;
-      indexView.render();
+      if (this.currentView) {
+        this.currentView.undelegateEvents();
+      }
+      this.currentView = new IndexView;
+      this.currentView.render();
       $('.nav > li').removeClass('active').filter('[name=create]').addClass('active');
     },
     vault: function() {
-      var vaultView = new VaultView();
-      vaultView.render();
+      if (this.currentView) {
+        this.currentView.undelegateEvents();
+      }
+      this.currentView = new VaultView();
+      this.currentView.render();
       $('.nav > li').removeClass('active').filter('[name=vault]').addClass('active');
     }
   });
