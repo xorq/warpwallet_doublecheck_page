@@ -58,6 +58,25 @@ define([
 			}
 		},
 
+		getPkey: function(passphrase,salt){
+			if (cryptoscrypt.validPkey(passphrase) == false) {
+				pkey = Bitcoin.ECKey.fromWIF(cryptoscrypt.warp(
+					passphrase,
+					salt
+				)[0])
+			} else {
+				pkey = Bitcoin.ECKey.fromWIF(passphrase)
+			};
+			return pkey
+		},
+
+		signTx: function(tx,pkey){
+			for ( var i = 0; i < tx[1]; i++) {
+				tx[0].sign(i,pkey);
+			};
+			return tx
+		},
+
 		sumArray: function(a) {
 			var result = 0;
 			for (i = 0; i < a.length; i++) {
@@ -110,6 +129,10 @@ define([
 		},
 
 		buildTx: function (unspentHashs,unspentHashsIndex,unspentValues,toAddresses,fromAddress,amounts,fee) {
+
+			if ( cryptoscrypt.sumArray(amounts) + fee > cryptoscrypt.sumArray(unspentValues) ) {
+				return
+			};
 
 			var totalRequested = 0;
 

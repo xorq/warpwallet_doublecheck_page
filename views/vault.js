@@ -14,7 +14,7 @@ define([
 			<form role='form'>\
 				<div class='form-group row'>\
 					<div class='col-xs-2'>\
-						<label>Passphrase</label>\
+						<label>Passphrase or Private Key</label>\
 					</div>\
 					<div class='col-xs-6'>\
 						<input type='text' class='form-control' name='passphrase' placeholder='Type your passphrase here' />\

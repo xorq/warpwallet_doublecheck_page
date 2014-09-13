@@ -5,7 +5,7 @@ define([
   'models/bitcoin',
   'models/qrcode'
 ], function($, _, Backbone,Bitcoin,qrcode){
-  var balance = '';
+  var balance = 0;
   var addresses = {"From":"","To":""};
   var unspentHashsIndex = [];
   var unspentHashs = [];
@@ -56,7 +56,7 @@ define([
             <label>Fee</label>\
           </div>\
           <div class='col-xs-6'>\
-            <input type='text' class='form-control' name='fee' placeholder='Enter transaction fee' />\
+            <input type='text' class='form-control ' name='fee' placeholder='Enter transaction fee' />\
           </div>\
           <div class='col-xs-5'>\
             <button type='button' class='btn btn-primary btn-add-recipient'>Add recipient</button>\
@@ -113,6 +113,7 @@ define([
       'focusout input[name^=amount]': 'updateFee',
       'blur input[name^=amount]': 'updateFee',
       'focus input[name^=amount]': 'updateFee',
+      'keyup input[name=fee]': 'updateTotal',
       'click button[name^=btn-remove]': 'removeOutput',
       'click button[name^=btn-all]': 'putAll'
     },
@@ -121,7 +122,15 @@ define([
       this.$el.html(_.template(this.template));
     },    
 
+    initialData: function(ev) {
+      
+      var field = ev.currentTarget.name;
+      addresses[field] = $('input[name=' + field + ']', this.$el).val().trim();
+
+    },
+
     putAll : function(ev) {
+
       var fieldNumber = (ev.currentTarget.name).slice(-1);
       var outputAddresses = [];
       var outputAmounts = [];
@@ -133,10 +142,9 @@ define([
           outputAmounts.push( 100000000 * $('input[name=amount' + index + ']',this.$el).val().trim() );
         }
       });
-
       var totalUnspent = cryptoscrypt.sumArray(unspentValues);
       var total = cryptoscrypt.sumArray(outputAmounts) + fee;
-      $('input[name=amount' + fieldNumber + ']', this.$el).val((this.balance - total)/100000000);
+      $('input[name=amount' + fieldNumber + ']', this.$el).val((balance - total)/100000000);
       this.updateFee();
 
     }, 
@@ -149,34 +157,34 @@ define([
       this.updateFee();
     },
 
-    addOutput : function() {
+    addOutput : function(ev) {
 
       var lastFieldNumber = $('input[name^=amount]', this.$el).length;
       var index = parseInt($('input[name^=amount]',this.$el)[lastFieldNumber - 1]['name'].slice(-1));
 
-      var outputsFieldsNumber = index + 1;
+      var outputFieldNumber = index + 1;
 
       var init = index;
       $(".form-group-to"+ init ).after("\
-      <div class='form-group row form-group-to" + outputsFieldsNumber + "'>\
+      <div class='form-group row form-group-to" + outputFieldNumber + "'>\
         <div class='col-xs-1'>\
           <label>To</label>\
         </div>\
-        <div class='col-xs-5 form-group has-feedback field-to" + outputsFieldsNumber + "' name='div-to" + outputsFieldsNumber + "'>\
-          <input type='text' class='col-xs-6 form-control' name='to" + outputsFieldsNumber + "' placeholder='Enter recipient name or Bitcoin address' />\
-          <span class='col-xs-6' name='glyphicon-to" + outputsFieldsNumber + "'></span>\
+        <div class='col-xs-5 form-group has-feedback field-to" + outputFieldNumber + "' name='div-to" + outputFieldNumber + "'>\
+          <input type='text' class='col-xs-6 form-control' name='to" + outputFieldNumber + "' placeholder='Enter recipient name or Bitcoin address' />\
+          <span class='col-xs-6' name='glyphicon-to" + outputFieldNumber + "'></span>\
         </div>\
         <div class='col-xs-2'>\
-          <input type='text' class='form-control' name='amount" + outputsFieldsNumber + "' placeholder='Enter BTC amount to send' />\
+          <input type='text' class='form-control' name='amount" + outputFieldNumber + "' placeholder='Enter BTC amount to send' />\
         </div>\
         <div class='col-xs-2'>\
-          <button type='button' class='form-control btn btn-primary btn-remove" + outputsFieldsNumber + "' name='btn-remove" + outputsFieldsNumber + "'>Remove</button>\
+          <button type='button' class='form-control btn btn-primary btn-remove" + outputFieldNumber + "' name='btn-remove" + outputFieldNumber + "'>Remove</button>\
         </div>\
         <div class='col-xs-1'>\
-          <button type='button' class='form-control btn btn-primary btn-remove' name='btn-all" + outputsFieldsNumber + "'>All</button>\
+          <button type='button' class='form-control btn btn-primary btn-remove' name='btn-all" + outputFieldNumber + "'>All</button>\
         </div>\
         <div class='col-xs-1'>\
-          <img style='display: none' class='thumb-to" + outputsFieldsNumber + "' width='50' /> \
+          <img style='display: none' class='thumb-to" + outputFieldNumber + "' width='50' /> \
         </div>\
       </div>\
        ");
@@ -184,7 +192,7 @@ define([
 
     sign : function() {
 
-      // Collect addresses and amounts;
+      // Collect addresses, amounts and pkey;
 
       var outputAddresses = [ ];
       var outputAmounts = [ ];
@@ -196,12 +204,8 @@ define([
         outputAmounts[i] = 100000000 * $(obj,this.$el).val().trim() ;
       });
 
-      // Stop if too much is spent
-
-      if ( cryptoscrypt.sumArray(outputAmounts) + fee > cryptoscrypt.sumArray(this.unspentValues) ) {
-        
-        return
-      }
+      inputPassphrase = $('input[name=passphrase]', this.$el).val();
+      salt = $('input[name=salt]', this.$el).val();
 
       // Build the unsigned transaction;
 
@@ -217,24 +221,14 @@ define([
 
       // Calculate the private key;
 
-      inputPassphrase = $('input[name=passphrase]', this.$el).val();
-
-      if (cryptoscrypt.validPkey(inputPassphrase) == false) {
-        pkey = Bitcoin.ECKey.fromWIF(cryptoscrypt.warp(
-          inputPassphrase,
-          $('input[name=salt]', this.$el).val()
-        )[0])
-      } else {
-        pkey = Bitcoin.ECKey.fromWIF(inputPassphrase)
-      };
+      pkey = cryptoscrypt.getPkey(inputPassphrase,salt);
 
       // Perform the signatures
 
-      for ( var i = 0; i < tx[1]; i++) {
-        tx[0].sign(i,pkey);
-      };
+      tx = cryptoscrypt.signTx(tx,pkey);
 
       //Create the QR code
+
       $('div[id=qrcode]').text('');
       $('div[id=label-qrcode]').text('');
       $('div[id=label-qrcode]').text('Full Transaction :');
@@ -261,11 +255,6 @@ define([
 
     },
 
-    initialData: function(ev) {
-      var field = ev.currentTarget.name;
-      addresses[field] = $('input[name=' + field + ']', this.$el).val().trim();
-    },
-
     updateFee : function () {
 
       var outputAmounts = [];
@@ -279,7 +268,8 @@ define([
         $('input[name=fee]', this.$el).val( parseInt(( 140 * numOfInputs + 100 * $('input[name^=amount]', this.$el).length + 150 ) / 100000) * 1000 + 0.0001);
       };
 
-      this.updateTotal();
+      this.updateTotal;
+
     },
 
     updateTotal : function() {
@@ -294,8 +284,29 @@ define([
  
     },
 
-    lookup : function(ev) {
+    updateBalance : function(address) {
 
+      var master = this;
+      $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + address, function(data) {
+      }).done(function(data) {
+        balance = (data.data.balance);
+        $('span[id=amount-balance-from]', this.$el).text('Balance : ' + balance/100000000 + ' BTC');
+      });
+      $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + address + '/unspent-outputs?per_page=100', function(data) {
+      }).done(function(data) {
+        master.unspentHashs = [];
+        master.unspentHashsIndex = [];
+        master.unspentValues = [];
+        $.each( data.data.outputs, function(idx,obj ) {
+          master.unspentHashs.push(obj.transaction_hash );
+          master.unspentHashsIndex.push( parseInt( obj.transaction_index ) );
+          master.unspentValues.push(obj.value);              
+        });
+        master.updateFee();
+      });
+    },
+
+    lookup : function(ev) {
       this.updateFee();
 
       var field = ev.currentTarget.name
@@ -313,6 +324,11 @@ define([
       $('span[name=glyphicon-from]', this.$el).text('');
 
       if (cryptoscrypt.validAddress(address) == true) {
+
+          if (field == 'from') {
+            this.updateBalance(address);
+          }
+
         master.doFeedback(field, 'ok');
         return;
       };
@@ -327,38 +343,25 @@ define([
         if (data.avatar) {
           thumb.attr({ src : data.avatar.url }).show();
         };
-      }).error(function() { master.doFeedback(field, 'problem');
+      }).error(function() {
+        master.doFeedback(field, 'problem');
       }).done(function(data) {
 
         address = data.bitcoin.address ? data.bitcoin.address : '';
         input.val(address);
 
         //Possibly unnecessary double check if Onename.io already checks that the bitcoin address is valid
+
         if (cryptoscrypt.validAddress(address) == true) {
           if (field == 'from') {
-            $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + address, function(data) {
-            }).done(function(data) {
-              master.balance = (data.data.balance);
-              $('span[id=amount-balance-from]', master.$el).text('Balance : ' + master.balance/100000000 + ' BTC');
-            });
-            $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + address + '/unspent-outputs?per_page=100', function(data) {
-            }).done(function(data) {
-              master.unspentHashs = [];
-              master.unspentHashsIndex = [];
-              master.unspentValues = [];
-              $.each( data.data.outputs, function(idx,obj ) {
-                master.unspentHashs.push(obj.transaction_hash );
-                master.unspentHashsIndex.push( parseInt( obj.transaction_index ) );
-                master.unspentValues.push(obj.value);              
-              });
-              master.updateFee();
-            });
+            master.updateBalance(address);
           }
           master.doFeedback(field, 'ok');
         } else {
           master.doFeedback(field, 'problem');
           return;
         };
+
       });
     }
   });
