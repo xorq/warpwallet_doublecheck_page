@@ -3,8 +3,10 @@ define([
   'underscore',
   'backbone',
   'views/index',
-  'views/vault'
-], function($, _, Backbone, IndexView, VaultView){
+  'views/vault',
+  'models/transaction'
+], function($, _, Backbone, IndexView, VaultView, Transaction){
+  console.log(Transaction);
   var AppRouter = Backbone.Router.extend({
     routes: {
       '': 'index',
@@ -15,7 +17,7 @@ define([
       if (this.currentView) {
         this.currentView.undelegateEvents();
       }
-      this.currentView = new IndexView;
+      this.currentView = new IndexView({ model: new Transaction });
       this.currentView.render();
       $('.nav > li').removeClass('active').filter('[name=create]').addClass('active');
     },

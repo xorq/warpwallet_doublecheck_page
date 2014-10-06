@@ -421,7 +421,7 @@ var QRCode;
 		 */
 		Drawing.prototype.makeImage = function () {
 			if (this._bIsPainted) {
-				_safeSetDataURI.call(this, _onMakeImage);
+				//_safeSetDataURI.call(this, _onMakeImage);
 			}
 		};
 			
@@ -591,7 +591,7 @@ var QRCode;
 	 */
 	QRCode.prototype.makeImage = function () {
 		if (typeof this._oDrawing.makeImage == "function" && (!this._android || this._android >= 3)) {
-			this._oDrawing.makeImage();
+			//this._oDrawing.makeImage();
 		}
 	};
 	

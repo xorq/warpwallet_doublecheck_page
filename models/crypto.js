@@ -7,6 +7,16 @@ define([
 	var scrypt = scrypt_module_factory(Math.pow(2,29));
 	return window.cryptoscrypt = cryptoscrypt = {
 
+
+		reverseHex: function(hex) {
+			var result = '';
+		    for (var i = 0; i <=hex.length-2; i=i+2) {
+    			result+=hex.substring(i,i+2);
+ 			}
+ 			return result;
+
+		},
+
 		scrypto: function(passphrase,salt) {
 
 			var result = scrypt.to_hex(
@@ -25,6 +35,20 @@ define([
 				salt + String.fromCharCode(0x02), 
 				Math.pow(2, 16), 256
 			);
+
+			var stepsDone = 0;
+			var calcStep = function(input) {
+				var res = sjcl.misc.pbkdf2(
+					input,
+					Math.pow(2, 6), 256
+				);
+				if (stepsDone++ < 1024) {
+					//setTimeout(function() {
+						calcStep(res);
+					//});
+				}
+			}
+
 			return sjcl.codec.hex.fromBits(res);
 		},
 
