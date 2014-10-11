@@ -102,11 +102,7 @@ define([
 		},
 
 		sumArray: function(a) {
-			var result = 0;
-			for (i = 0; i < a.length; i++) {
-				result += a[i];
-			} 
-			return result
+			return _.reduce(a, function(memo, num){ return 1*memo + 1*num; }, 0) ;
 		},
 
 		combine: function(a,min) {

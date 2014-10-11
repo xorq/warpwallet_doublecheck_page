@@ -7,7 +7,6 @@
     padding-right: 0px;
 }
 .has-feedback .form-control-feedback {
-    position: absolute;
     top: 0px;
     right: 15px;
     display: block;

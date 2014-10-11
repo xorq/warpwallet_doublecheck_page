@@ -1,29 +1,4 @@
-		/*
-define(['wordlist'], function(WordList) {
-	// test suite
-	describe('random-tests', function() {
-		// test case
-		it('gives four words by default', function() {
-			// do a test, return true if successful, false if failed
-			return WordList.random().split(' ').length == 4;
-		});
-		// another test case
-		it('gives five words if asked', function() {
-			return WordList.random(5).split(' ').length == 5;
-		});
 
-		it('it only gives 5-char words or longer', function() {
-			var success = true;
-			WordList.random(5, 5).split(' ').each(function(word) {
-				if (word.length < 5) {
-					success = false;
-				}
-			});
-			return success;
-		});
-	})
-});
-*/
 
 define([], function() {
 	// our very private parts!
@@ -38,19 +13,25 @@ define([], function() {
 			if (typeof(num_words) == 'undefined') {
 				num_words = 4;
 			}
-
 			var words = '';
+			var array = new Uint32Array(parseInt(num_words));
+			var cryptoObj = window.crypto || window.msCrypto; 
+
+			random = cryptoObj.getRandomValues(array);
+
 			for (var i = 0; i < num_words; ++i) {
-			  w = wordDB[Math.floor(Math.random() * wordDB.length)];
-			  if (w.length < min_word_length) {
-			  	--i;
-			  	continue;
-			  }
+
+				w = wordDB[Math.floor(random[i]/Math.pow(2,32) * wordDB.length)];
+				if (w.length < min_word_length) {
+					--i;
+					continue;
+				}
 			  words += w + ' ';
 			}
 			words = words.trim();
 			return words;
 		},
+
 		HexToWords: function(hex) {
 			// does some magic
 			result=''
@@ -62,6 +43,7 @@ define([], function() {
 
 			return result.trim();
 		},
+
 		WordsToHex: function(words) {
 			// does some magic
 			var result = 0
@@ -70,6 +52,6 @@ define([], function() {
 				result+=wordDB.indexOf(words[i])*Math.pow(wordDB.length,i)
 			}
 			return result.toString(16)
-		}
+		},
 	};
 });

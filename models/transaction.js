@@ -6,28 +6,25 @@
 ], function($, _, Backbone,Bitcoin) {
 	function Transaction() {
 		this.from = '';
+		this.checkedFrom = '';
 		this.thumbFrom = '';
-		this.senders = [ {address:''} ]
-		this.recipients = [ {address:'',amount:0} ];
+		this.senders = [ { address:'' } ]
+		this.recipients = [ { address:'', amount:0, checkedAddress:'' } ];
 		this.fee = 0;
 		this.passphrase = '';
 		this.salt = '';
 		this.balance = '';
-		this.unspentHashs = [];
-		this.unspentHashsIndex = [];
-		this.unspentValues = [];
+		this.unspent = [ { } ];
 		this.qrcode = '';
 		this.feeMode = 'auto';
 
 		this.changeFeeMode = function() {
-			var modes = ['auto','custom'];
-			this.feeMode = modes[(modes.indexOf(this.feeMode) + 1) % modes.length];
-			//console.log(modes[(modes.indexOf(this.feeMode)+ 1 ) % modes.length]);
-
+			var modes = [ 'auto', 'custom' ];
+			this.feeMode = modes[ (modes.indexOf(this.feeMode) + 1) % modes.length ];
 		}
 
 		this.addRecipient = function() {
-			this.recipients.push({address:'',amount:0});
+			this.recipients.push({ address : '', amount : 0 });
 		}
 
 		this.addSender = function(from) {
@@ -36,14 +33,12 @@
 
 		this.removeRecipient = function(index) {
 			this.recipients.splice(index, 1);
-			//this.updateFee();
 		}
 
 		this.pushTransaction = function() {
 			// todo
 		}
 
-		// we can represent a transaciton in JSON fformat
 		this.data = function() {
 			return {
 				from : this.from,
@@ -65,13 +60,11 @@
 			var outputAmounts = [];
 			var master = this;
 
-			$.each(
-			this.recipients,function(i,obj){
-			  if (i!=parseInt(recipientId)){
-			    outputAmounts.push(parseInt(obj['amount']))
-			  }
-			});
-			this.recipients[recipientId]['amount'] = (parseInt(this.balance) - cryptoscrypt.sumArray(outputAmounts))-this.fee;
+			var sumAmounts = cryptoscrypt.sumArray( 
+				_.pluck(this.recipients, 'amount')
+			 );
+
+			this.recipients[recipientId][ 'amount' ] = parseInt(this.balance - sumAmounts - this.fee + this.recipients[recipientId][ 'amount' ]);
 		}
 
 		this.fromData = function(data) {
@@ -84,33 +77,34 @@
 
 		this.getFee = function() {
 
+			master = this;
+
 			if (this.from == '') { return 0 }
 
 			if (this.feeMode == 'custom') {
 				return this.fee
 			}
 
-			var outputAmounts = [];
-			$.each(this.recipients, function(i, recipient) {
-				outputAmounts[i] = recipient.amount ;
-			});
-			var sumAmounts = cryptoscrypt.sumArray( outputAmounts );
+			if (this.unspent.length>0) {
 
-			if (this.unspentHashs) {
-				var numOfInputs = cryptoscrypt.bestCombination( this.unspentValues, sumAmounts ).length;
-				this.fee = parseInt(( 140 * numOfInputs + 100 * this.recipients.length + 150 ) /1000) * 10000 + 10000;
+				var numOfInputs = cryptoscrypt.bestCombination(
+					_.pluck(this.unspent, 'transaction_index'),
+					master.getTotal()
+				).length;
+
+				this.fee = parseInt(( 140 * numOfInputs + 100 * this.recipients.length + 150 ) / 1000) * 10000 + 10000;
+
 			};
+
 		return this.fee;
 		//this.updateTotal();
 		}
 
 		this.getTotal = function() {
-			var outputAmounts = [];
-			var master = this;
-			$.each( master.recipients, function(i, obj) {
-				outputAmounts[i] = parseInt(parseFloat(obj['amount'])) ;
-			});
-			return cryptoscrypt.sumArray( outputAmounts )+this.fee;
+
+			return cryptoscrypt.sumArray(
+				_.pluck(this.recipients, 'amount')
+				)+this.fee
 		}
 
 		this.sign = function(passphrase,salt) {
@@ -120,66 +114,52 @@
 				return 'There is not enough money available';
 			}
 
-			var outputAmounts = [];
-			var outputAddresses = [];
-			$.each(this.recipients, function(i, recipient) {
-				if (recipient.address != '') {
-					outputAddresses.push(recipient.address) ;
-				};
-				if (recipient.amount != '') {
-					outputAmounts.push(recipient.amount) ;
-				};
-			});
 			// Build the unsigned transaction;
 
 			var tx = cryptoscrypt.buildTx(
-			  this.unspentHashs,
-			  this.unspentHashsIndex,
-			  this.unspentValues,
-			  outputAddresses,
+			  _.pluck(this.unspent, 'transaction_hash'),
+			  _.pluck(this.unspent, 'transaction_index'),
+			  _.pluck(this.unspent, 'value'),
+			  _.pluck(this.recipients, 'address'),
 			  this.from,
-			  outputAmounts,
+			  _.pluck(this.recipients, 'amount'),
 			  this.fee
 			);
 
-			//console.log(tx[0].toHex());
+			// Display unsigned transaction
+
+			console.log(tx[0].toHex());
 			
 			// Calculate the private key;
 
-			pkey = cryptoscrypt.getPkey(passphrase,salt);
+			pkey = cryptoscrypt.getPkey(passphrase, salt);
 
 			// Perform the signatures
 
-			tx = cryptoscrypt.signTx(tx,pkey);
+			tx = cryptoscrypt.signTx(tx, pkey);
 
 			//Create the QR code
 
 			this.qrcode = tx[0].toHex().toString();
 
-			// Show the transaction Hex
+			// Show the signed transaction Hex
 
 			console.log(tx[0].toHex());
 		}
 
-	    this.updateBalance = function(address) {
+		this.updateUnspent = function() {
+			master = this;
+			return $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.from + '/unspent-outputs?per_page=100', function(data) {
+	        	master.unspent = data.data.outputs;
+	    	})
+		}
 
-	      var master = this;
+	    this.updateBalance = function() {
 
-	      return $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + address + '/unspent-outputs?per_page=100', function(data) {
-	        
-	        master.unspentHashs = [];
-	        master.unspentHashsIndex = [];
-	        master.unspentValues = [];
-
-	        $.each( data.data.outputs, function(idx,obj ) {
-	          master.unspentHashs.push(obj.transaction_hash );
-	          master.unspentHashsIndex.push( parseInt( obj.transaction_index ) );
-	          master.unspentValues.push(obj.value);             
-	        })
-
-	        master.balance = cryptoscrypt.sumArray(master.unspentValues);
-
-	      });
+			var master = this;
+			return this.updateUnspent(master.from).done(function(){
+				master.balance = cryptoscrypt.sumArray(_.pluck(master.unspent, 'value'))
+			});
 	    }
 
 		this.lookup = function(field,value,dataId,inputValue) {
@@ -187,29 +167,31 @@
 			var master = this;
 			var address = inputValue;
 
-			// Check if value has been modified
-
-			check = (field == 'from') ? this.from : master.recipients[dataId].address;
-			if (inputValue == check) {
-			  return $().promise();
-			};
-
-		    if (field == 'from') {
-		      this.balance = '';
-		      this.from = inputValue;
-		      this.thumbFrom = '';
-		    } 
-
-		    if (field == 'to') {
-		      master.recipients[dataId].address = inputValue;
-		      master.recipients[dataId].thumb = '';
-		    } 
-
 		  	// If nothing
 
 			if (inputValue == '') {
 			  return $().promise(); 
 			}
+
+			// Stop function if nothing has changed
+
+			//check = (field == 'from') ? this.checkedFrom : master.recipients[dataId].checkedAddress;
+			//if (inputValue == check) {
+			//  return $().promise();
+			//}
+
+			//reset values if anything changed
+
+		    if (field == 'from') {
+		      this.balance = '';
+		      //this.from = inputValue; this is already done on keydown
+		      this.thumbFrom = '';
+		    } 
+
+		    if (field == 'to') {
+		      //this.recipients[dataId].address = inputValue; This is already done on keydown
+		      this.recipients[dataId].thumb = '';
+		    } 
 
 		  	//If address is already valid
 
@@ -218,18 +200,16 @@
 			    if (field == 'from') {
 			      this.from = address;
 			      this.thumbFrom = '';
-			      return this.updateBalance(inputValue);
+			      this.updateBalance();
 			    } 
 
 			    if (field == 'to') {
-			      master.recipients[dataId].address = inputValue;
-			      master.recipients[dataId].thumb = '';
+			      this.recipients[dataId].address = inputValue;
+			      this.recipients[dataId].thumb = '';
 			    }
 			    
-			    ////master.render();
 			    return $().promise();
 		    }
-
 		  // If not valid address, lookup on onename.io
 
 			return $.getJSON('https://onename.io/' + inputValue + '.json', function(data) {
@@ -238,15 +218,27 @@
 
 			    if (data.avatar) {
 
-			      if (field == 'from') {master.thumbFrom = data.avatar.url} else {master.recipients[dataId].thumb = data.avatar.url}
+			      if (field == 'from') {
+			      	master.thumbFrom = data.avatar.url
+			      } else {
+			      	master.recipients[dataId].thumb = data.avatar.url
+			      }
 
 			    };
 
 			    address = data.bitcoin.address ? data.bitcoin.address : '';
 
+			    // Double check that whatever onename.io sent is valid
+
 			    if (cryptoscrypt.validAddress(address) == true) {
-			    	if (field == 'from'){master.from = address};
-			    	if (field == 'to'){master.recipients[dataId].address = address};
+			    	if (field == 'from'){
+			    		master.from = address;
+			    		master.checkedFrom = address;
+			    	};
+			    	if (field.substring(0,2) == 'to'){
+			    		master.recipients[dataId].address = address;
+			    		master.recipients[dataId].checkedAddress = address;
+			    	};
 			  	}
 			})
 		}
