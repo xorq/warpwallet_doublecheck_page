@@ -9,6 +9,7 @@ define([
 
 
 		reverseHex: function(hex) {
+
 			var result = '';
 		    for (var i = 0; i <=hex.length-2; i=i+2) {
     			result+=hex.substring(i,i+2);
@@ -27,9 +28,11 @@ define([
 				)
 			);
 			return result
+
 		},
 
 		pbkdf2o: function(passphrase,salt) {
+
 			var res = sjcl.misc.pbkdf2(
 				passphrase + String.fromCharCode(0x02),
 				salt + String.fromCharCode(0x02), 
@@ -53,6 +56,7 @@ define([
 		},
 
 		warp: function(passphrase,salt) {
+
 			var hex1 = cryptoscrypt.scrypto(passphrase,salt);
 			var hex2 = cryptoscrypt.pbkdf2o(passphrase,salt);
 			var out = '';
@@ -61,8 +65,11 @@ define([
 			}
 			key = new Bitcoin.ECKey(BigInteger.fromHex(out), false);
 			return [key.toWIF(),key.pub.getAddress()];
+
 		},
+
 		validAddress: function(address){
+
 			try{
 				Bitcoin.Address.fromBase58Check(address);
 				return true;
@@ -70,9 +77,11 @@ define([
 			catch(err){
 				return false;
 			}
+
 		},
 
 		validPkey: function(data){
+
 			try{
 				Bitcoin.ECKey.fromWIF(data);
 				return true;
@@ -80,6 +89,7 @@ define([
 			catch(err){
 				return false;
 			}
+
 		},
 
 		getPkey: function(passphrase,salt){
@@ -93,6 +103,7 @@ define([
 				pkey = Bitcoin.ECKey.fromWIF(passphrase)
 			};
 			return pkey
+
 		},
 
 		signTx: function(tx,pkey){
@@ -100,13 +111,17 @@ define([
 				tx[0].sign(i,pkey);
 			};
 			return tx
+
 		},
 
 		sumArray: function(a) {
+
 			return _.reduce(a, function(memo, num){ return 1*memo + 1*num; }, 0) ;
+		
 		},
 
 		combine: function(a,min) {
+
 	    	var fn = function(n, src, got, all) {
 		        if (n == 0) {
 		            if (got.length > 0) {
@@ -125,6 +140,7 @@ define([
 	    	}
 	    	all.push(a);
 	    	return all;
+
 		},
 
 		bestCombination: function (index,aim) {
@@ -147,6 +163,7 @@ define([
 				result.push(index.indexOf(parseInt(winningArray[g])));
 			}
 			return result;
+
 		},
 
 		buildTx: function (unspentHashs,unspentHashsIndex,unspentValues,toAddresses,fromAddress,amounts,fee) {
@@ -174,7 +191,8 @@ define([
 				tx.addOutput(fromAddress,totalRedeemed - ( totalRequested + fee ));
 			};
 
-	        return [tx,selectedComb.length];		
+	        return [tx,selectedComb.length];
+	        		
     	},
 		
 		makeTx : function() {

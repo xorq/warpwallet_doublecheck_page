@@ -13,6 +13,11 @@ define([
 		template: "\
 			<form role='form'>\
 				<div class='form-group row'>\
+					<div class='col-xs-12'>\
+						<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a></h5>\
+					</div>\
+				</div>\
+				<div class='form-group row'>\
 					<div class='col-xs-2'>\
 						<label>Passphrase or Private Key</label>\
 					</div>\
@@ -57,35 +62,50 @@ define([
 			</form>\
 		", 
 		events: {
+
 			'click .btn-random': 'random', 
 			'click .btn-generate': 'generate', 
 			'keyup input[name=passphrase]': 'deleteIfChanged', 
 			'keyup input[name=email]': 'deleteIfChanged'
+
 		}, 
+
 		render: function() {
+
 			this.$el.html(_.template(this.template));
+
 		}, 
+
 		random: function() {
+
 				$('input[name=passphrase]', this.$el).val(
 					WordList.random($('select[name=count_words]', this.$el).val())
 				);
+
 		}, 
+
 		deleteResults: function() {
+
 			$('div[id=qrcode-address-image]').text('');
 			$('div[id=qrcode-privkey-image]').text('');
 			$('div[id=label-address]').text('');
 			$('div[id=label-privkey]').text('');
 			$('div[id=text-address]').text('');
 			$('div[id=text-privatekey]').text('');
+
 		}, 
+
 		deleteIfChanged: function() {
+
 			if (
 				this.passphraseMemory!=$('input[name=passphrase]', this.$el).val() |
 				this.saltMemory!=$('input[name=email]', this.$el).val()
 				){
 					this.deleteResults()
 				}
+
 		}, 
+
 		generate: function() {
 
 			this.passphraseMemory = $('input[name=passphrase]', this.$el).val()
@@ -109,6 +129,7 @@ define([
 			$('div[id=label-privkey]').text('Secret Private key: '+result[0]);
 			$('div[id=text-address]').text("Address");
 			$('div[id=text-privatekey]').text("Private Key");
+
 		}
 	});
 

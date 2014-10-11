@@ -175,10 +175,10 @@
 
 			// Stop function if nothing has changed
 
-			//check = (field == 'from') ? this.checkedFrom : master.recipients[dataId].checkedAddress;
-			//if (inputValue == check) {
-			//  return $().promise();
-			//}
+			check = (field == 'from') ? this.checkedFrom : master.recipients[dataId].checkedAddress;
+			if (inputValue == check) {
+			  return $().promise();
+			}
 
 			//reset values if anything changed
 

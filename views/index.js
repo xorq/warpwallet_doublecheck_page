@@ -30,7 +30,16 @@ define([
         <span class='col-xs-6 <% if (cryptoscrypt.validAddress(recipient.address)) {%>glyphicon glyphicon-ok form-control-feedback<%} else { if (recipient.address) {%>glyphicon glyphicon-remove form-control-feedback<%} else{}}%>' name='glyphicon'></span>\
       </div>\
     "),
+    templateToThumb: _.template("\
+      <div class='col-xs-1' id='thumb'>\
+        <img id='thumb' name='thumb' class='thumb' width='50' <% if (recipient.thumb) {%>src='<%= recipient.thumb %>' style='display:true'<%} else {%>style='display:none'<%}%>/> \
+      </div>\
+    "),
     template: _.template("\
+      <div class='col-xs-12'>\
+        <h5>This page is compatible with <a href='http://www.onename.io'>onename.io</a>'s nicknames, the passphrase and salt are those of your <a href='https://keybase.io/warp'>warp wallet</a>, but you can also insert a normal private key in the passphrase field.</h5> \
+        <br>\
+      </div>\
       <form role='form'>\
         <div class='form-group row from-section'>\
           <div class='col-xs-1'>\
@@ -65,7 +74,7 @@ define([
             <div class='col-xs-1'>\
               <button type='button' class='form-control btn btn-primary btn-putall' name='btn-all<%=index%>'>All</button>\
             </div>\
-            <div class='col-xs-1' id='thumb'>\
+            <div class='col-xs-1 thumbTo<%= index %>' id='thumb'>\
               <img id='thumb' name='thumb' class='thumb' width='50' <% if (recipient.thumb) {%>src='<%= recipient.thumb %>' style='display:true'<%} else {%>style='display:none'<%}%>/> \
             </div>\
           </div>\
@@ -133,9 +142,6 @@ define([
           <textarea class='form-control' rows='3'><%=qrcode%></textarea>\
          <%}%>\
       </div>\
-      </div>\
-      <div class='col-xs-12'>\
-        <span class=''>If you appreciate our work, you can make a donation to this address here : 1KdAaoUu4pHTgsZPVeLciYnzF2UWVnuknB</span>\
       </div>\
       <br>\
     "),
@@ -207,6 +213,19 @@ define([
       index = dataId;
       $('.addressTo'+dataId, this.el).html(
         this.templateToAddressField(
+          this.model.data()
+        )
+      );
+
+    },
+
+
+    renderThumbTo: function(dataId) {
+
+      recipient = this.model.data().recipients[dataId];
+      index = dataId;
+      $('.thumbTo'+dataId, this.el).html(
+        this.templateToThumb(
           this.model.data()
         )
       );
@@ -333,7 +352,7 @@ define([
 
             if (master.model.recipients[ recipientId ].checkedAddress == fieldValue) { return };
             master.renderAddressTo(recipientId);
-
+            master.renderThumbTo(recipientId);
           };
 
         })
