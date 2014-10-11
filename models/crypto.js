@@ -83,6 +83,7 @@ define([
 		},
 
 		getPkey: function(passphrase,salt){
+
 			if (cryptoscrypt.validPkey(passphrase) == false) {
 				pkey = Bitcoin.ECKey.fromWIF(cryptoscrypt.warp(
 					passphrase,

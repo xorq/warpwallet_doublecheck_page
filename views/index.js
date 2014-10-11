@@ -135,7 +135,7 @@ define([
       </div>\
       </div>\
       <div class='col-xs-12'>\
-        <span class=''>You can then use http://www.blockchain.info/pushtx to broadcast this transaction</span>\
+        <span class=''>If you appreciate our work, you can make a donation to this address here : 1KdAaoUu4pHTgsZPVeLciYnzF2UWVnuknB</span>\
       </div>\
       <br>\
     "),
@@ -176,14 +176,13 @@ define([
 
     sign : function() {
 
-      this.model.sign($('input[name=passphrase]', this.$el), $('input[name=salt]', this.$el));
+      this.model.sign($('input[name=passphrase]', this.$el).val(), $('input[name=salt]', this.$el).val());
       this.render();
 
     },
 
 
     render : function() {
-
       var master = this;
 
       this.$el.html(this.template(this.model.data()));
