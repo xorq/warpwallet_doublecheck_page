@@ -6,7 +6,7 @@ define([
   'views/vault',
   'models/transaction'
 ], function($, _, Backbone, IndexView, VaultView, Transaction){
-  console.log(Transaction);
+
   var AppRouter = Backbone.Router.extend({
     routes: {
       '': 'index',

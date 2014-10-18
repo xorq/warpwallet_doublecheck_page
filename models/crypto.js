@@ -7,8 +7,16 @@ define([
 	var scrypt = scrypt_module_factory(Math.pow(2,29));
 	return window.cryptoscrypt = cryptoscrypt = {
 
+		
+		hashCode : function(str) {
+		    var hash = 0;
+		    for (var i = 0; i < str.length; i++) {
+		        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+		    }
+		    return hash;
+		},
 
-		reverseHex: function(hex) {
+		reverseHex : function(hex) {
 
 			var result = '';
 		    for (var i = 0; i <=hex.length-2; i=i+2) {
@@ -18,7 +26,7 @@ define([
 
 		},
 
-		scrypto: function(passphrase,salt) {
+		scrypto : function(passphrase,salt) {
 
 			var result = scrypt.to_hex(
 				scrypt.crypto_scrypt(
@@ -31,7 +39,7 @@ define([
 
 		},
 
-		pbkdf2o: function(passphrase,salt) {
+		pbkdf2o : function(passphrase,salt) {
 
 			var res = sjcl.misc.pbkdf2(
 				passphrase + String.fromCharCode(0x02),
@@ -55,7 +63,7 @@ define([
 			return sjcl.codec.hex.fromBits(res);
 		},
 
-		warp: function(passphrase,salt) {
+		warp : function(passphrase,salt) {
 
 			var hex1 = cryptoscrypt.scrypto(passphrase,salt);
 			var hex2 = cryptoscrypt.pbkdf2o(passphrase,salt);
@@ -68,7 +76,7 @@ define([
 
 		},
 
-		validAddress: function(address){
+		validAddress : function(address){
 
 			try{
 				Bitcoin.Address.fromBase58Check(address);
@@ -80,7 +88,7 @@ define([
 
 		},
 
-		validPkey: function(data){
+		validPkey : function(data){
 
 			try{
 				Bitcoin.ECKey.fromWIF(data);
@@ -92,7 +100,7 @@ define([
 
 		},
 
-		getPkey: function(passphrase,salt){
+		getPkey : function(passphrase,salt){
 
 			if (cryptoscrypt.validPkey(passphrase) == false) {
 				pkey = Bitcoin.ECKey.fromWIF(cryptoscrypt.warp(
@@ -106,7 +114,7 @@ define([
 
 		},
 
-		signTx: function(tx,pkey){
+		signTx : function(tx,pkey){
 			for ( var i = 0; i < tx[1]; i++) {
 				tx[0].sign(i,pkey);
 			};
@@ -114,13 +122,13 @@ define([
 
 		},
 
-		sumArray: function(a) {
+		sumArray : function(a) {
 
 			return _.reduce(a, function(memo, num){ return 1*memo + 1*num; }, 0) ;
 		
 		},
 
-		combine: function(a,min) {
+		combine : function(a,min) {
 
 	    	var fn = function(n, src, got, all) {
 		        if (n == 0) {
@@ -143,7 +151,7 @@ define([
 
 		},
 
-		bestCombination: function (index,aim) {
+		bestCombination : function (index,aim) {
 
 			var a = cryptoscrypt.combine(index,0);
 			var distancesArray = [];
@@ -166,7 +174,7 @@ define([
 
 		},
 
-		buildTx: function (unspentHashs,unspentHashsIndex,unspentValues,toAddresses,fromAddress,amounts,fee) {
+		buildTx : function (unspentHashs,unspentHashsIndex,unspentValues,toAddresses,fromAddress,amounts,fee) {
 
 			if ( cryptoscrypt.sumArray(amounts) + fee > cryptoscrypt.sumArray(unspentValues) ) {
 				return

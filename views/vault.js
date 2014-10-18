@@ -5,8 +5,8 @@ define([
 	'models/wordlist', 
 	'models/crypto', 
 	'models/qrcode',
-	'models/bitcoin'
-], function($, _, Backbone, WordList, crypto, Bitcoin){
+	'models/bitcoin',
+], function($, _, Backbone, WordList, crypto, qrcode, Bitcoin){
 
 	var VaultView = Backbone.View.extend({
 		el: $('#contents'), 
@@ -14,7 +14,7 @@ define([
 			<form role='form'>\
 				<div class='form-group row'>\
 					<div class='col-xs-12'>\
-						<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a></h5>\
+						<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and can/should be used offline</h5>\
 					</div>\
 				</div>\
 				<div class='form-group row'>\
@@ -59,7 +59,10 @@ define([
 					<div class='col-xs-6' id='qrcode-address-image'></div>\
 					<div class='col-xs-6' id='qrcode-privkey-image'></div>\
 				</div>\
+				 <div id='reader' style='width:300px;height:250px'>\
+ 				</div>\
 			</form>\
+			<h6>If you find this application useful, you can buy us a coffee at 14FJGgKjuDDzj73JVSPs9zYcwTh8anZTDS</h6>\
 		", 
 		events: {
 
@@ -114,6 +117,7 @@ define([
 			if (cryptoscrypt.validPkey(this.passphraseMemory)) { return };
 
 			this.deleteResults()
+
 			var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160,correctLevel : QRCode.CorrectLevel.L});
 			var qrcode2 = new QRCode("qrcode-privkey-image", {width: 160, height: 160, correctLevel : QRCode.CorrectLevel.L});
 

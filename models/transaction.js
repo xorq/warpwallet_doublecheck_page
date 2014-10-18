@@ -5,10 +5,10 @@
   'models/bitcoin',
 ], function($, _, Backbone,Bitcoin) {
 	function Transaction() {
+		this.guidance = 'Hide';
 		this.from = '';
 		this.checkedFrom = '';
 		this.thumbFrom = '';
-		this.senders = [ { address:'' } ]
 		this.recipients = [ { address:'', amount:0, checkedAddress:'' } ];
 		this.fee = 0;
 		this.passphrase = '';
@@ -17,6 +17,7 @@
 		this.unspent = [ { } ];
 		this.qrcode = '';
 		this.feeMode = 'auto';
+		this.showImportQR = false;
 
 		this.changeFeeMode = function() {
 			var modes = [ 'auto', 'custom' ];
@@ -51,9 +52,62 @@
 				getFee : this.getFee(),
 				total : this.getTotal(),
 				qrcode : this.qrcode,
-				feeMode : this.feeMode
+				feeMode : this.feeMode,
+				guidance : this.guidance,
+				showImportQR: this.showImportQR
 			};
 		}
+
+		this.export = function() {
+
+			recipientsExport = [];
+			this.recipients.forEach(function(v){ 
+			recipientsExport.push(_.pick(v,'address','amount'));//_.pick(v,'good'); console.log(v); 
+			});
+
+			unspentExport = [];
+			this.unspent.forEach(function(v){ 
+			unspentExport.push(_.pick(v,'transaction_hash','value','transaction_index'));//_.pick(v,'good'); console.log(v); 
+			});
+
+			data = {
+				recipients : recipientsExport,
+				from : this.from,
+				balance : this.balance,
+				unspent : unspentExport
+			};
+
+			data = JSON.stringify(data);
+
+			String.prototype.chunk = function(size) {
+				console.log(cryptoscrypt.hashCode(this.slice(0,0+size)));
+				return [].concat.apply([],
+					this.split('').map(function(x,i){ return i%size ? [] : ((i/size).toString()+'&'+this.slice(i,i+size)+'&'+cryptoscrypt.hashCode(this.slice(i,i+size)).toString()) }, this)
+				)
+      		}
+
+			numberOfChunks = Math.ceil((data.length)/200);
+			chunkSize = Math.ceil(data.length / numberOfChunks);
+			chunks = data.chunk(chunkSize);
+
+			return chunks
+		}
+
+
+		this.import = function(data) {
+
+			data = $.parseJSON(data);
+			if (!data) { return; }
+
+			console.log(data);
+
+			this.recipients = data.recipients;
+			this.from = data.from;
+			this.unspent = data.unspent;
+			this.balance = data.balance;
+
+		}
+
 
 		this.putAll = function(recipientId) {
 
@@ -77,34 +131,41 @@
 
 		this.getFee = function() {
 
-			master = this;
+			try {
+				master = this;
 
-			if (this.from == '') { return 0 }
+				if (this.from == '') { return 0 }
 
-			if (this.feeMode == 'custom') {
-				return this.fee
+				if (this.feeMode == 'custom') {
+					return this.fee
+				}
+
+				if (this.unspent.length>0) {
+
+					var numOfInputs = cryptoscrypt.bestCombination(
+						_.pluck(this.unspent, 'transaction_index'),
+						master.getTotal()
+					).length;
+
+					this.fee = parseInt(( 140 * numOfInputs + 100 * this.recipients.length + 150 ) / 1000) * 10000 + 10000;
+
+				};
+
+				return this.fee;
+				//this.updateTotal();
+			} catch(err) {
+				return 0
 			}
-
-			if (this.unspent.length>0) {
-
-				var numOfInputs = cryptoscrypt.bestCombination(
-					_.pluck(this.unspent, 'transaction_index'),
-					master.getTotal()
-				).length;
-
-				this.fee = parseInt(( 140 * numOfInputs + 100 * this.recipients.length + 150 ) / 1000) * 10000 + 10000;
-
-			};
-
-		return this.fee;
-		//this.updateTotal();
 		}
 
 		this.getTotal = function() {
-
-			return cryptoscrypt.sumArray(
-				_.pluck(this.recipients, 'amount')
-				)+this.fee
+			try {
+				return cryptoscrypt.sumArray(
+					_.pluck(this.recipients, 'amount')
+					)+this.fee
+			} catch(err) {
+				return 0
+			}
 		}
 
 		this.sign = function(passphrase,salt) {
@@ -240,6 +301,7 @@
 			    		master.recipients[dataId].checkedAddress = address;
 			    	};
 			  	}
+
 			})
 		}
 	}
