@@ -54,7 +54,10 @@
 				qrcode : this.qrcode,
 				feeMode : this.feeMode,
 				guidance : this.guidance,
-				showImportQR: this.showImportQR
+				showImportQR: this.showImportQR,
+				qrPartials: this.qrPartials,
+				qrTotal: this.qrTotal,
+				qrParts: this.qrParts
 			};
 		}
 
@@ -78,23 +81,115 @@
 			};
 
 			data = JSON.stringify(data);
+			
+			var chunkLength = 190;
+			var fullCheck = sjcl.hash.sha256.hash(data)[0];
+			var numChunks = Math.ceil(data.length / chunkLength);
+			chunkLength = Math.ceil(data.length / numChunks);
 
-			String.prototype.chunk = function(size) {
-				console.log(cryptoscrypt.hashCode(this.slice(0,0+size)));
-				return [].concat.apply([],
-					this.split('').map(function(x,i){ return i%size ? [] : ((i/size).toString()+'&'+this.slice(i,i+size)+'&'+cryptoscrypt.hashCode(this.slice(i,i+size)).toString()) }, this)
-				)
-      		}
+			var chunks = [];
+			for (var i = 0; i < data.length; i += chunkLength) {
+				chunks.push(JSON.stringify({
+					i: Math.floor(i / chunkLength), // index
+					t: numChunks, // total
+					d: data.substr(i, chunkLength), // data
+					c: fullCheck // checksum
+				}));
+			}
+			console.log(chunks);
 
-			numberOfChunks = Math.ceil((data.length)/200);
-			chunkSize = Math.ceil(data.length / numberOfChunks);
-			chunks = data.chunk(chunkSize);
+			// do a self-check
+/*			var dataStr = '';
+			_.each(chunks, function(chunk) {
+				dataStr += JSON.parse(chunk).d;
+			});
+			if (dataStr == data) {
+				console.log('integrity check passed');
+			} else {
+				console.log('FAILED int check');
+			}
+*/
 
 			return chunks
 		}
 
+//{ i: 0, t: 3, c: 'abcd', d: '{123123123123123123...'}
+//{ i: 1, t: 3, c: 'abcdff', d: '...123123123123123123...'}
+//{ i: 2, t: 3, c: 'abcdfffff', d: '...123123123123123123}'}
+
+		this.newImport = function() {
+			this.qrPartials = {};
+			this.qrTotal = 0;
+			this.qrParts = 0;
+			this.lastQrCode = false;
+		},
 
 		this.import = function(data) {
+			console.log('import called width ' + data);
+
+			try {
+				var qrData = JSON.parse(data);
+				console.log('parse OK');
+			} catch (e) {
+				console.log("Couldn't parse JSON");
+				return;
+			}
+			if (!qrData) {
+				console.log("Invalid QR data, aborting");
+				return;
+			}
+			if (this.lastQrCode && this.lastQrCode.c != qrData.c) {
+				console.log("Checksum doesn't match previous QR code, ignoring this code");
+				return;
+			}
+
+			if (!this.qrPartials[qrData.i]) {
+				this.qrParts++;
+				this.qrPartials[qrData.i] = qrData;
+				this.lastQrCode = qrData;
+			}
+			this.qrTotal = qrData.t;
+			console.log(this.qrPartials);
+
+			var code = _.reduce(this.qrPartials, function(code, chunk) { return code + chunk.d; }, '');
+			var check = sjcl.hash.sha256.hash(code);
+			if (check[0] != qrData.c) {
+				console.log('invalid code checksum or missing pieces');
+				return;
+			}
+			var jsonCode = JSON.parse(code);
+			console.log(jsonCode);
+
+			this.recipients = jsonCode.recipients;
+			this.from = jsonCode.from;
+			this.unspent = jsonCode.unspent;
+			this.balance = jsonCode.balance;
+			return true;
+
+/*
+			function read(a) {
+				$("#qr-value").text(a);
+				try {console.log(JSON.parse(results.join('')))} catch(err) {};;
+				$("#title").html(got.toString());
+
+				if (hashCode(a.split("&")[1]) == a.split("&")[2]) {
+
+					got[a.split("&")[0]] = a.split("&")[0];
+
+					$("#title").html("OK Got Numbers " +a.split("&")[0] +"Got those :"+ got);
+					try {
+						results[a.split("&")[0]] = a.split('&')[1];
+						} catch(err) {
+
+					}
+				};
+
+				try{
+					console.log(JSON.parse(results.join('')));
+					$("#big-result").text("OK GOT IT : "+(results.join('')));
+					//copyToClipboard(results.join(''));
+				} catch(err) {};
+			}
 
 			data = $.parseJSON(data);
 			if (!data) { return; }
@@ -105,7 +200,7 @@
 			this.from = data.from;
 			this.unspent = data.unspent;
 			this.balance = data.balance;
-
+*/
 		}
 
 

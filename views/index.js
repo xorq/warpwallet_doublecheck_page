@@ -152,19 +152,34 @@ define([
 
 
     render: function() {
+      if (typeof(localMediaStream) != 'undefined' && localMediaStream) {
+        localMediaStream.stop();
+        localMediaStream.src = null;
+        localMediaStream.mozSrcObject = null;
+        localMediaStream = null;
+      } 
+
       var master = this;
       this.$el.html(this.template(this.model.data()));
       this.renderQrCode();
       this.updateTotal();
 
       if (this.model.showImportQR) {
+        this.model.newImport();
         $('.qr-reader').html5_qrcode(
           function(code) {
             console.log(code);
+            if (master.model.import(code)) {
+              master.model.showImportQR = false;
+              master.render();
+            } else {
+              console.log($('.qr-status', master.el));
+              $('.qr-status', master.el).html("Got " + master.model.qrParts + ' out of ' + master.model.qrTotal + ' codes.');
+            }
           }, function(error) {
-            console.log(error);
+          //  console.log(error);
           }, function(error) {
-            console.log(error);
+            //console.log(error);
           }
         );
       }
