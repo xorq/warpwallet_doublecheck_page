@@ -14,7 +14,9 @@ define([
 			<form role='form'>\
 				<div class='form-group row'>\
 					<div class='col-xs-12'>\
-						<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and can/should be used offline</h5>\
+						<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and can/should be used offline.</h5>\
+						<h5>Also think to register your bitcoin address at <a href='http://onename.io/'>onename.io</a> for easier use.</h5>\
+						<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> words from a ~10,000 words list</h5>\
 					</div>\
 				</div>\
 				<div class='form-group row'>\
@@ -37,7 +39,7 @@ define([
 						</select>\
 					</div>\
 					<div class='col-xs-2'>\
-						<button type='button' class='btn btn-primary btn-random'>Random</button>\
+						<button type='button' class='btn btn-primary btn-random'>Random Words</button>\
 					</div>\
 				</div>\
 				<div class='form-group row'>\
@@ -48,7 +50,7 @@ define([
 						<input type='text' class='form-control' name='email' placeholder='Enter your email/salt here' />\
 					</div>\
 				</div>\
-				<button type='button' class='btn btn-primary btn-generate'>Generate Vault</button>\
+				<button type='button' class='btn btn-primary btn-generate'>Generate Vault, it will take few seconds on a regular computer</button>\
 				<br>\
 				<br>\
 				<div class='text-left' id='label-address'></div>\
@@ -62,7 +64,7 @@ define([
 				 <div id='reader' style='width:300px;height:250px'>\
  				</div>\
 			</form>\
-			<h6>If you find this application useful, you can buy us a coffee at 14FJGgKjuDDzj73JVSPs9zYcwTh8anZTDS</h6>\
+			<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>\
 		", 
 		events: {
 

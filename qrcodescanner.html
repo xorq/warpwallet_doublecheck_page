@@ -1,0 +1,36 @@
+<!DOCTYPE html>    
+<html>
+    <head>
+        <title>JSQRCode Scanner Demo</title>
+        <script type="text/javascript" src="models/scanner/jquery-1.7.2.min.js"></script>
+
+        <script type="text/javascript" src="models/scanner/grid.js"></script>
+        <script type="text/javascript" src="models/scanner/version.js"></script>
+        <script type="text/javascript" src="models/scanner/detector.js"></script>
+        <script type="text/javascript" src="models/scanner/formatinf.js"></script>
+        <script type="text/javascript" src="models/scanner/errorlevel.js"></script>
+        <script type="text/javascript" src="models/scanner/bitmat.js"></script>
+        <script type="text/javascript" src="models/scanner/datablock.js"></script>
+        <script type="text/javascript" src="models/scanner/bmparser.js"></script>
+        <script type="text/javascript" src="models/scanner/datamask.js"></script>
+        <script type="text/javascript" src="models/scanner/rsdecoder.js"></script>
+        <script type="text/javascript" src="models/scanner/gf256poly.js"></script>
+        <script type="text/javascript" src="models/scanner/gf256.js"></script>
+        <script type="text/javascript" src="models/scanner/decoder.js"></script>
+        <script type="text/javascript" src="models/scanner/QRCode.js"></script>
+        <script type="text/javascript" src="models/scanner/findpat.js"></script>
+        <script type="text/javascript" src="models/scanner/alignpat.js"></script>
+        <script type="text/javascript" src="models/scanner/databr.js"></script>
+
+        <script type="text/javascript" src="models/scanner/qr.js"></script>
+        <script type="text/javascript" src="models/scanner/camera.js"></script>
+        <script type="text/javascript" src="models/scanner/init.js"></script>
+    </head>
+    <body>
+        <h1>JSQRCode Scanner Demo</h1>
+        <p>Hold a QR Code in front of your webcam.</p>
+        <video  id="camsource" autoplay width="320" height="240">Put your fallback message here.</video>
+        <canvas id="qr-canvas" width="320" height="240" style="display:none"></canvas>
+        <h3 id="qr-value"></h3>
+    </body>
+</html>

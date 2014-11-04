@@ -1,17 +1,17 @@
-/* ========================================================================
+/* ==
  * Bootstrap: button.js v3.2.0
  * http://getbootstrap.com/javascript/#buttons
- * ========================================================================
+ * ==
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
+ * == */
 
 
 +function ($) {
   'use strict';
 
   // BUTTON PUBLIC CLASS DEFINITION
-  // ==============================
+  // ==
 
   var Button = function (element, options) {
     this.$element  = $(element)
@@ -67,7 +67,7 @@
 
 
   // BUTTON PLUGIN DEFINITION
-  // ========================
+  // ===
 
   function Plugin(option) {
     return this.each(function () {
@@ -89,7 +89,7 @@
 
 
   // BUTTON NO CONFLICT
-  // ==================
+  // ====
 
   $.fn.button.noConflict = function () {
     $.fn.button = old
@@ -98,7 +98,7 @@
 
 
   // BUTTON DATA-API
-  // ===============
+  // =
 
   $(document).on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
     var $btn = $(e.target)

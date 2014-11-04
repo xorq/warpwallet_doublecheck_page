@@ -1,17 +1,17 @@
-/* ========================================================================
+/* ==
  * Bootstrap: tab.js v3.2.0
  * http://getbootstrap.com/javascript/#tabs
- * ========================================================================
+ * ==
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
+ * == */
 
 
 +function ($) {
   'use strict';
 
   // TAB CLASS DEFINITION
-  // ====================
+  // ======
 
   var Tab = function (element) {
     this.element = $(element)
@@ -90,7 +90,7 @@
 
 
   // TAB PLUGIN DEFINITION
-  // =====================
+  // 
 
   function Plugin(option) {
     return this.each(function () {
@@ -109,7 +109,7 @@
 
 
   // TAB NO CONFLICT
-  // ===============
+  // =
 
   $.fn.tab.noConflict = function () {
     $.fn.tab = old
@@ -118,7 +118,7 @@
 
 
   // TAB DATA-API
-  // ============
+  // =====
 
   $(document).on('click.bs.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function (e) {
     e.preventDefault()

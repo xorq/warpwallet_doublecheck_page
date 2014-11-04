@@ -5,8 +5,6 @@ define([
   'qrcode',
   'models/transaction'
 ], function($, _, Backbone, Transaction){
-  var guidance = 'false';
-  var balance = 0;
   var addresses = { "From":"", "To":"" };
   var qrSize = 300;
   var qrShown = 0;
@@ -21,12 +19,12 @@ define([
       'click button[name=btn-guidance]': 'guidanceToggle',
       'click button[name=btn-export]': 'export',
       'click button[name=btn-import]': 'import',
-      'click button[id=nextQr]': 'nextQr',
-      'click button[id=previousQr]': 'previousQr',
-      'click div[id=qrcodeExport]': 'clearExport',
+      'click button[name=nextQr]': 'nextQr',
+      'click button[name=previousQr]': 'previousQr',
+      'click div[name=qrcodeExport]': 'clearExport',
       'click .btn-feemode': 'changeFeeMode',
       'click .btn-add-recipient': 'addOutput',
-      'click .btn-sign': 'sign',
+      'click button[name=btn-sign]': 'sign',
       'blur input[name^=to]': 'lookup',
       'click button[name^=btn-remove]': 'removeOutput',
       'blur input[name=from]': 'lookup',
@@ -40,14 +38,16 @@ define([
     },
 
     guidanceToggle: function() {
-
-      this.model.guidance = this.model.guidance=='Show' ? 'Hide' : 'Show';
+//'<%= showImportQR || 'display: none;'
+      this.model.guidance = this.model.guidance == false && true;
+      //this.model.guidance = this.model.guidance=='Show' ? 'Hide' : 'Show';
 
       this.render();
 
     },
 
     export: function() {
+
 
       $('button[name=btn-export]', this.$el).toggleClass('btn-danger');
       $('button[name=btn-export]', this.$el).toggleClass('btn-primary');
@@ -57,7 +57,7 @@ define([
         i=0;
         this.drawExportQrcode(i);
       
-      $('div[name=exportQrcode]', this.$el).attr('style','dislpay:true; vertical-align:middle');
+      $('div[name=exportQrcode]', this.$el).attr('style','dislpay:true');
 
       } else {
 
@@ -71,9 +71,8 @@ define([
     drawExportQrcode: function(a) {
 
       data = this.model.export();
-
-      $('[name=qrcodeExport]',this.$el).children().remove();
-      $('h3[name=titleQrcode]', this.$el).html('QRcode '+ ( 1 + a ).toString()+' / '+data.length.toString());
+      $('div[name=qrcodeExport]',this.$el).children().remove();
+      $('h5[name=titleQrcode]', this.$el).html('QRcode '+ ( 1 + a ).toString()+' / '+data.length.toString());
 
       var qrcode = new QRCode('qrcodeExport', { 
         width: 300, 
@@ -86,9 +85,16 @@ define([
     },
 
 
+    clearExport: function() {
+
+      $('div[name=exportQrcode]', this.$el).attr('style','dislpay:none');
+      this.render();
+    },
+
+
     previousQr: function() {
 
-      if (this.qrShown > 0) {
+      if (this.qrShown) {
         this.drawExportQrcode(this.qrShown - 1);
       }
 
@@ -116,23 +122,16 @@ define([
     },
 
 
-    clearExport: function() {
-
-      $('div[name=exportQrcode]', this.$el).attr('style','dislpay:none');
-      this.render();
-    },
-
-
-    successClass: function(from) {
-      if (cryptoscrypt.validAddress(from)) {
+    successClass: function(address) {
+      if (cryptoscrypt.validAddress(address)) {
         return 'has-success';
-      } else if (from) {
+      } else if (address) {
         return 'has-error';
       }
     },
 
 
-    changeFeeMode : function() {
+    changeFeeMode: function() {
 
       this.model.changeFeeMode();
       this.updateFee();
@@ -150,8 +149,9 @@ define([
 
      //   end of html5_qrcode
 
-
     render: function() {
+
+
       if (typeof(localMediaStream) != 'undefined' && localMediaStream) {
         localMediaStream.stop();
         localMediaStream.src = null;
@@ -168,7 +168,7 @@ define([
         this.model.newImport();
         $('.qr-reader').html5_qrcode(
           function(code) {
-            console.log(code);
+            console.log('esze');
             if (master.model.import(code)) {
               master.model.showImportQR = false;
               master.render();
@@ -188,7 +188,7 @@ define([
 
     renderFrom: function() {
 
-      $('.from-section', this.el).html(this.templateFrom(this.model.data()));
+      $('.addressFrom', this.el).html(this.templateFrom(this.model.data()));
 
     },
 
@@ -197,9 +197,8 @@ define([
 
       recipient = this.model.recipients[dataId];
       index = dataId;
-      $('.addressTo'+dataId, this.el).html(
-        this.templateToAddressField(      
-        )
+      $('[dataId=' + dataId + '] > div[class~=addressTo]',this.el).html(
+        this.templateToAddressField()
       );
 
     },
@@ -209,19 +208,18 @@ define([
 
       recipient = this.model.recipients[dataId];
       index = dataId;
-      $('.thumbTo'+dataId, this.el).html(
-        this.templateToThumb(
-        )
+      $('[dataId=' + dataId + '] > div[name=thumb]',this.el).html(
+        this.templateToThumb()
       );
 
     },
 
 
-    renderQrCode : function() {
+    renderQrCode: function() {
 
       if (this.model.qrcode==''){ return };
 
-      $('div[id=qrcode]', this.$el).children().remove();
+      $('div[name=qrcode]', this.$el).children().remove();
 
       if ($('select[name=qrSize]', this.$el).length > 0) {
 
@@ -240,49 +238,49 @@ define([
     },
 
 
-    updateTotal : function() {
+    updateTotal: function() {
 
       $('input[name=total]', this.$el).val(this.getTotal());
 
     },
 
 
-    updateAmount : function(ev) {
+    updateAmount: function(ev) {
 
-      var recipientId = parseInt($(ev.currentTarget).parents('.row').attr('data-id'));
+      var recipientId = parseInt($(ev.currentTarget).parents('.row').attr('dataId'));
       this.model.recipients[recipientId][ 'amount' ] = parseInt(100000000 * ev.currentTarget.value);
       this.updateTotal();
       
     },   
 
 
-    updateAddress : function(ev) {
+    updateAddress: function(ev) {
 
-      var recipientId = parseInt($(ev.currentTarget).parents('.row').attr('data-id'));
+      var recipientId = parseInt($(ev.currentTarget).parents('.row').parents('.row').attr('dataId'));
       this.model.recipients[recipientId][ 'address' ] = ev.currentTarget.value;
 
     },   
 
 
-    putAll : function(ev) {
+    putAll: function(ev) {
 
-      this.model.putAll($(ev.currentTarget).parents('.row').attr('data-id'));
+      this.model.putAll($(ev.currentTarget).parents('.row').attr('dataId'));
       this.render();
 
     }, 
 
 
-    removeOutput : function(ev) { 
+    removeOutput: function(ev) { 
 
       this.model.removeRecipient(
-        $(ev.currentTarget).parents('.row').attr('data-id')
+        $(ev.currentTarget).parents('.row').parents('.row').attr('dataId')
       );
       this.render();
       
     },
 
 
-    addOutput : function() {
+    addOutput: function() {
 
       this.model.addRecipient();
       this.render();
@@ -290,7 +288,7 @@ define([
     },
 
 
-    updateFee : function () {
+    updateFee: function () {
 
       if (this.model.feeMode == 'auto') {
         $('input[name=fee]', this.$el).val(this.model.getFee() / 100000000 );
@@ -304,7 +302,7 @@ define([
     },
 
 
-    getTotal : function() {
+    getTotal: function() {
 
       return (cryptoscrypt.sumArray(
         (_.map($('input[name^=amount]', this.$el),function(str){return 100000000 * str['value']}
@@ -313,20 +311,46 @@ define([
     },
 
 
-    lookup : function(ev) {
+    lookup: function(ev) {
 
       var master = this;
       var address = ev.currentTarget.value.trim();
       var fieldName = ev.currentTarget.name;
       var fieldValue = ev.currentTarget.value;
-      var recipientId = $(ev.currentTarget).parents('.row').attr('data-id');
+      var recipientId = $(ev.currentTarget).parents('.row').parents('.row').attr('dataId');
       var fieldEntry = ev.currentTarget.value.trim();
+
+      //Initialize if nothing is entered
+
+      if ((fieldValue == '') & (fieldName == 'from')) {
+        this.model.from = '';
+        this.model.thumbFrom = '';
+        this.model.balance = '';
+        this.renderFrom();
+        return
+      };
+
+      if ((fieldValue == '') & (fieldName == 'to')) {
+        this.model.recipients[ recipientId ].address = '';
+        this.model.recipients[ recipientId ].thumb = '';
+        this.renderAddressTo(recipientId);
+        this.renderThumbTo(recipientId);
+        return
+      };
+
+      //Initialize if something is entered
+      if (fieldName == 'from') {
+        this.model.from = fieldValue;
+      };
+
+      if (fieldName == 'to') {
+        this.model.recipients[recipientId].address = fieldValue;
+      };
 
       this.model.lookup(fieldName,fieldValue,recipientId,fieldEntry).done(function(){
 
           if (ev.currentTarget.name == 'from') {
 
-            if (master.model.checkedFrom == fieldValue) { return };
             master.model.updateBalance().done(function() {  
             master.renderFrom();
             master.updateFee();
@@ -335,13 +359,14 @@ define([
 
           };
 
-          if (ev.currentTarget.name.substring(0,2) == 'to') {
+          if (ev.currentTarget.name == 'to') {
 
-            if (master.model.recipients[ recipientId ].checkedAddress == fieldValue) { return };
             master.renderAddressTo(recipientId);
             master.renderThumbTo(recipientId);
           };
 
+      }).fail(function(){
+        master.render()
       })
     },
 

@@ -1,16 +1,18 @@
 .nav {
-	margin-top: 20px;
+	margin-top: 0px;
 }
 #contents {
-    padding-top: 20px;
+    padding-top: 10px;
 	padding-left: 20px;
-    padding-right: 20px;
+    padding-right: 0px;
 }
+
+
 .has-feedback .form-control-feedback {
     top: 0px;
-    right: 15px;
+    /*right: -7px;*/
     display: block;
-    width: 34px;
+    width: 0px;
     height: 34px;
     line-height: 34px;
     text-align: center;
@@ -21,4 +23,30 @@
     display: inline-block;
     position: relative;
     vertical-align: middle;
+}
+
+.has-feedback .form-control {
+    padding-right:10px;
+}
+
+.legend{
+
+    height:40px;
+    vertical-align: center;
+    line-height: 50px;
+    padding-bottom:40px;
+    padding-top:15px;
+}
+
+.guidance{
+
+    padding:10px;
+}
+
+
+.toButton{
+    font-size:18px;
+    height:34px;
+    top:0px;
+    line-height:0;
 }

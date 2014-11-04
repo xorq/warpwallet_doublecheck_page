@@ -1,17 +1,17 @@
-/* ========================================================================
+/* ==
  * Bootstrap: scrollspy.js v3.2.0
  * http://getbootstrap.com/javascript/#scrollspy
- * ========================================================================
+ * ==
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
+ * == */
 
 
 +function ($) {
   'use strict';
 
   // SCROLLSPY CLASS DEFINITION
-  // ==========================
+  // =====
 
   function ScrollSpy(element, options) {
     var process  = $.proxy(this.process, this)
@@ -129,7 +129,7 @@
 
 
   // SCROLLSPY PLUGIN DEFINITION
-  // ===========================
+  // ======
 
   function Plugin(option) {
     return this.each(function () {
@@ -149,7 +149,7 @@
 
 
   // SCROLLSPY NO CONFLICT
-  // =====================
+  // 
 
   $.fn.scrollspy.noConflict = function () {
     $.fn.scrollspy = old
@@ -158,7 +158,7 @@
 
 
   // SCROLLSPY DATA-API
-  // ==================
+  // ====
 
   $(window).on('load.bs.scrollspy.data-api', function () {
     $('[data-spy="scroll"]').each(function () {

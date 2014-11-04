@@ -1,17 +1,17 @@
-/* ========================================================================
+/* ==
  * Bootstrap: alert.js v3.2.0
  * http://getbootstrap.com/javascript/#alerts
- * ========================================================================
+ * ==
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
+ * == */
 
 
 +function ($) {
   'use strict';
 
   // ALERT CLASS DEFINITION
-  // ======================
+  // =
 
   var dismiss = '[data-dismiss="alert"]'
   var Alert   = function (el) {
@@ -57,7 +57,7 @@
 
 
   // ALERT PLUGIN DEFINITION
-  // =======================
+  // ==
 
   function Plugin(option) {
     return this.each(function () {
@@ -76,7 +76,7 @@
 
 
   // ALERT NO CONFLICT
-  // =================
+  // ===
 
   $.fn.alert.noConflict = function () {
     $.fn.alert = old
@@ -85,7 +85,7 @@
 
 
   // ALERT DATA-API
-  // ==============
+  // 
 
   $(document).on('click.bs.alert.data-api', dismiss, Alert.prototype.close)
 

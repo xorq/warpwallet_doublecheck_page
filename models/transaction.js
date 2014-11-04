@@ -5,11 +5,11 @@
   'models/bitcoin',
 ], function($, _, Backbone,Bitcoin) {
 	function Transaction() {
-		this.guidance = 'Hide';
+		this.guidance = false;
 		this.from = '';
 		this.checkedFrom = '';
 		this.thumbFrom = '';
-		this.recipients = [ { address:'', amount:0, checkedAddress:'' } ];
+		this.recipients = [ { address:'', amount:0, checkedAddress:'', thumb:'' } ];
 		this.fee = 0;
 		this.passphrase = '';
 		this.salt = '';
@@ -24,6 +24,13 @@
 			this.feeMode = modes[ (modes.indexOf(this.feeMode) + 1) % modes.length ];
 		}
 
+		this.glyphiconClass = function(address) {
+
+			return (cryptoscrypt.validAddress(address)) ? 
+				'glyphicon glyphicon-ok form-control-feedback' : (address) ? 
+					'glyphicon glyphicon-remove form-control-feedback' : ''
+		}
+
 		this.addRecipient = function() {
 			this.recipients.push({ address : '', amount : 0 });
 		}
@@ -33,7 +40,12 @@
 		}
 
 		this.removeRecipient = function(index) {
-			this.recipients.splice(index, 1);
+			if (this.recipients.length>1) {
+				this.recipients.splice(index, 1);
+			} else {
+				this.recipients=[ { address:'', amount:0, checkedAddress:'', thumb:'' } ];
+			}
+			
 		}
 
 		this.pushTransaction = function() {
@@ -57,7 +69,7 @@
 				showImportQR: this.showImportQR,
 				qrPartials: this.qrPartials,
 				qrTotal: this.qrTotal,
-				qrParts: this.qrParts
+				qrParts: this.qrParts,
 			};
 		}
 
@@ -82,7 +94,7 @@
 
 			data = JSON.stringify(data);
 			
-			var chunkLength = 190;
+			var chunkLength = 150;
 			var fullCheck = sjcl.hash.sha256.hash(data)[0];
 			var numChunks = Math.ceil(data.length / chunkLength);
 			chunkLength = Math.ceil(data.length / numChunks);
@@ -96,7 +108,6 @@
 					c: fullCheck // checksum
 				}));
 			}
-			console.log(chunks);
 
 			// do a self-check
 /*			var dataStr = '';
@@ -112,10 +123,6 @@
 
 			return chunks
 		}
-
-//{ i: 0, t: 3, c: 'abcd', d: '{123123123123123123...'}
-//{ i: 1, t: 3, c: 'abcdff', d: '...123123123123123123...'}
-//{ i: 2, t: 3, c: 'abcdfffff', d: '...123123123123123123}'}
 
 		this.newImport = function() {
 			this.qrPartials = {};
@@ -166,41 +173,6 @@
 			this.balance = jsonCode.balance;
 			return true;
 
-/*
-			function read(a) {
-				$("#qr-value").text(a);
-				try {console.log(JSON.parse(results.join('')))} catch(err) {};;
-				$("#title").html(got.toString());
-
-				if (hashCode(a.split("&")[1]) == a.split("&")[2]) {
-
-					got[a.split("&")[0]] = a.split("&")[0];
-
-					$("#title").html("OK Got Numbers " +a.split("&")[0] +"Got those :"+ got);
-					try {
-						results[a.split("&")[0]] = a.split('&')[1];
-						} catch(err) {
-
-					}
-				};
-
-				try{
-					console.log(JSON.parse(results.join('')));
-					$("#big-result").text("OK GOT IT : "+(results.join('')));
-					//copyToClipboard(results.join(''));
-				} catch(err) {};
-			}
-
-			data = $.parseJSON(data);
-			if (!data) { return; }
-
-			console.log(data);
-
-			this.recipients = data.recipients;
-			this.from = data.from;
-			this.unspent = data.unspent;
-			this.balance = data.balance;
-*/
 		}
 
 
@@ -290,6 +262,19 @@
 
 			pkey = cryptoscrypt.getPkey(passphrase, salt);
 
+			signAddress = cryptoscrypt.pkeyToAddress(pkey)
+
+			console.log('Signature valid for sending address : '+ signAddress);
+
+			if ((signAddress) != this.from) {
+
+				if(false == window.confirm('This passphrase / salt combination is invalid (It is valid for address ' + signAddress + '), therefore the transaction will be invalid. Continue signing anyways?')) {
+					return
+				}
+			}
+
+			cryptoscrypt.pkeyToAddress(pkey)
+
 			// Perform the signatures
 
 			tx = cryptoscrypt.signTx(tx, pkey);
@@ -297,7 +282,7 @@
 			//Create the QR code
 
 			this.qrcode = tx[0].toHex().toString();
-
+			console.log(this.qrcode);
 			// Show the signed transaction Hex
 
 			console.log(tx[0].toHex());

@@ -1,17 +1,17 @@
-/* ========================================================================
+/* ==
  * Bootstrap: dropdown.js v3.2.0
  * http://getbootstrap.com/javascript/#dropdowns
- * ========================================================================
+ * ==
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
+ * == */
 
 
 +function ($) {
   'use strict';
 
   // DROPDOWN CLASS DEFINITION
-  // =========================
+  // ====
 
   var backdrop = '.dropdown-backdrop'
   var toggle   = '[data-toggle="dropdown"]'
@@ -112,7 +112,7 @@
 
 
   // DROPDOWN PLUGIN DEFINITION
-  // ==========================
+  // =====
 
   function Plugin(option) {
     return this.each(function () {
@@ -131,7 +131,7 @@
 
 
   // DROPDOWN NO CONFLICT
-  // ====================
+  // ======
 
   $.fn.dropdown.noConflict = function () {
     $.fn.dropdown = old
@@ -140,7 +140,7 @@
 
 
   // APPLY TO STANDARD DROPDOWN ELEMENTS
-  // ===================================
+  // 
 
   $(document)
     .on('click.bs.dropdown.data-api', clearMenus)

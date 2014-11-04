@@ -7,7 +7,7 @@ define([
 	var scrypt = scrypt_module_factory(Math.pow(2,29));
 	return window.cryptoscrypt = cryptoscrypt = {
 
-		
+
 		hashCode : function(str) {
 		    var hash = 0;
 		    for (var i = 0; i < str.length; i++) {
@@ -15,6 +15,12 @@ define([
 		    }
 		    return hash;
 		},
+
+
+		pkeyToAddress : function(pkey) {
+			return Bitcoin.ECKey.fromWIF(pkey.toWIF()).pub.getAddress().toString();
+		},
+
 
 		reverseHex : function(hex) {
 
@@ -113,6 +119,7 @@ define([
 			return pkey
 
 		},
+
 
 		signTx : function(tx,pkey){
 			for ( var i = 0; i < tx[1]; i++) {
