@@ -35,6 +35,9 @@ define([
       'click button[name^=btn-all]': 'putAll',
       'blur input[name=fee]': 'updateFee',
       'click select[name=qrSize]': 'renderQrCode',
+      'click li[name=guidance-tails]': 'guidanceTails',
+      'click li[name=guidance-dedicated]': 'guidanceDediated',
+      'click li[name=guidance-off]': 'guidanceOff'
     },
 
     guidanceToggle: function() {
@@ -44,6 +47,21 @@ define([
 
       this.render();
 
+    },
+
+    guidanceTails: function() {
+      this.model.guidance = 'tails'
+      this.render();
+    },
+
+    guidanceDediated: function() {
+      this.model.guidance = 'dedicated'
+      this.render();
+    },
+
+    guidanceOff: function() {
+      this.model.guidance = ''
+      this.render();
     },
 
     export: function() {
@@ -141,17 +159,22 @@ define([
 
 
     sign: function() {
-
+      var master = this;
       this.model.sign($('input[name=passphrase]', this.$el).val(), $('input[name=salt]', this.$el).val());
-      this.render();
-
+        if (this.model.from == this.model.signAddress) {
+          master.render();
+        } else {
+          BootstrapDialog.confirm('This passphrase / salt combination is invalid for the address ' + this.model.from + ' which is not the sending address, as a matter of fact, the signature is invalid and wont be accepted, would you like to continue for testing purposes?', function(result){
+          master.model.qrcode = result ? master.model.qrcode : '';
+          master.render();
+          });
+        }
     },
 
      //   end of html5_qrcode
 
     render: function() {
-
-
+      
       if (typeof(localMediaStream) != 'undefined' && localMediaStream) {
         localMediaStream.stop();
         localMediaStream.src = null;
@@ -168,7 +191,6 @@ define([
         this.model.newImport();
         $('.qr-reader').html5_qrcode(
           function(code) {
-            console.log('esze');
             if (master.model.import(code)) {
               master.model.showImportQR = false;
               master.render();

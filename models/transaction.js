@@ -18,7 +18,8 @@
 		this.qrcode = '';
 		this.feeMode = 'auto';
 		this.showImportQR = false;
-
+		this.signAddress = "";
+		
 		this.changeFeeMode = function() {
 			var modes = [ 'auto', 'custom' ];
 			this.feeMode = modes[ (modes.indexOf(this.feeMode) + 1) % modes.length ];
@@ -70,6 +71,7 @@
 				qrPartials: this.qrPartials,
 				qrTotal: this.qrTotal,
 				qrParts: this.qrParts,
+				signAddress: this.signAddress
 			};
 		}
 
@@ -262,18 +264,9 @@
 
 			pkey = cryptoscrypt.getPkey(passphrase, salt);
 
-			signAddress = cryptoscrypt.pkeyToAddress(pkey)
+			this.signAddress = cryptoscrypt.pkeyToAddress(pkey);
 
-			console.log('Signature valid for sending address : '+ signAddress);
-
-			if ((signAddress) != this.from) {
-
-				if(false == window.confirm('This passphrase / salt combination is invalid (It is valid for address ' + signAddress + '), therefore the transaction will be invalid. Continue signing anyways?')) {
-					return
-				}
-			}
-
-			cryptoscrypt.pkeyToAddress(pkey)
+			cryptoscrypt.pkeyToAddress(pkey);
 
 			// Perform the signatures
 

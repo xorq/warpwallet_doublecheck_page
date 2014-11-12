@@ -48,5 +48,15 @@
     font-size:18px;
     height:34px;
     top:0px;
-    line-height:0;
+    
 }
+
+.btn-group{
+    padding:3px;
+}
+
+.input-group{
+    padding-left:10px;
+}
+
+
