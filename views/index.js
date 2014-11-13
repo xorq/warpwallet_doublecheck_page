@@ -216,10 +216,9 @@ define([
 
 
     renderAddressTo: function(dataId) {
-
       recipient = this.model.recipients[dataId];
       index = dataId;
-      $('[dataId=' + dataId + '] > div[class~=addressTo]',this.el).html(
+      $('.fieldAddressTo').html(
         this.templateToAddressField()
       );
 
@@ -270,6 +269,7 @@ define([
     updateAmount: function(ev) {
 
       var recipientId = parseInt($(ev.currentTarget).parents('.row').attr('dataId'));
+
       this.model.recipients[recipientId][ 'amount' ] = parseInt(100000000 * ev.currentTarget.value);
       this.updateTotal();
       
@@ -277,16 +277,14 @@ define([
 
 
     updateAddress: function(ev) {
-
-      var recipientId = parseInt($(ev.currentTarget).parents('.row').parents('.row').attr('dataId'));
+      var recipientId = parseInt($(ev.currentTarget).parents('.row.addressTo').attr('dataId'));
       this.model.recipients[recipientId][ 'address' ] = ev.currentTarget.value;
-
     },   
 
 
     putAll: function(ev) {
 
-      this.model.putAll($(ev.currentTarget).parents('.row').attr('dataId'));
+      this.model.putAll($(ev.currentTarget).parents('.row.addressTo').attr('dataId'));
       this.render();
 
     }, 
@@ -295,7 +293,7 @@ define([
     removeOutput: function(ev) { 
 
       this.model.removeRecipient(
-        $(ev.currentTarget).parents('.row').parents('.row').attr('dataId')
+        $(ev.currentTarget).parents('.row.addressTo').attr('dataId')
       );
       this.render();
       
@@ -339,7 +337,7 @@ define([
       var address = ev.currentTarget.value.trim();
       var fieldName = ev.currentTarget.name;
       var fieldValue = ev.currentTarget.value;
-      var recipientId = $(ev.currentTarget).parents('.row').parents('.row').attr('dataId');
+      var recipientId = $(ev.currentTarget).parents('.row.addressTo').attr('dataId');
       var fieldEntry = ev.currentTarget.value.trim();
 
       //Initialize if nothing is entered

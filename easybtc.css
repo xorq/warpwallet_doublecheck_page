@@ -18,6 +18,12 @@
     text-align: center;
 
 }
+
+.has-feedback .form-control{
+    padding-right:5px
+}
+
+
 .btn-qrcode {
     top:100px;
     display: inline-block;
@@ -25,7 +31,7 @@
     vertical-align: middle;
 }
 
-.has-feedback .form-control {
+.has-feedback {
     padding-right:10px;
 }
 
