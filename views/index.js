@@ -218,7 +218,7 @@ define([
     renderAddressTo: function(dataId) {
       recipient = this.model.recipients[dataId];
       index = dataId;
-      $('.fieldAddressTo').html(
+      $('[class=fieldAddressTo][dataId='+index+']').html(
         this.templateToAddressField()
       );
 
@@ -261,14 +261,14 @@ define([
 
     updateTotal: function() {
 
-      $('input[name=total]', this.$el).val(this.getTotal());
+      $('input[name=total]', this.$el).val(this.model.getTotal()/100000000);
 
     },
 
 
     updateAmount: function(ev) {
 
-      var recipientId = parseInt($(ev.currentTarget).parents('.row').attr('dataId'));
+      var recipientId = parseInt($(ev.currentTarget).parents('.addressTo').attr('dataId'));
 
       this.model.recipients[recipientId][ 'amount' ] = parseInt(100000000 * ev.currentTarget.value);
       this.updateTotal();
@@ -325,7 +325,7 @@ define([
     getTotal: function() {
 
       return (cryptoscrypt.sumArray(
-        (_.map($('input[name^=amount]', this.$el),function(str){return 100000000 * str['value']}
+        (_.map($('input[name^=amount]', this.$el),function(str){return (100000000 * str['value'])/2}
         )))+parseInt(this.model.fee))/100000000    
 
     },

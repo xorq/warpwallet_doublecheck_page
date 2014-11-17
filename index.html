@@ -44,47 +44,50 @@
 
 		<script type='text/template' id='indexViewFromTemplate'>
 
-			<div class='row col-sm-9 col-xs-11 form-group has-feedback input-prepend <%=this.successClass(from) %>'>
+			<div class='row col-sm-9 col-xs-12 form-group has-feedback input-prepend <%=this.successClass(from) %>'>
 				<label for='sendingAddr'>Sending Address</label>
 				<div class='row input-group hidden-xs'>
-					<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='Enter sender name or Bitcoin address' value='<%= from %>'></input>
+					<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='Onename or address' value='<%= from %>'></input>
 					<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-10px'></span>
 					<span class='input-group-addon hidden-xs'>Balance: <%= balance/100000000 %></span>
 				</div>
 
-				<div class='row input-group visible-xs'>
-					<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='Enter sender name or Bitcoin address' value='<%= from %>'>
+				<div class='row input-group visible-xs' style='padding-left:15px'>
+					<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='Onename or address' value='<%= from %>'>
 					<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-10px'></span>
 					</input>
+					<label class='bg-success col-xs-12'>
+						Balance: <%= balance/100000000 %>
+					</label>
 				</div>
 
 			</div>
 
-			<div class='col-xs-1 col-sm-1' id='thumb' style='left:16px;top:25px'>
+			<div class='col-sm-1 hidden-xs' id='thumb' style='left:16px;top:25px'>
 				<img id='thumb' class='thumb' width='40' src='<%= thumbFrom %>' style='display:<%= thumbFrom ||'none'%>'</img>
 			</div>
-			<div class='visible-xs col-xs-12'>
-				<h5 class='bg-success col-xs-12'>Balance: <%= balance/100000000 %></h5>
-			</div>
-
 
 		</script>
 
 
 		<script type='text/template' id='indexViewToAddressTemplate'>
 
-			<div class='row col-xs-12 col-sm-6 form-group has-feedback input-prepend <%=this.successClass(recipient.address) %>'>
-				<div class='row input-group'>
-					<input type='text' tabindex=<%=index*2+2%> class='form-control' name='to' value='<%= recipient.address %>' placeholder='Enter recipient name or Bitcoin address'>
-						<span class='<%= cryptoscrypt.validAddress(recipient.address) ? 'glyphicon glyphicon-ok form-control-feedback' : recipient.address ? 'glyphicon glyphicon-remove form-control-feedback' : ''%>' style='left:-10px' name='glyphicon'>
-						</span>
-					</input>
-					<span class='input-group-btn'>
+			<div class='fieldAddressTo' dataId='<%= index %>'>
+				<div class='row col-xs-12 col-sm-6 form-group has-feedback input-prepend <%=this.successClass(recipient.address) %>'>
+					<div class='row input-group'>
+						<input type='text' tabindex=<%=index*2+2%> class='form-control' name='to' value='<%= recipient.address %>' placeholder='Enter recipient name or Bitcoin address'>
+							<span class='<%= cryptoscrypt.validAddress(recipient.address) ? 'glyphicon glyphicon-ok form-control-feedback' : recipient.address ? 'glyphicon glyphicon-remove form-control-feedback' : ''%>' style='left:-10px' name='glyphicon'>
+							</span>
+						</input>
+						
 						<span class='input-group-btn'>
-							<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-remove'></button>
+							<span class='input-group-btn'>
+								<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-remove'></button>
+							</span>
 						</span>
-					</span>
+					</div>
 				</div>
+
 			</div>
 
 		</script>
@@ -183,43 +186,42 @@
 				<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 2 : Prepare your transaction, you can use <a href='http://onename.io/'>onename.io</a> names
 				</h5>
 				
-				<div class='row col-xs-11 addressFrom' name='div-from' style='padding-left:20px'>
+				<div class='row col-xs-12 addressFrom' name='div-from' style=''>
 					
-					<div class='row col-sm-9 col-xs-11 form-group has-feedback input-prepend <%=this.successClass(from) %>'>
+					<div class='row col-sm-9 col-xs-12 form-group has-feedback input-prepend <%=this.successClass(from) %>'>
 						<label for='sendingAddr'>Sending Address</label>
 
-						<div class='row input-group hidden-xs'>
-							<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='Enter sender name or Bitcoin address' value='<%= from %>'></input>
+						<div class='row input-group hidden-xs' style='padding-left:15px'>
+							<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='BTC address / Onename' value='<%= from %>'></input>
 							<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-10px'></span>
 							<span class='input-group-addon hidden-xs'>Balance: <%= balance/100000000 %></span>
 						</div>
 
-						<div class='row input-group visible-xs'>
-							<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='Enter sender name or Bitcoin address' value='<%= from %>'>
+						<div class='row input-group visible-xs' style='padding-left:15px'>
+							<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='BTC address / Onename' value='<%= from %>'>
 							<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-10px'></span>
 							</input>
+							<label class='bg-success col-xs-12'>
+								Balance: <%= balance/100000000 %>
+							</label>
 						</div>
 
 					</div>
 
-					<div class='col-xs-1 col-sm-1' id='thumb' style='left:16px;top:25px'>
+					<div class='col-sm-1 hidden-xs' id='thumb' style='left:16px;top:25px'>
 						<img id='thumb' class='thumb' width='40' src='<%= thumbFrom %>' style='display:<%= thumbFrom ||'none'%>'</img>
 					</div>
-					<div class='visible-xs col-xs-12'>
-						<h5 class='bg-success col-xs-12'>Balance: <%= balance/100000000 %></h5>
-					</div>
-					
 				</div>
 				
 
 			
-				<label>Receiving Address</label>
+				<label>Receiving Address<%=recipients.length>1 ? 'es':''%></label>
 				<% _.each(recipients, function(recipient, index) { %> 
 					<div class='row col-xs-12 addressTo' dataId='<%= index %>' style='padding-left:20px'>
-						<div class='fieldAddressTo'>
+						<div class='fieldAddressTo' dataId='<%= index %>'			>
 							<div class='row col-xs-12 col-sm-6 form-group has-feedback input-prepend <%=successClass(recipient.address) %>'>
 								<div class='row input-group'>
-									<input type='text' tabindex=<%=index*2+2%> class='form-control' name='to' value='<%= recipient.address %>' placeholder='Enter recipient name or Bitcoin address'>
+									<input type='text' tabindex=<%=index*2+2%> class='form-control' name='to' value='<%= recipient.address %>' placeholder='BTC address / Onename'>
 										<span class='<%= cryptoscrypt.validAddress(recipient.address) ? 'glyphicon glyphicon-ok form-control-feedback' : recipient.address ? 'glyphicon glyphicon-remove form-control-feedback' : ''%>' style='left:-10px' name='glyphicon'>
 										</span>
 									</input>
@@ -232,21 +234,30 @@
 								</div>
 							</div>
 						</div>
+							<div class='col-xs-10 col-sm-4 hidden-xs'>
+								<div class='input-group' style=''>
+									<input type='text' class='form-control' tabindex=<%=index*2+3%> name='amount' value='<%= recipient.amount>0 ? recipient.amount/100000000 : ''%>' placeholder='Amount' />
+									<span class='input-group-btn'>
+										<button class='btn btn-primary glyphicon glyphicon-download' type='button' name='btn-all'></button>
+									</span>
+								</div>
+							</div>
+						
+						
 
-						<div class='col-xs-10 col-sm-4'>
-							<div class='input-group' style=''>
-							<input type='text' class='form-control' tabindex=<%=index*2+3%> name='amount' value='<%= recipient.amount>0 ? recipient.amount/100000000 : ''%>' placeholder='amount' />
-							<span class='input-group-addon hidden-xs'>BTC</span>
-							<span class='input-group-btn'>
-								<button class='btn btn-primary glyphicon glyphicon-download' type='button' name='btn-all'></button>
-							</span>
-
+						<div class='row col-xs-10 col-sm-4 visible-xs'>
+							<div class='row input-group' style=''>
+								<input type='text' class='form-control' tabindex=<%=index*2+3%> name='amount' value='<%= recipient.amount>0 ? recipient.amount/100000000 : ''%>' placeholder='Amount' />
+								<span class='input-group-addon hidden-xs'>BTC</span>
+								<span class='input-group-btn'>
+									<button class='btn btn-primary glyphicon glyphicon-download' type='button' name='btn-all'></button>
+								</span>
 							</div>
 							
-								<hr class='col-xs-12 visible-xs'>
-							
+							<hr class='col-xs-12 visible-xs'>
 						</div>
-						<div class='col-xs-1 col-sm-1' name='thumb'>
+
+						<div class='col-xs-1 col-sm-1 hidden-xs' name='thumb'>
 							<img name='thumbTo' class='' width='40' src='<%= recipient.thumb %>' style=<%=recipient.thumb || 'display:none'%>></img>
 						</div>
 
@@ -257,26 +268,27 @@
 						</div>
 					</div>
 				<% }); %> 
-				</div>
-				<div class='col-xs-12 form-group'>
-					<label for='fee'>Fee</label>
-					<div class='input-group col-xs-9 col-sm-5'>
-						<input type='text' class='form-control' <%=(feeMode == 'auto') ? 'readonly':''%> name='fee' id='fee' placeholder='Enter transaction fee' value='<%= getFee/100000000 %>'></input>
-						<span class='input-group-addon hidden-xs'>BTC</span>
-						<span class='input-group-btn'>
-							<button type='button' name='btn-feemode' class='btn <%= (feeMode == 'auto') ? 'btn-primary':'btn-danger'%> btn-feemode'>Fee: <%=feeMode%></button>
-						</span>
+
+					<div class='row col-xs-12 form-group'>
+						<label for='fee'>Fee</label>
+						<div class='input-group col-xs-9 col-sm-5'>
+							<input type='text' class='form-control' <%=(feeMode == 'auto') ? 'readonly':''%> name='fee' id='fee' value='<%= getFee/100000000 %>'></input>
+							<span class='input-group-addon hidden-xs'>BTC</span>
+							<span class='input-group-btn'>
+								<button type='button' name='btn-feemode' class='btn <%= (feeMode == 'auto') ? 'btn-primary':'btn-danger'%> btn-feemode'>Fee: <%=feeMode%></button>
+							</span>
+						</div>
+					</div>
+
+					<div class='row col-xs-12 form-group'>
+						<label for='total'>Total</label>	
+						<div class='input-group col-xs-8 col-sm-3'>
+							<input type='text' name='total' class='form-control' id='total' readonly></input>
+							<span class='input-group-addon'>BTC</span>
+						</div>
 					</div>
 				</div>
 
-				<div class='col-xs-12 form-group'>
-					<label for='total'>Total</label>	
-					<div class='input-group col-xs-8 col-sm-3'>
-						<input type='text' name='total' class='form-control' id='total' readonly></input>
-						<span class='input-group-addon'>BTC</span>
-					</div>
-				</div>
-			
 			</div>
 
 			<div class='col-xs-12' name='signature'>
@@ -302,14 +314,14 @@
 					<label for='passphrase'>
 						Passphrase
 					</label>
-					<input type='text' class='form-control' name='passphrase' placeholder='Type your passphrase here' />
+					<input type='text' class='form-control' name='passphrase' placeholder='Passphrase' />
 				
 
 				
 					<label for='salt' style='margin-top:10px'>
 						Salt
 					</label>
-					<input type='text' class='form-control' name='salt' placeholder='Type your email or salt here' />
+					<input type='text' class='form-control' name='salt' placeholder='Email / Salt' />
 				
 					
 				<div class='col-xs-12'>
