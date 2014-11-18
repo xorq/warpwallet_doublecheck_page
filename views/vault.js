@@ -19,38 +19,36 @@ define([
 						<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> words from a ~10,000 words list</h5>\
 					</div>\
 				</div>\
-				<div class='form-group row'>\
-					<div class='col-xs-2'>\
-						<label>Passphrase or Private Key</label>\
-					</div>\
-					<div class='col-xs-6'>\
-						<input type='text' class='form-control' name='passphrase' placeholder='Type your passphrase here' />\
-					</div>\
-					<div class='col-xs-2'>\
-						<select class='form-control' name='count_words'>\
-							<option value='1'>1</option>\
-							<option value='2'>2</option>\
-							<option value='3'>3</option>\
-							<option selected value='4'>4</option>\
-							<option value='5'>5</option>\
-							<option value='6'>6</option>\
-							<option value='7'>7</option>\
-							<option value='8'>8</option>\
-						</select>\
-					</div>\
-					<div class='col-xs-2'>\
-						<button type='button' class='btn btn-primary btn-random'>Random Words</button>\
+				<div class='form-group'>\
+						<label for='passphrase'>Passphrase or Private Key</label>\
+						<input type='text' class='form-control' name='passphrase' id='passphrase' placeholder='Type your passphrase here' />\
 					</div>\
 				</div>\
-				<div class='form-group row'>\
-					<div class='col-xs-2'>\
-						<label>Email</label>\
+				<div class='form-group row col-xs-12'>\
+					<div class='row col-xs-12'>\
+					<div class='row col-xs-5'>\
+					<label for='count_words'>Random words generator</label>\
+					<select class='form-control' name='count_words'>\
+						<option value='1'>1</option>\
+						<option value='2'>2</option>\
+						<option value='3'>3</option>\
+						<option selected value='4'>4</option>\
+						<option value='5'>5</option>\
+						<option value='6'>6</option>\
+						<option value='7'>7</option>\
+						<option value='8'>8</option>\
+					</select>\
+					<button type='button' class='btn btn-primary btn-random' style='margin-top:20px'>Random Words</button>\
 					</div>\
-					<div class='col-xs-10'>\
-						<input type='text' class='form-control' name='email' placeholder='Enter your email/salt here' />\
 					</div>\
 				</div>\
-				<button type='button' class='btn btn-primary btn-generate'>Generate Vault, it will take few seconds on a regular computer</button>\
+				<div class='form-group'>\
+					<label for='email'>Email</label>\
+					<input type='text' class='form-control' name='email' placeholder='Enter your email/salt here' />\
+				</div>\
+				<div class='button-group col-sm-9 col-xs-12'>\
+					<button type='button' class='btn btn-primary btn-generate' style='font-size:14px;white-space: normal ; margin-top:20px'>Generate vault, this will take few seconds on a normal computer</button>\
+				</div>\
 				<br>\
 				<br>\
 				<div class='text-left' id='label-address'></div>\
