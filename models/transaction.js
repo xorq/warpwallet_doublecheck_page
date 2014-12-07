@@ -283,14 +283,23 @@
 
 		this.updateUnspent = function() {
 			master = this;
-			return $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.from + '/unspent-outputs?per_page=100', function(data) {
-	        	master.unspent = data.data.outputs;
-	    	})
+			return $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.from + '/unspent-outputs?per_page=100')
+			.success(
+				$.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.from + '/unspent-outputs?per_page=100', function(data) {
+		        	master.unspent = data.data.outputs;
+		    	})
+	    	)
+	    	.error(
+				$.getJSON('https://blockchainbdgpzk.onion/unspent?active=' + master.from, function(data) {
+		        	master.unspent = data.unspent_outputs;
+		    	})
+	    	)
 		}
 
 	    this.updateBalance = function() {
 
 			var master = this;
+			console.log(this.updateUnspent(master.from));
 			return this.updateUnspent(master.from).done(function(){
 				master.balance = cryptoscrypt.sumArray(_.pluck(master.unspent, 'value'))
 			});
