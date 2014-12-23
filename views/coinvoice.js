@@ -79,6 +79,7 @@ define([
 		updateRate: function() {
 			currency = $('select[id=currency]', this.$el).val();
 			this.getRate("USD",currency);
+			return $().promise
 		},
 
 		random: function() {
@@ -139,32 +140,38 @@ define([
 
 		generate: function() {
 			//this.deleteResults();
+			if ($('select[id=currency]', this.$el).val() != currency) {
+				this.updateRate().done()
+			}
 
 			var address = $('input[id=address]', this.$el).val()
 			var fiat = $('input[id=fiat]', this.$el).val()
 
-			if (cryptoscrypt.validPkey(address)) { return };
+			if (true) {
 
-			//.deleteResults()
+				//if (cryptoscrypt.validPkey(address)) { return };
 
-			var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160,correctLevel : QRCode.CorrectLevel.L});
-			var amount = Math.floor(10000*(fiat / (rate*btcUsd)))/10000;
-			var result = 'bitcoin://'+address+'?amount='+amount;
-			
-			qrcode.makeCode(result);
-			
+				//.deleteResults()
 
-			//$('div[id=label-address]').text(curren);
-			$('div[id=label-privkey]').text(amount+' BTC');
-			
-			//$('div[id=text-privkey]').text('Public Bitcoin zrezer: '+amount);
-			/*
-			$('div[id=label-address]').text('Public Bitcoin Address: '+result[1]);
-			$('div[id=label-privkey]').text('Secret Private key: '+result[0]);
-			$('div[id=text-address]').text("Address");
-			$('div[id=text-privatekey]').text("Private Key");
-			*/
+				var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160,correctLevel : QRCode.CorrectLevel.L});
+				var amount = Math.floor(10000*(fiat / (rate*btcUsd)))/10000;
+				var result = 'bitcoin://'+address+'?amount='+amount;
+				
+				qrcode.makeCode(result);
+				
 
+				//$('div[id=label-address]').text(curren);
+				rateperone = Math.floor(10000*rate*btcUsd)/10000;
+				$('div[id=label-privkey]').text(amount+' BTC with 1 BTC = '+(rateperone)+' '+currency);
+				
+				//$('div[id=text-privkey]').text('Public Bitcoin zrezer: '+amount);
+				/*
+				$('div[id=label-address]').text('Public Bitcoin Address: '+result[1]);
+				$('div[id=label-privkey]').text('Secret Private key: '+result[0]);
+				$('div[id=text-address]').text("Address");
+				$('div[id=text-privatekey]').text("Private Key");
+				*/
+			}
 		}
 	});
 
