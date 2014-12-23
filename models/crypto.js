@@ -78,7 +78,7 @@ define([
 				out += (parseInt(hex1[i], 16) ^ parseInt(hex2[i], 16)).toString(16);
 			}
 			key = new Bitcoin.ECKey(BigInteger.fromHex(out), false);
-			return [key.toWIF(),key.pub.getAddress()];
+			return [key.toWIF(),key.pub.getAddress().toString()];
 
 		},
 

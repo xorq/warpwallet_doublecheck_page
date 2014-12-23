@@ -283,25 +283,33 @@
 
 		this.updateUnspent = function() {
 			master = this;
-			return $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.from + '/unspent-outputs?per_page=100')
-			.success(
-				$.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.from + '/unspent-outputs?per_page=100', function(data) {
+			return $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.from + '/unspent-outputs?per_page=100', function(data) {
+		        	master.unspent = data.data.outputs;
+		        	//if (data.data.outputs) { console.log('okay') } else { console.log('not ok')}
+		    	})
+		}
+
+		this.updateUnspentOnion = function() {
+			master = this;
+			return $.getJSON('https://blockchainbdgpzk.onion/unspent?active=' + master.from, function(data) {
 		        	master.unspent = data.data.outputs;
 		    	})
-	    	)
-	    	.error(
-				$.getJSON('https://blockchainbdgpzk.onion/unspent?active=' + master.from, function(data) {
-		        	master.unspent = data.unspent_outputs;
-		    	})
-	    	)
 		}
 
 	    this.updateBalance = function() {
 
 			var master = this;
-			console.log(this.updateUnspent(master.from));
 			return this.updateUnspent(master.from).done(function(){
+				console.log(master.unspent[0].value);
+
+
+				if (master.unspent[0].value) {
 				master.balance = cryptoscrypt.sumArray(_.pluck(master.unspent, 'value'))
+				} else {
+					master.updateUnspentOnion().done(function(){
+						master.balance = cryptoscrypt.sumArray(_.pluck(master.unspent, 'value'))
+					});
+				}
 			});
 	    }
 
@@ -343,7 +351,7 @@
 			    if (field == 'from') {
 			      this.from = address;
 			      this.thumbFrom = '';
-			      this.updateBalance();
+			      this.updateBalance().error(console.log('merde'));
 			    } 
 
 			    if (field == 'to') {

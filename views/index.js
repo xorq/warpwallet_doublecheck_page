@@ -1,10 +1,14 @@
+requirejs.config({
+  waitSeconds: 200,
+});
+
 define([
-  'jquery',
-  'underscore',
   'backbone',
+  'underscore',
+  'jquery',
   'qrcode',
   'models/transaction'
-], function($, _, Backbone, Transaction){
+], function(Backbone, _, $, Transaction){
   var addresses = { "From":"", "To":"" };
   var qrSize = 300;
   var qrShown = 0;
@@ -164,10 +168,8 @@ define([
         if (this.model.from == this.model.signAddress) {
           master.render();
         } else {
-          BootstrapDialog.confirm('This passphrase / salt combination is invalid for the address ' + this.model.from + ' which is not the sending address, as a matter of fact, the signature is invalid and wont be accepted, would you like to continue for testing purposes?', function(result){
-          master.model.qrcode = result ? master.model.qrcode : '';
+          alert("the signature is invalid");
           master.render();
-          });
         }
     },
 
@@ -175,6 +177,8 @@ define([
 
     render: function() {
       
+      console.log(navigator.userAgent);
+
       if (typeof(localMediaStream) != 'undefined' && localMediaStream) {
         localMediaStream.stop();
         localMediaStream.src = null;

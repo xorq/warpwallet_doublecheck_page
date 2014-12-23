@@ -4,13 +4,15 @@ define([
   'backbone',
   'views/index',
   'views/vault',
+  'views/coinvoice',
   'models/transaction'
-], function($, _, Backbone, IndexView, VaultView, Transaction){
+], function($, _, Backbone, IndexView, VaultView, Coinvoice, Transaction){
 
   var AppRouter = Backbone.Router.extend({
     routes: {
       '': 'index',
-      'vault': 'vault'
+      'vault': 'vault',
+      'coinvoice': 'easyQr'
     },
     currentView: false,
     index: function() {
@@ -28,7 +30,15 @@ define([
       this.currentView = new VaultView();
       this.currentView.render();
       $('.nav > li').removeClass('active').filter('[name=vault]').addClass('active');
-    }
+    },
+    easyQr: function() {
+      if (this.currentView) {
+        this.currentView.undelegateEvents();
+      }
+      this.currentView = new Coinvoice();
+      this.currentView.render();
+      $('.nav > li').removeClass('active').filter('[name=easyQr]').addClass('active');
+    } 
   });
 
   var initialize = function(){

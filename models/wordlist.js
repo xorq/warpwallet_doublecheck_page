@@ -7,6 +7,7 @@ define([], function() {
 
 	// interface object by which the outside code can interact with us
 	return window.WordList = {
+
 		// a function they are allowed to call... this function can talk to our private data
 		random: function(num_words, min_word_length) {
 			// good API design - allow for defaults if they make sense, don't fail unexpectedly
@@ -29,6 +30,7 @@ define([], function() {
 			  words += w + ' ';
 			}
 			words = words.trim();
+
 			return words;
 		},
 
