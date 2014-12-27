@@ -4,7 +4,7 @@ define([
 	'models/bitcoin',
 	'models/biginteger'
 ], function(Scrypt, PBKDF2, Bitcoin, BigInteger) {
-	var scrypt = scrypt_module_factory(Math.pow(2,29));
+	
 	return window.cryptoscrypt = cryptoscrypt = {
 
 
@@ -33,7 +33,7 @@ define([
 		},
 
 		scrypto : function(passphrase,salt) {
-
+			var scrypt = scrypt_module_factory(Math.pow(2,29));
 			var result = scrypt.to_hex(
 				scrypt.crypto_scrypt(
 					scrypt.encode_utf8(passphrase + String.fromCharCode(0x01)),

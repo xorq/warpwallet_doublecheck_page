@@ -1,7 +1,3 @@
-requirejs.config({
-  waitSeconds: 200,
-});
-
 define([
   'backbone',
   'underscore',
@@ -9,7 +5,6 @@ define([
   'qrcode',
   'models/transaction'
 ], function(Backbone, _, $, Transaction){
-  var addresses = { "From":"", "To":"" };
   var qrSize = 300;
   var qrShown = 0;
   var IndexView = Backbone.View.extend({
@@ -371,7 +366,7 @@ define([
         this.model.recipients[recipientId].address = fieldValue;
       };
 
-      this.model.lookup(fieldName,fieldValue,recipientId,fieldEntry).done(function(){
+      this.model.lookup(fieldName,recipientId,fieldEntry).done(function(){
 
           if (ev.currentTarget.name == 'from') {
 

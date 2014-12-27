@@ -313,7 +313,7 @@
 			});
 	    }
 
-		this.lookup = function(field,value,dataId,inputValue) {
+		this.lookup = function(field,dataId,inputValue) {
 
 			var master = this;
 			var address = inputValue;
@@ -376,8 +376,6 @@
 			      }
 
 			    };
-
-			    address = data.bitcoin.address ? data.bitcoin.address : '';
 
 			    // Double check that whatever onename.io sent is valid
 
