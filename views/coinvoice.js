@@ -66,7 +66,7 @@ define([
 		render: function() {
 
 			// Get parameters
-			this.address = this.getParameterByName('address');
+			//this.address = this.getParameterByName('address');
 			this.currency = this.getParameterByName('currency');
 			this.title = this.getParameterByName('title');
 			this.onename = this.getParameterByName('onename');
@@ -88,7 +88,6 @@ define([
 					$('input[id=address]').val(data.address);
 					master.address = data.address;
 					master.thumb = data.avatar;
-					master.updatePage();
 				});
 			};
 
@@ -105,21 +104,21 @@ define([
 			this.currency = $('select[id=currency]', this.$el).val();
 			this.fiat = $('input[id=fiat]', this.$el).val();
 
-			//Get Rates into btcUsd and rate, when it is done, update the page
-
 			//special case for BTC since it is not resolved by https://rate-exchange.appspot.com
 			if (this.currency == 'BTC') {
 				master.btcUsd = 1;
 				master.rate = 1;
-				master.updatePage();
+				master.updateLink();
 				return
 			};
 
+			//Get Rates into btcUsd and rate, when it is done, update the page
 			this.getFiatRate("USD",this.currency).done(function(data){
 				master.rate = data.result;
 				master.getBtcRate().done(function(data){
 					master.btcUsd = data.result;
-					master.updatePage();
+					master.updateLink();
+					master.updateLegend();
 				});
 			});
 		},
@@ -127,67 +126,71 @@ define([
 		// Called by event inputAddress
 		lookupFromInput: function() {
 			var master = this;
-			var address = $('input[id=address]').val();
+			var input = $('input[id=address]').val();
 
 			// if it is an address, no need for looking it up on onename
 			if (cryptoscrypt.validAddress(address) == true) {
 				this.address = address;
+				master.updatePage();
+				console.log('updatepagecalled now');
 	    		return
 			};
 
 			// if it is not an address, then it must be a onename ID
-			this.onename = address;
+			this.onename = input;
 			this.lookupOnename(this.onename).done(function(data) {
-				$('input[id=address]').val(master.address);
 				master.address = data.address;
+				$('input[id=address]').val(master.address);
 				master.thumb = data.avatar;
 				master.updatePage();
 			});
 		},
 
-		// Called in updateRate, render, even input fiat (keydown)
+		// Called in updateRate and updatePage
+		updateLink: function() {
+			var link = 'http://www.easy-btc.org/?address=' + this.address + '&currency=' + this.currency + '&onename=' + this.onename + '#coinvoice';
+			$('div[id=link]').html("<a href=" + link + ">Your Link</a>");
+		},
+
+		// Called in lookupFromInput and even input fiat (keydown)
 		updatePage: function() {
+			console.log('updatepagecalled');
 			var master = this;
 
-			//build the link
+			//gather data from page
 			this.fiat = $('input[id=fiat]').val();
 			this.amount = Math.floor(10000 * (this.fiat / (this.rate * this.btcUsd))) / 10000;
-			
-			var link = 'http://www.easy-btc.org/?address=' + this.address + '&currency=' + this.currency + '&onename=' + this.onename + '#coinvoice';
-			
+
+			//build the link
+			this.updateLink();
+			this.updateLegend();
 			//erasing the qrcode
 			$('div[id=qrcode-address-image]').text('');
 			$('div[id=qrcode-privkey-image]').text('');
 
-			$('div[id=link]').html("<a href=" + link + ">Your Link</a>");
-			
-			this.updateQr();
-			
+			this.makeQrCode();
+	
 			//Get the image and draw it
 			if (master.thumb && master.thumb.url) {
 				this.getImage(master.thumb.url).done(function(data) {
-					master.imageSrc = data.image;
+					master.imageSrc = data;
 					master.drawThumb
 				})
 			}
 		}, 
-		// Called in updatePage
-		updateQr: function() {
+		// Called in updatePage and updateRate
+		updateLegend: function() {
 
-			var master = this;
+			var ratePerBTC = this.rate * this.btcUsd;
 
-			// update legend
-			var rateperone = Math.floor(10000 * this.rate * this.btcUsd) / 10000;
-			if (this.amount && rateperone && this.currency) {
-				$('div[id=legend]').text(this.amount + ' BTC with 1 BTC = ' + (rateperone) + ' ' + this.currency);
-			} else {
-				$('div[id=legend]').text('');
-			}
-			//make the QR code
-			this.makeQrCode();
-			if (this.thumb) {
-				this.drawThumb()
+			this.amount = Math.floor(10000 * this.fiat / ratePerBTC)/10000;
+			if ((this.address == '') | (this.amount == 0) | (ratePerBTC == 0)) {
+				return
 			};
+
+			var legend = (this.amount + ' BTC with 1 BTC = ' + (ratePerBTC) + ' ' + this.currency)
+			$('div[id=legend]').text( legend );
+
 		},
 
 		// Called in updateQr
@@ -197,13 +200,19 @@ define([
 			var result = 'bitcoin://' + this.address + (this.amount ? '?amount=' + this.amount : '');
 
 			qrcode.makeCode(result);
+
+			if (this.thumb) {
+				this.drawThumb()
+			};
 		},
 
-		// Called in updateQr, updatePage, updateQr
+		// Called in updatePage
 		drawThumb: function() {
-			var image = new Image();
+
+			var image = this.imageSrc ? this.imageSrc : new Image()
 			var ctx = $('canvas')[0].getContext('2d');
 			image.src = this.thumb.url;
+			console.log(this.imageSrc);	
 			ctx.drawImage(image, 60, 60, 40, 40);
 		},
 
@@ -254,17 +263,18 @@ define([
 
 		// Called in updatePage
  		getImage: function(url) {
-
+ 			var ctx = $('canvas')[0].getContext('2d');
  			var master = this;
  			var image = new Image();
 			var def = $.Deferred();
+			image.src = url;
 			image.onload = function() {
 				def.resolve(
-					this
+					image
 				);
+				ctx.drawImage(image, 60, 60, 40, 40);
 			};
 			image.onerror = def.reject;
-			image.src = url;
 			return def;
 		},
 
