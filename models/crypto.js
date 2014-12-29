@@ -82,7 +82,7 @@ define([
 
 		},
 
-		validAddress : function(address){
+		validAddress : function(address) {
 
 			try{
 				Bitcoin.Address.fromBase58Check(address);
@@ -94,7 +94,7 @@ define([
 
 		},
 
-		validPkey : function(data){
+		validPkey : function(data) {
 
 			try{
 				Bitcoin.ECKey.fromWIF(data);
@@ -106,7 +106,7 @@ define([
 
 		},
 
-		getPkey : function(passphrase,salt){
+		getPkey : function(passphrase,salt) {
 
 			if (cryptoscrypt.validPkey(passphrase) == false) {
 				pkey = Bitcoin.ECKey.fromWIF(cryptoscrypt.warp(
@@ -121,7 +121,7 @@ define([
 		},
 
 
-		signTx : function(tx,pkey){
+		signTx : function(tx,pkey) {
 			for ( var i = 0; i < tx[1]; i++) {
 				tx[0].sign(i,pkey);
 			};

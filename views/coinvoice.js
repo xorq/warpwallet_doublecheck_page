@@ -6,6 +6,38 @@ define([
 	'models/transaction',
 	'models/currencylist'
 ], function($, _, Backbone, qrcode, Transaction, CurrencyList){
+
+
+	$.createCache = function( requestFunction ) {
+		var cache = {};
+		return function( key, callback ) {
+		if ( !cache[ key ] ) {
+			cache[ key ] = $.Deferred(function( defer ) {
+			requestFunction( defer, key );
+			}).promise();
+		}
+		return cache[ key ].done( callback );
+		};
+	};
+
+	$.cachedGetScript = $.createCache(function( defer, url ) {
+		$.getScript( url ).then( defer.resolve, defer.reject );
+	});
+
+	$.loadImage = $.createCache(function( defer, url ) {
+		var image = new Image();
+		function cleanUp() {
+			image.onload = image.onerror = null;
+		}
+		defer.then( cleanUp, cleanUp );
+		image.onload = function() {
+		defer.resolve( url );
+		};
+		image.onerror = defer.reject;
+		image.src = url;
+	});
+
+
 	var currency = '';
 	var rate = 0;
 	var btcUsd = 0;
@@ -47,7 +79,7 @@ define([
 				<div class='text-left' id='legend'></div>\
 				<div class='' id='title' style='font-weight:bold'><%=title%></div>\
 				<div class='col-xs-6' id='qrcode-address-image'></div>\
-				 <div id='reader' style='width:300px;height:250px'>\
+				<div id='reader' style='width:300px;height:250px'>\
 			</form>\
 			</div>\
 			<div class='col-xs-12'>\
@@ -66,7 +98,7 @@ define([
 		render: function() {
 
 			// Get parameters
-			//this.address = this.getParameterByName('address');
+			this.address = this.getParameterByName('address');
 			this.currency = this.getParameterByName('currency');
 			this.title = this.getParameterByName('title');
 			this.onename = this.getParameterByName('onename');
@@ -84,7 +116,6 @@ define([
 					if (master.address & (data.address != master.address)) {
 						window.alert("The address specified in the link wasn't the same as the one resolved by Onename. Onename's address will be kept, please double check and be very careful!");
 					}
-
 					$('input[id=address]').val(data.address);
 					master.address = data.address;
 					master.thumb = data.avatar;
@@ -92,11 +123,11 @@ define([
 			};
 
 			this.updateRate();
+
 		},
 
 		//Called by render and event click currency
 		updateRate: function() {
-
 			master = this;
 
 			//Get currency and amount
@@ -109,13 +140,14 @@ define([
 				master.btcUsd = 1;
 				master.rate = 1;
 				master.updateLink();
+				master.updateLegend();
 				return
 			};
 
 			//Get Rates into btcUsd and rate, when it is done, update the page
-			this.getFiatRate("USD",this.currency).done(function(data){
+			this.getFiatRate("USD",this.currency).done(function(data) {
 				master.rate = data.result;
-				master.getBtcRate().done(function(data){
+				master.getBtcRate().done(function(data) {
 					master.btcUsd = data.result;
 					master.updateLink();
 					master.updateLegend();
@@ -132,7 +164,6 @@ define([
 			if (cryptoscrypt.validAddress(address) == true) {
 				this.address = address;
 				master.updatePage();
-				console.log('updatepagecalled now');
 	    		return
 			};
 
@@ -143,6 +174,7 @@ define([
 				$('input[id=address]').val(master.address);
 				master.thumb = data.avatar;
 				master.updatePage();
+
 			});
 		},
 
@@ -152,9 +184,22 @@ define([
 			$('div[id=link]').html("<a href=" + link + ">Your Link</a>");
 		},
 
+		// Called in updatePage and updateRate
+		updateLegend: function() {
+
+			var ratePerBTC = Math.floor(10000 * this.rate * this.btcUsd ) / 10000;
+
+			this.amount = Math.floor(10000 * this.fiat / ratePerBTC) / 10000;
+			if ((this.address == '') | (this.amount == 0) | (ratePerBTC == 0)) {
+				return
+			};
+
+			var legend = (this.amount + ' BTC with 1 BTC = ' + (ratePerBTC) + ' ' + this.currency)
+			$('div[id=legend]').text( legend );
+		},
+
 		// Called in lookupFromInput and even input fiat (keydown)
 		updatePage: function() {
-			console.log('updatepagecalled');
 			var master = this;
 
 			//gather data from page
@@ -169,31 +214,9 @@ define([
 			$('div[id=qrcode-privkey-image]').text('');
 
 			this.makeQrCode();
-	
-			//Get the image and draw it
-			if (master.thumb && master.thumb.url) {
-				this.getImage(master.thumb.url).done(function(data) {
-					master.imageSrc = data;
-					master.drawThumb
-				})
-			}
 		}, 
-		// Called in updatePage and updateRate
-		updateLegend: function() {
 
-			var ratePerBTC = this.rate * this.btcUsd;
-
-			this.amount = Math.floor(10000 * this.fiat / ratePerBTC)/10000;
-			if ((this.address == '') | (this.amount == 0) | (ratePerBTC == 0)) {
-				return
-			};
-
-			var legend = (this.amount + ' BTC with 1 BTC = ' + (ratePerBTC) + ' ' + this.currency)
-			$('div[id=legend]').text( legend );
-
-		},
-
-		// Called in updateQr
+		// Called in updatePage, updateQr
 		makeQrCode: function() {
 
 			var qrcode = new QRCode("qrcode-address-image", { width: 160, height: 160, correctLevel: QRCode.CorrectLevel.H });
@@ -202,18 +225,22 @@ define([
 			qrcode.makeCode(result);
 
 			if (this.thumb) {
-				this.drawThumb()
+				this.drawThumb();
 			};
 		},
 
-		// Called in updatePage
+		// Called in updatePage, makeQrCode
 		drawThumb: function() {
+			url = this.thumb.url
+			var defer = $.Deferred();
 
-			var image = this.imageSrc ? this.imageSrc : new Image()
-			var ctx = $('canvas')[0].getContext('2d');
-			image.src = this.thumb.url;
-			console.log(this.imageSrc);	
-			ctx.drawImage(image, 60, 60, 40, 40);
+			function draw() {
+				var image = new Image();
+				var ctx = $('canvas')[0].getContext('2d');
+				image.src = url;
+				ctx.drawImage(image, 60, 60, 40, 40);
+			}
+			$.loadImage( url ) .done(draw);
 		},
 
 //MODELS
@@ -258,23 +285,6 @@ define([
 					result:data.bpi.USD.rate
 				});
 			});
-			return def;
-		},
-
-		// Called in updatePage
- 		getImage: function(url) {
- 			var ctx = $('canvas')[0].getContext('2d');
- 			var master = this;
- 			var image = new Image();
-			var def = $.Deferred();
-			image.src = url;
-			image.onload = function() {
-				def.resolve(
-					image
-				);
-				ctx.drawImage(image, 60, 60, 40, 40);
-			};
-			image.onerror = def.reject;
 			return def;
 		},
 
