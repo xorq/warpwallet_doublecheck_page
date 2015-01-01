@@ -14,7 +14,7 @@ define([
 			<form role='form'>\
 				<div class='form-group row'>\
 					<div class='col-xs-12'>\
-						<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and can/should be used offline.</h5>\
+						<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and it is recommended to be used offline.</h5>\
 						<h5>Also think to register your bitcoin address at <a href='http://onename.io/'>onename.io</a> for easier use.</h5>\
 						<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> words from a ~10,000 words list</h5>\
 					</div>\
