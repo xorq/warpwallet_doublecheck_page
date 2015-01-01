@@ -7,6 +7,9 @@
     padding-right: 0px;
 }
 
+.img {
+    padding:0px;
+}
 
 .has-feedback .form-control-feedback {
     top: 0px;
@@ -37,7 +40,7 @@
 
 .legend{
 
-    height:40px;
+    height:10px;
     vertical-align: center;
     line-height: 50px;
     padding-bottom:40px;
@@ -45,7 +48,6 @@
 }
 
 .guidance{
-
     padding:10px;
 }
 

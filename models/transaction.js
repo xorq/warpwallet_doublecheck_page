@@ -1,8 +1,8 @@
 	define([
-  'jquery',
-  'underscore',
-  'backbone',
-  'models/bitcoin',
+	'jquery',
+	'underscore',
+	'backbone',
+	'models/bitcoin',
 ], function($, _, Backbone,Bitcoin) {
 	function Transaction() {
 		this.guidance = false;
@@ -20,6 +20,16 @@
 		this.showImportQR = false;
 		this.signAddress = "";
 		
+		this.getJSONrequest = function(url,success,fail) {
+			return $.ajax({
+				url: url,
+				dataType: 'json',
+				success: success,
+				error: fail
+			});
+		}
+
+
 		this.changeFeeMode = function() {
 			var modes = [ 'auto', 'custom' ];
 			this.feeMode = modes[ (modes.indexOf(this.feeMode) + 1) % modes.length ];
@@ -79,12 +89,12 @@
 
 			recipientsExport = [];
 			this.recipients.forEach(function(v){ 
-			recipientsExport.push(_.pick(v,'address','amount'));//_.pick(v,'good'); console.log(v); 
+			recipientsExport.push(_.pick(v,'address','amount'));
 			});
 
 			unspentExport = [];
 			this.unspent.forEach(function(v){ 
-			unspentExport.push(_.pick(v,'transaction_hash','value','transaction_index'));//_.pick(v,'good'); console.log(v); 
+			unspentExport.push(_.pick(v,'transaction_hash','value','transaction_index'));
 			});
 
 			data = {
@@ -110,19 +120,6 @@
 					c: fullCheck // checksum
 				}));
 			}
-
-			// do a self-check
-/*			var dataStr = '';
-			_.each(chunks, function(chunk) {
-				dataStr += JSON.parse(chunk).d;
-			});
-			if (dataStr == data) {
-				console.log('integrity check passed');
-			} else {
-				console.log('FAILED int check');
-			}
-*/
-
 			return chunks
 		}
 
@@ -135,7 +132,6 @@
 
 		this.import = function(data) {
 			console.log('import called width ' + data);
-
 			try {
 				var qrData = JSON.parse(data);
 				console.log('parse OK');
@@ -210,14 +206,11 @@
 				}
 
 				if (this.unspent.length>0) {
-
 					var numOfInputs = cryptoscrypt.bestCombination(
 						_.pluck(this.unspent, 'transaction_index'),
 						master.getTotal()
 					).length;
-
 					this.fee = parseInt(( 140 * numOfInputs + 100 * this.recipients.length + 150 ) / 1000) * 10000 + 10000;
-
 				};
 
 				return this.fee;
@@ -281,114 +274,148 @@
 			console.log(tx[0].toHex());
 		}
 
-		this.updateUnspent = function() {
-			master = this;
-			return $.getJSON('https://api.biteasy.com/blockchain/v1/addresses/' + master.from + '/unspent-outputs?per_page=100', function(data) {
-		        	master.unspent = data.data.outputs;
-		        	//if (data.data.outputs) { console.log('okay') } else { console.log('not ok')}
-		    	})
+		this.updateUnspent = function(from, success, fail) {
+			return this.getJSONrequest('https://api.biteasy.com/blockchain/v1/addresses/' + from + '/unspent-outputs?per_page=100&callback=?refreshSection', success, fail);
 		}
 
-		this.updateUnspentOnion = function() {
-			master = this;
-			return $.getJSON('https://blockchainbdgpzk.onion/unspent?active=' + master.from, function(data) {
-		        	master.unspent = data.data.outputs;
-		    	})
+		this.updateUnspentOnion = function(from, success, fail) {
+			return this.getJSONrequest('https://blockchainbdgpzk.onion/unspent?active=' + from + '&cors=true', success, fail);
 		}
 
-	    this.updateBalance = function() {
-
+		this.updateBalance = function() {
 			var master = this;
-			return this.updateUnspent(master.from).done(function(){
-				console.log(master.unspent[0].value);
 
-
+			var successFunction = function(data) {
+				master.unspent = data.data.outputs;
 				if (master.unspent[0].value) {
-				master.balance = cryptoscrypt.sumArray(_.pluck(master.unspent, 'value'))
-				} else {
-					master.updateUnspentOnion().done(function(){
-						master.balance = cryptoscrypt.sumArray(_.pluck(master.unspent, 'value'))
-					});
+					master.balance = cryptoscrypt.sumArray(_.pluck(master.unspent, 'value'))
 				}
-			});
-	    }
+				def.resolve();
+			};
+
+			var successFunctionOnion = function(data) {
+				master.unspent = data.unspent_outputs;
+				if (master.unspent[0].value) {
+					master.balance = cryptoscrypt.sumArray(_.pluck(master.unspent, 'value'))
+
+					//Rename keys to match
+					b = [];
+					var map = {
+						tx_hash : "transaction_hash",
+						value : "value",
+						tx_output_n : "transaction_index",
+					};
+					master.unspent.forEach( function(value, index) {
+						block = {};
+						_.each(master.unspent[index], function(value2, key) {
+							key = map[key] || key;
+							block[key] = value2;
+						})
+						b[index] = block;
+					});
+					master.unspent = b;
+				}
+
+				def.resolve();
+			};
+
+
+			var failFunction = function() {
+
+				return master.updateUnspentOnion(
+					master.from,
+					successFunctionOnion,
+					function() {
+						console.log('Unable to fetch address data');
+						return def.reject;
+					})
+			};
+
+			var url = 'https://api.biteasy.com/blockchain/v1/addresses/' + this.from + '/unspent-outputs?per_page=100';
+			var def = $.Deferred()
+
+			this.getJSONrequest(url, successFunction, failFunction);
+
+			return def
+		}
+		
 
 		this.lookup = function(field,dataId,inputValue) {
 
 			var master = this;
 			var address = inputValue;
 
-		  	// If nothing
+			// If nothing
 
 			if (inputValue == '') {
-			  return $().promise(); 
+				return $().promise(); 
 			}
 
 			// Stop function if nothing has changed
 
 			check = (field == 'from') ? this.checkedFrom : master.recipients[dataId].checkedAddress;
 			if (inputValue == check) {
-			  return $().promise();
+				return $().promise();
 			}
 
 			//reset values if anything changed
 
-		    if (field == 'from') {
-		      this.balance = '';
-		      //this.from = inputValue; this is already done on keydown
-		      this.thumbFrom = '';
-		    } 
+			if (field == 'from') {
+				this.balance = '';
+				//this.from = inputValue; this is already done on keydown
+				this.thumbFrom = '';
+			} 
 
-		    if (field == 'to') {
-		      //this.recipients[dataId].address = inputValue; This is already done on keydown
-		      this.recipients[dataId].thumb = '';
-		    } 
+			if (field == 'to') {
+				//this.recipients[dataId].address = inputValue; This is already done on keydown
+				this.recipients[dataId].thumb = '';
+			} 
 
-		  	//If address is already valid
+			//If address is already valid
 
-		  	if (cryptoscrypt.validAddress(inputValue) == true) {
+			if (cryptoscrypt.validAddress(inputValue) == true) {
 
-			    if (field == 'from') {
-			      this.from = address;
-			      this.thumbFrom = '';
-			      this.updateBalance().error(console.log('merde'));
-			    } 
+				if (field == 'from') {
+					this.from = address;
+					this.thumbFrom = '';
+					this.updateBalance().done();
+				} 
 
-			    if (field == 'to') {
-			      this.recipients[dataId].address = inputValue;
-			      this.recipients[dataId].thumb = '';
-			    }
-			    
-			    return $().promise();
-		    }
-		  // If not valid address, lookup on onename.io
+				if (field == 'to') {
+					this.recipients[dataId].address = inputValue;
+					this.recipients[dataId].thumb = '';
+				}
+				
+				return;
+			}
+			// If not valid address, lookup on onename.io
 
 			return $.getJSON('https://onename.io/' + inputValue + '.json', function(data) {
 
-			    address = data.bitcoin.address ? data.bitcoin.address : '';
+				address = data.bitcoin.address ? data.bitcoin.address : '';
 
-			    if (data.avatar) {
+				if (data.avatar) {
 
-			      if (field == 'from') {
-			      	master.thumbFrom = data.avatar.url
-			      } else {
-			      	master.recipients[dataId].thumb = data.avatar.url
-			      }
+					if (field == 'from') {
+					master.thumbFrom = data.avatar.url
+					} else {
+					master.recipients[dataId].thumb = data.avatar.url
+					}
 
-			    };
+				};
 
-			    // Double check that whatever onename.io sent is valid
+				// Double check that whatever onename.io sent is valid
 
-			    if (cryptoscrypt.validAddress(address) == true) {
-			    	if (field == 'from'){
-			    		master.from = address;
-			    		master.checkedFrom = address;
-			    	};
-			    	if (field.substring(0,2) == 'to'){
-			    		master.recipients[dataId].address = address;
-			    		master.recipients[dataId].checkedAddress = address;
-			    	};
-			  	}
+				if (cryptoscrypt.validAddress(address) == true) {
+					if (field == 'from'){
+						master.from = address;
+						master.checkedFrom = address;
+					};
+					if (field.substring(0,2) == 'to'){
+						master.recipients[dataId].address = address;
+						master.recipients[dataId].checkedAddress = address;
+					};
+				}
 
 			})
 		}

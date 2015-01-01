@@ -11,14 +11,7 @@ define([
 	var VaultView = Backbone.View.extend({
 		el: $('#contents'), 
 		template: "\
-			<form role='form'>\
-				<div class='form-group row'>\
-					<div class='col-xs-12'>\
-						<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and it is recommended to be used offline.</h5>\
-						<h5>Also think to register your bitcoin address at <a href='http://onename.io/'>onename.io</a> for easier use.</h5>\
-						<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> words from a ~10,000 words list</h5>\
-					</div>\
-				</div>\
+			<form role='form col-xs-12' style='margin-right: 20px;'>\
 				<div class='form-group'>\
 						<label for='passphrase'>Passphrase or Private Key</label>\
 						<input type='text' class='form-control' name='passphrase' id='passphrase' placeholder='Type your passphrase here' />\
@@ -26,9 +19,8 @@ define([
 				</div>\
 				<div class='form-group row col-xs-12'>\
 					<div class='row col-xs-12'>\
-					<div class='row col-xs-5'>\
 					<label for='count_words'>Random words generator</label>\
-					<select class='form-control' name='count_words'>\
+					<select class='form-control' style='width:100px' name='count_words'>\
 						<option value='1'>1</option>\
 						<option value='2'>2</option>\
 						<option value='3'>3</option>\
@@ -46,23 +38,30 @@ define([
 					<label for='email'>Email</label>\
 					<input type='text' class='form-control' name='email' placeholder='Enter your email/salt here' />\
 				</div>\
-				<div class='button-group col-sm-9 col-xs-12'>\
+				<div class='button-group col-xs-12'>\
 					<button type='button' class='btn btn-primary btn-generate' style='font-size:14px;white-space: normal ; margin-top:20px'>Generate vault, this will take few seconds on a normal computer</button>\
+					<br>\
+				<br>\
 				</div>\
-				<br>\
-				<br>\
-				<div class='text-left' id='label-address'></div>\
-				<div class='text-left' id='label-privkey'></div>\
 				<div class='row text-center'>\
-					<div class='col-xs-6 h3' id='text-address'></div>\
-					<div class='col-xs-6 h3' id='text-privatekey'></div>\
-					<div class='col-xs-6' id='qrcode-address-image'></div>\
-					<div class='col-xs-6' id='qrcode-privkey-image'></div>\
+					<div class='col-xs-12 col-ms-6 h3' id='text-address'></div>\
+					<div class='col-xs-12 col-ms-6' id='qrcode-address-image'></div>\
+					<div class='text-center' id='label-address'></div>\
+					<br>\
+					<div class='col-xs-12 col-ms-6 h3' id='text-privatekey'></div>\
+					<div class='col-xs-12 col-ms-6' id='qrcode-privkey-image'></div>\
+					<div class='text-center' id='label-privkey'></div>\
+					<br>\
+					<br>\
+								<div class='col-xs-11'>\
+				<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and it is recommended to be used offline.</h5>\
+				<h5>Also think to register your bitcoin address at <a href='http://onename.io/'>onename.io</a> for easier use.</h5>\
+				<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> words from a ~10,000 words list</h5>\
+				<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>\
+			</div>\
 				</div>\
-				 <div id='reader' style='width:300px;height:250px'>\
  				</div>\
 			</form>\
-			<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>\
 		", 
 		events: {
 
@@ -129,8 +128,8 @@ define([
 			qrcode.makeCode(result[1]);
 			qrcode2.makeCode(result[0]);
 
-			$('div[id=label-address]').text('Public Bitcoin Address: '+result[1]);
-			$('div[id=label-privkey]').text('Secret Private key: '+result[0]);
+			$('div[id=label-address]').text(result[1]);
+			$('div[id=label-privkey]').text(result[0]);
 			$('div[id=text-address]').text("Address");
 			$('div[id=text-privatekey]').text("Private Key");
 

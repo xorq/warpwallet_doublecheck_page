@@ -9,30 +9,30 @@ define([
 
 	$.createCache = function( requestFunction ) {
 		var cache = {};
-		return function( key, callback ) {
-		if ( !cache[ key ] ) {
-			cache[ key ] = $.Deferred(function( defer ) {
-			requestFunction( defer, key );
+		return function(key, callback) {
+		if (!cache[ key ]) {
+			cache[key] = $.Deferred(function(defer) {
+			requestFunction(defer, key);
 			}).promise();
 		}
-		return cache[ key ].done( callback );
+		return cache[key].done(callback);
 		};
 	};
 
-	$.loadImage = $.createCache(function( defer, url ) {
+	$.loadImage = $.createCache(function(defer, url) {
 		var image = new Image();
 		function cleanUp() {
 			image.onload = image.onerror = null;
 		}
-		defer.then( cleanUp, cleanUp );
+		defer.then(cleanUp, cleanUp);
 		image.onload = function() {
-		defer.resolve( url );
+		defer.resolve(url);
 		};
 		image.onerror = defer.reject;
 		image.src = url;
 	});
 
-	var currency = '';
+	var currency = 'BTC';
 	var rate = 0;
 	var btcUsd = 0;
 	var thumb = '';
@@ -46,13 +46,7 @@ define([
 		el: $('#contents'),
 		template: _.template("\
 			<%currencies = [{'code':'BTC','name':'Bitcoin'},{'code':'AED','name':'United Arab Emirates Dirham'},{'code':'ARS','name':'Argentine Peso'},{'code':'AUD','name':'Australian Dollar'},{'code':'BGN','name':'Bulgarian Lev'},{'code':'BND','name':'Brunei Dollar'},{'code':'BOB','name':'Bolivian Boliviano'},{'code':'BRL','name':'Brazilian Real'},{'code':'CAD','name':'Canadian Dollar'},{'code':'CHF','name':'Swiss Franc'},{'code':'CLP','name':'Chilean Peso'},{'code':'CNY','name':'Chinese Yuan Renminbi'},{'code':'COP','name':'Colombian Peso'},{'code':'CZK','name':'Czech Republic Koruna'},{'code':'DKK','name':'Danish Krone'},{'code':'EGP','name':'Egyptian Pound'},{'code':'EUR','name':'Euro'},{'code':'FJD','name':'Fijian Dollar'},{'code':'GBP','name':'British Pound Sterling'},{'code':'HKD','name':'Hong Kong Dollar'},{'code':'HRK','name':'Croatian Kuna'},{'code':'HUF','name':'Hungarian Forint'},{'code':'IDR','name':'Indonesian Rupiah'},{'code':'ILS','name':'Israeli New Sheqel'},{'code':'INR','name':'Indian Rupee'},{'code':'JPY','name':'Japanese Yen'},{'code':'KES','name':'Kenyan Shilling'},{'code':'KRW','name':'South Korean Won'},{'code':'LTL','name':'Lithuanian Litas'},{'code':'MAD','name':'Moroccan Dirham'},{'code':'MXN','name':'Mexican Peso'},{'code':'MYR','name':'Malaysian Ringgit'},{'code':'NOK','name':'Norwegian Krone'},{'code':'NZD','name':'New Zealand Dollar'},{'code':'PEN','name':'Peruvian Nuevo Sol'},{'code':'PHP','name':'Philippine Peso'},{'code':'PKR','name':'Pakistani Rupee'},{'code':'PLN','name':'Polish Zloty'},{'code':'RON','name':'Romanian Leu'},{'code':'RSD','name':'Serbian Dinar'},{'code':'RUB','name':'Russian Ruble'},{'code':'SAR','name':'Saudi Riyal'},{'code':'SEK','name':'Swedish Krona'},{'code':'SGD','name':'Singapore Dollar'},{'code':'THB','name':'Thai Baht'},{'code':'TRY','name':'Turkish Lira'},{'code':'TWD','name':'New Taiwan Dollar'},{'code':'UAH','name':'Ukrainian Hryvnia'},{'code':'USD','name':'US Dollar'},{'code':'VEF','name':'Venezuelan Bolí­var Fuerte'},{'code':'VND','name':'Vietnamese Dong'},{'code':'ZAR','name':'South African Rand'}];%>\
-			<form role='form'>\
-				<div class='form-group row'>\
-					<div class='col-xs-12'>\
-						<h5>This tool just makes a QR code for a bitcoin payment denominated in a fiat currency</h5>\
-						<h5>Use Onename for a picture inside the QR code</h5>\
-					</div>\
-				</div>\
+			<form role='form' style='margin-right: 20px;'>\
 				<div class='form-group'>\
 					<label for='address'>Bitcoin address or <a href='http://www.onename.io'>Onename</a> to send the funds to:</label>\
 					<input type='text' class='form-control' name='btc address' id='address' placeholder='enter your BTC address here' value='<%= address %>' />\
@@ -69,16 +63,23 @@ define([
 						<%})%>\
 					</select>\
 				</div>\
-				<div class='text-left' id='link'></div>\
+				</br>\
 				<div class='text-left' id='label-address'></div>\
-				<div class='text-left' id='legend'></div>\
 				<div class='' id='title' style='font-weight:bold'><%=title%></div>\
+				<%=title?'</br>':''%>\
 				<div class='col-xs-6' id='qrcode-address-image'></div>\
-				<div id='reader' style='width:300px;height:250px'>\
-			</form>\
-			</div>\
-			<div class='col-xs-12'>\
+				<div class='text hidden-xs col-xs-4'>\
+					<div class='text-left' style='font-size:27px;font-weight:bold' id='legend'></div>\
+					<div class='text-left' id='legend2' style='font-size:20px;font-weight:bold'></div>\
+				</div>\
+				<div class='text col-xs-12 visible-xs'>\
+					<div class='text-left' style='font-size:27px;font-weight:bold' id='legend'></div>\
+					<div class='text-left' id='legend2' style='font-size:20px;font-weight:bold'></div>\
+				</div>\
+				<div id='reader' style='width:600px;height:250px'></div>\
+				<div class='text-left' id='link'></div>\
 			<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>\
+			</form>\
 			</div>\
 		"), 
 		events: {
@@ -117,6 +118,7 @@ define([
 				});
 			};
 			this.updateRate();
+			this.updatePage();
 		},
 
 		// Called by event inputAddress
@@ -183,18 +185,23 @@ define([
 
 		// Called in updateRate and updatePage
 		updateLink: function() {
-			var link = window.location.pathname + '?address=' + this.address + '&currency=' + this.currency + '&onename=' + this.onename + '#coinvoice';
-			$('div[id=link]').html("<a href=" + link + ">Your Link</a>");
+			var currency = '?currency=' + this.currency;
+			var address = this.address ? '&address=' + this.address : '';
+			var onename = this.onename ? '&onename=' + this.onename : '';
+			var link = window.location.pathname + currency + address + onename + '#coinvoice';
+			$('div[id=link]').html("<a href=" + link + ">Link to this page</a>");
 		},
 
-		// Called in updateRate and updatePage
+		// Called in updatePage
 		updateLegend: function() {
-			var ratePerBTC = Math.floor(10000 * this.rate * this.btcUsd ) / 10000;
-			if ((this.address == '') | (this.amount == 0) | (ratePerBTC == 0)) {
+			var ratePerBTC = Math.floor(100 * this.rate * this.btcUsd ) / 100;
+			if (!ratePerBTC) {
 				return
 			};
-			var legend = this.amount + ' BTC with 1 BTC = ' + (ratePerBTC) + ' ' + this.currency;
-			$('div[id=legend]').text( legend );
+			var legend = this.amount + ' BTC'
+			var legend2 = '1 BTC = ' + ratePerBTC + ' ' + this.currency;
+			$('div[id=legend]').text(legend);
+			$('div[id=legend2]').text(legend2);
 		},
 
 		// Called in updatePage, updateQr
@@ -210,7 +217,6 @@ define([
 		// Called in updatePage, makeQrCode
 		drawThumb: function() {
 			var url = this.thumb.url
-			var defer = $.Deferred();
 			function draw() {
 				var image = new Image();
 				var ctx = $('canvas')[0].getContext('2d');
@@ -225,7 +231,6 @@ define([
 		// Called in render, lookupFromInput
 		lookupOnename: function(onename) {
 			var def = $.Deferred();
-			var master = this;
 			$.getJSON('https://onename.io/' + this.onename + '.json')
 			.done(function(data) {
 				def.resolve({
@@ -238,9 +243,7 @@ define([
 
 		// Called in updateRate
  		getFiatRate: function(from, to) {
- 			var master = this;
 			var def = $.Deferred();
-
 			$.getJSON('https://rate-exchange.appspot.com/currency?from=' + from + '&to=' + to + '&callback=?')
 			.done(function(data) { 
 				def.resolve({
@@ -252,7 +255,6 @@ define([
 
 		// Called in updateRate
  		getBtcRate: function() {
- 			var master = this;
 			var def = $.Deferred();
 			$.getJSON('http://api.coindesk.com/v1/bpi/currentprice.json')
 			.done(function(data) { 

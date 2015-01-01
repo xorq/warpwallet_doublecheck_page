@@ -4,9 +4,8 @@
 	<head>
 		<meta charset='utf-8'>
 		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>	
 		<title>EasyBTC</title>
-
 		<script src='bower_components/jquery/dist/jquery.min.js'></script>
 		<script src='bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
 		
@@ -27,16 +26,16 @@
 	</head>
 	<body>
 
-		<div class='container' style='background:#fff;'>
-			<h1>Easy-BTC.org</h1>
-			<h4>Cold Storage for everyone</h4>
-			<h6>Easy-BTC uses <a href=http://www.bitcoinjs.org/>BitcoinJS</a>, <a href='http://onename.io/'>Onename.io</a> and is compatible with <a href='https://keybase.io/warp'>Warp Wallet</a></h6>
-			<ul class='nav nav-tabs' role='tablist'>
+		<div class='container'>
+			<h2 style=''>Easy-BTC.org</h2>
+			<!--<h4>Cold Storage for everyone</h4>
+			<h6>Easy-BTC uses <a href=http://www.bitcoinjs.org/>BitcoinJS</a>, <a href='http://onename.io/'>Onename.io</a> and is compatible with <a href='https://keybase.io/warp'>Warp Wallet</a></h6>-->
+			<ul class='nav nav-pills' role='tablist'>
 				<li name='vault'><a href='#vault'>New Vault</a></li>
 				<li name='create' class='active'><a href='#'>Send Payment</a></li>
 				<li name='easyQr'><a href='#coinvoice'>Recieve Payment</a></li>
 			</ul>
-			<div id='contents' ></div>
+			<div id='contents' class='panel panel-primary' style='background:#ddd;border-color=#044;border:5px black solid' ></div>
 		</div>
 
 		<script data-main='config.js' src='bower_components/requirejs/require.js'></script>
@@ -97,275 +96,282 @@
 			<img name='thumbTo' class='' width='40' src='<%= recipient.thumb %>' style=<%=recipient.thumb || 'display:none'%>></img>
 		</script>
 
+		<script type='text/template' id='indexViewTemplate2'>
+
+			<%
+			function successClass(address) {
+				if (cryptoscrypt.validAddress(address)) {
+					return 'has-success';
+				} else if (address) {
+					return 'has-error';
+				}
+			}
+			%>
+
+			<form role='form col-xs-12' style='margin-right: 20px;'>
+				<div class='btn-group'>
+					<button type='button' data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Tools<span class='caret'></span></button>
+					<ul class='dropdown-menu'>
+						<li name='btn-import'><a href='#'>Import QR code(s) for a transaction</a></li>
+						<li name='btn-export'><a href='#'>Export QR code(s) for this transaction</a></li>
+						<li class='divider'></li>
+						<li name='guidance-tails'><a href='#'>Guidance for using Tails</a></li>
+						<li name='guidance-dedicated'><a href='#'>Guidance for using a dedicated offline computer</a></li>
+						<li class='divider'></li>
+						<li name='guidance-off'><a href='#'>Turn guidance off</a></li>
+					</ul>
+				</div>
+			</form>
+		</script>
+
 		<script type='text/template' id='indexViewTemplate'>
 
 			<%
-    		function successClass(address) {
-      			if (cryptoscrypt.validAddress(address)) {
-        			return 'has-success';
-      			} else if (address) {
-        			return 'has-error';
-      			}
-    		}
-    		%>
+			function successClass(address) {
+				if (cryptoscrypt.validAddress(address)) {
+					return 'has-success';
+				} else if (address) {
+					return 'has-error';
+				}
+			}
+			%>
+			<div class = 'col-xs-12' name='content'>
+			<form role='form col-xs-12' style=''>
+				<div name='tools'>
+					<button type='button' data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Tools <span class='caret'></span></button>
+					<ul class='dropdown-menu'>
+						<li name='btn-import'><a href='#'>Import QR code(s) for a transaction</a></li>
+						<li name='btn-export'><a href='#'>Export QR code(s) for this transaction</a></li>
+						<li class='divider'></li>
+						<li name='guidance-tails'><a href='#'>Guidance for using Tails</a></li>
+						<li name='guidance-dedicated'><a href='#'>Guidance for using a dedicated offline computer</a></li>
+						<li class='divider'></li>
+						<li name='guidance-off'><a href='#'>Turn guidance off</a></li>
+					</ul>
+				</div>
 
-			<div class = 'col-xs-12' name='introduction'>
-				<h5>You can spend coins easily and safely using this page.
-				For help, click on 'Guidance'.</h5>
-			</div>
-
-			<div class = 'col-xs-12' name='tools'>
-				<legend class='legend'>Tools</legend>
 				
-				<div class='col-xs-7 col-sm-3'>
-				    <div class='btn-group'>
-				        <div class='btn-group'>
-				            <button type='button' data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Guidance <span class='caret'></span></button>
-				            <ul class='dropdown-menu'>
-				                <li name='guidance-tails'><a href='#'>Using Tails</a></li>
-				                <li name='guidance-dedicated'><a href='#'>Using a dedicated offline computer</a></li>
-				                <li class='divider'></li>
-				                <li name='guidance-off'><a href='#'>Turn guidance off</a></li>
-				            </ul>
-				        </div>
-				    </div>
-				</div>
+					<div class='col-xs-10' name='exportQrcode' style='display:none'>
+						<h5 class='col-xs-9' name='titleQrcode' style='text-align:center'></h5>
+					</div>
 
-				<div class='col-xs-8 col-sm-4'>
-					<div class='btn-group'>
-						<button type='button' class='form-control btn-primary' name='btn-import'>Import QRcodes</button>
+					<div class='col-xs-12' name='exportQrcode' style='display:none'>
+						<div class='col-xs-2' name='previous'>
+							<button type='button' class='btn btn-qrcode glyphicon glyphicon-arrow-left' name='previousQr' style='font-size:45px'></button>
+						</div>
+						<div class='col-xs-6 qrcodeExport' id='qrcodeExport' name='qrcodeExport' style='width:350px'>
+						</div>
+						<div class='col-xs-2' name='next' style='height:300px; vertical-align:middle'>
+							<button type='button' class='btn btn-qrcode glyphicon glyphicon-arrow-right' name='nextQr' style='font-size:45px'></button>
+						</div>
 					</div>
-				</div>
-				<div class='col-xs-8 col-sm-4'>
-					<div class='btn-group'>
-						<button type='button' class='form-control btn-primary' name='btn-export'>Export QRcodes</button>
-					</div>
-				</div>
-				<div class='col-xs-10' name='exportQrcode' style='display:none'>
-					<h5 class='col-xs-9' name='titleQrcode' style='text-align:center'></h5>
-				</div>
 
-				<div class='col-xs-12' name='exportQrcode' style='display:none'>
-					<div class='col-xs-2' name='previous'>
-						<button type='button' class='btn btn-qrcode glyphicon glyphicon-arrow-left' name='previousQr' style='font-size:45px'></button>
-					</div>
-					<div class='col-xs-6 qrcodeExport' id='qrcodeExport' name='qrcodeExport' style='width:350px'>
-					</div>
-					<div class='col-xs-2' name='next' style='height:300px; vertical-align:middle'>
-						<button type='button' class='btn btn-qrcode glyphicon glyphicon-arrow-right' name='nextQr' style='font-size:45px'></button>
+					<div class='col-xs-12'>
+						<h4 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Using a computer with <a href='http://tails.boum.org/'>Tails</a></h4>
+						<img class='<%= guidance != 'tails' && 'hidden' %>' src='TailsComputer.png' style='width:625px;height:277px'>
+						<h4 class='bg-info guidance <%= guidance != 'dedicated' && 'hidden' %>'>Using a dedicated offline computer</h4>
+						<img class='<%= guidance != 'dedicated' && 'hidden' %>' src='OfflineComputer.png' style='width:625px;height:277px'>
+
+						</div>
+
+					<div class='col-xs-12' class='importQr' style='display: <%= showImportQR || 'none' %>'>
+						<p>Hold a QR Code in front of your webcam.</p>
+						<div class='qr-status'></div>
+						<div class='qr-reader' style='width: 400px; height: 300px'></div>
 					</div>
 				</div>
 
-				<div class='col-xs-12'>
-					<h4 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Using a computer with <a href='http://tails.boum.org/'>Tails</a></h4>
-					<img class='<%= guidance != 'tails' && 'hidden' %>' src='TailsComputer.png' style='width:625px;height:277px'>
-					<h4 class='bg-info guidance <%= guidance != 'dedicated' && 'hidden' %>'>Using a dedicated offline computer</h4>
-					<img class='<%= guidance != 'dedicated' && 'hidden' %>' src='OfflineComputer.png' style='width:625px;height:277px'>
-
-					</div>
-
-				<div class='col-xs-12' class='importQr' style='display: <%= showImportQR || 'none' %>'>
-					<p>Hold a QR Code in front of your webcam.</p>
-					<div class='qr-status'></div>
-					<div class='qr-reader' style='width: 400px; height: 300px'></div>
-				</div>
-			</div>
-
-			<div class='col-xs-12' name='transaction'>
-			
-				<legend class='legend'>Transaction</legend>
+				<div class='col-xs-12' name='transaction'>
 				
-				
-
-				<h5 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Step 1 : Open <a href='http://tails.boum.org/'>Tails</a>, and open this page.
-				</h5>
-
-				<h5 class='bg-info guidance <%= guidance != 'dedicated' && 'hidden' %>'>Step 1 : Open this page on an online computer.
-				</h5>
-
-				<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 2 : Prepare your transaction, you can use <a href='http://onename.io/'>onename.io</a> names
-				</h5>
-				
-				<div class='row col-xs-12 addressFrom' name='div-from' style=''>
+					<legend class='legend'>Transaction</legend>
 					
-					<div class='row col-sm-9 col-xs-12 form-group has-feedback input-prepend <%=successClass(from) %>'>
-						<label for='sendingAddr'>Sending Address</label>
+					
 
-						<div class='row input-group hidden-xs' style='padding-left:15px'>
-							<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='BTC address / Onename' value='<%= from %>'></input>
-							<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-5px'></span>
-							<span class='input-group-addon hidden-xs'>Balance: <%= balance/100000000 %></span>
+					<h5 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Step 1 : Open <a href='http://tails.boum.org/'>Tails</a>, and open this page.
+					</h5>
+
+					<h5 class='bg-info guidance <%= guidance != 'dedicated' && 'hidden' %>'>Step 1 : Open this page on an online computer.
+					</h5>
+
+					<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 2 : Prepare your transaction, you can use <a href='http://onename.io/'>onename.io</a> names
+					</h5>
+					
+					<div class='row col-xs-12 addressFrom' name='div-from' style=''>
+						
+						<div class='row col-sm-9 col-xs-12 form-group has-feedback input-prepend <%=successClass(from) %>'>
+							<label for='sendingAddr'>Sending Address</label>
+
+							<div class='row input-group hidden-xs' style='padding-left:15px'>
+								<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='BTC address / Onename' value='<%= from %>'></input>
+								<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-5px'></span>
+								<span class='input-group-addon hidden-xs'>Balance: <%= balance/100000000 %></span>
+							</div>
+
+							<div class='row input-group visible-xs' style='padding-left:15px'>
+								<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='BTC address / Onename' value='<%= from %>'>
+								<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-5px'></span>
+								</input>
+								<label class='bg-success col-xs-12'>
+									Balance: <%= balance/100000000 %>
+								</label>
+							</div>
+
 						</div>
 
-						<div class='row input-group visible-xs' style='padding-left:15px'>
-							<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='from' placeholder='BTC address / Onename' value='<%= from %>'>
-							<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-5px'></span>
-							</input>
-							<label class='bg-success col-xs-12'>
-								Balance: <%= balance/100000000 %>
-							</label>
+						<div class='col-sm-1 hidden-xs' id='thumb' style='left:16px;top:25px'>
+							<img id='thumb' class='thumb' width='40' src='<%= thumbFrom %>' style='display:<%= thumbFrom ||'none'%>'</img>
 						</div>
-
 					</div>
+					
 
-					<div class='col-sm-1 hidden-xs' id='thumb' style='left:16px;top:25px'>
-						<img id='thumb' class='thumb' width='40' src='<%= thumbFrom %>' style='display:<%= thumbFrom ||'none'%>'</img>
-					</div>
-				</div>
 				
-
-			
-				<label>Receiving Address<%=recipients.length>1 ? 'es':''%></label>
-				<% _.each(recipients, function(recipient, index) { %> 
-					<div class='row col-xs-12 addressTo' dataId='<%= index %>' style='padding-left:20px'>
-						<div class='fieldAddressTo' dataId='<%= index %>'			>
-							<div class='row col-xs-12 col-sm-6 form-group has-feedback input-prepend <%=successClass(recipient.address) %>'>
-								<div class='row input-group'>
-									<input type='text' tabindex=<%=index*2+2%> class='form-control' name='to' value='<%= recipient.address %>' placeholder='BTC address / Onename'>
-										<span class='<%= cryptoscrypt.validAddress(recipient.address) ? 'glyphicon glyphicon-ok form-control-feedback' : recipient.address ? 'glyphicon glyphicon-remove form-control-feedback' : ''%>' style='left:-10px' name='glyphicon'>
-										</span>
-									</input>
-									
-									<span class='input-group-btn'>
+					<label>Receiving Address<%=recipients.length>1 ? 'es':''%></label>
+					<% _.each(recipients, function(recipient, index) { %> 
+						<div class='row col-xs-12 addressTo' dataId='<%= index %>' style='padding-left:20px'>
+							<div class='fieldAddressTo' dataId='<%= index %>'			>
+								<div class='row col-xs-12 col-sm-6 form-group has-feedback input-prepend <%=successClass(recipient.address) %>'>
+									<div class='row input-group'>
+										<input type='text' tabindex=<%=index*2+2%> class='form-control' name='to' value='<%= recipient.address %>' placeholder='BTC address / Onename'>
+											<span class='<%= cryptoscrypt.validAddress(recipient.address) ? 'glyphicon glyphicon-ok form-control-feedback' : recipient.address ? 'glyphicon glyphicon-remove form-control-feedback' : ''%>' style='left:-10px' name='glyphicon'>
+											</span>
+										</input>
+										
 										<span class='input-group-btn'>
-											<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-remove'></button>
+											<span class='input-group-btn'>
+												<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-remove'></button>
+											</span>
 										</span>
-									</span>
+									</div>
 								</div>
 							</div>
-						</div>
-							<div class='col-xs-10 col-sm-4 hidden-xs'>
-								<div class='input-group' style=''>
+								<div class='col-xs-10 col-sm-4 hidden-xs'>
+									<div class='input-group' style=''>
+										<input type='text' class='form-control' tabindex=<%=index*2+3%> name='amount' value='<%= recipient.amount>0 ? recipient.amount/100000000 : ''%>' placeholder='Amount' />
+										<span class='input-group-btn'>
+											<button class='btn btn-primary glyphicon glyphicon-download' type='button' name='btn-all'></button>
+										</span>
+									</div>
+								</div>
+							
+							
+
+							<div class='row col-xs-10 col-sm-4 visible-xs'>
+								<div class='row input-group' style=''>
 									<input type='text' class='form-control' tabindex=<%=index*2+3%> name='amount' value='<%= recipient.amount>0 ? recipient.amount/100000000 : ''%>' placeholder='Amount' />
+									<span class='input-group-addon hidden-xs'>BTC</span>
 									<span class='input-group-btn'>
 										<button class='btn btn-primary glyphicon glyphicon-download' type='button' name='btn-all'></button>
 									</span>
 								</div>
+								
+								<hr class='col-xs-12 visible-xs'>
 							</div>
-						
-						
 
-						<div class='row col-xs-10 col-sm-4 visible-xs'>
-							<div class='row input-group' style=''>
-								<input type='text' class='form-control' tabindex=<%=index*2+3%> name='amount' value='<%= recipient.amount>0 ? recipient.amount/100000000 : ''%>' placeholder='Amount' />
+							<div class='col-xs-1 col-sm-1 hidden-xs' name='thumb' style='padding:0px'>
+								<img name='thumbTo' class='' width='40' src='<%= recipient.thumb %>' style=<%=recipient.thumb || 'display:none'%>></img>
+							</div>
+
+							<div class='col-xs-1 btn-group' style='bottom:3px;'>
+								<button type='button' class='btn-default btn-sm btn-add-recipient toButton' name='btn-add' style='top:0px; <%=index==recipients.length-1 || 'display:none'%>'>
+									<span class='glyphicon glyphicon-plus-sign glyphicon-align-center' style='color:green;horizontal-align:middle;vertical-align:middle;horizontal-align:middle;bottom:1px'></span>
+								</button>
+							</div>
+						</div>
+					<% }); %> 
+
+						<div class='row col-xs-12 form-group'>
+							<label for='fee'>Fee</label>
+							<div class='input-group col-xs-12' style='width:250px'>
+								<input type='text' class='form-control' <%=(feeMode == 'auto') ? 'readonly':''%> name='fee' id='fee' value='<%= getFee/100000000 %>'></input>
 								<span class='input-group-addon hidden-xs'>BTC</span>
 								<span class='input-group-btn'>
-									<button class='btn btn-primary glyphicon glyphicon-download' type='button' name='btn-all'></button>
+									<button type='button' name='btn-feemode' class='btn <%= (feeMode == 'auto') ? 'btn-primary':'btn-danger'%> btn-feemode'>Fee: <%=feeMode%></button>
 								</span>
 							</div>
-							
-							<hr class='col-xs-12 visible-xs'>
 						</div>
 
-						<div class='col-xs-1 col-sm-1 hidden-xs' name='thumb'>
-							<img name='thumbTo' class='' width='40' src='<%= recipient.thumb %>' style=<%=recipient.thumb || 'display:none'%>></img>
-						</div>
-
-						<div class='col-xs-1 btn-group' style='bottom:3px'>
-							<button type='button' class='btn-default btn-sm btn-add-recipient toButton' name='btn-add' style='top:0px; <%=index==recipients.length-1 || 'display:none'%>'>
-								<span class='glyphicon glyphicon-plus-sign glyphicon-align-center' style='color:green;horizontal-align:middle;vertical-align:middle;horizontal-align:middle;bottom:1px'></span>
-							</button>
-						</div>
-					</div>
-				<% }); %> 
-
-					<div class='row col-xs-12 form-group'>
-						<label for='fee'>Fee</label>
-						<div class='input-group col-xs-9 col-sm-5'>
-							<input type='text' class='form-control' <%=(feeMode == 'auto') ? 'readonly':''%> name='fee' id='fee' value='<%= getFee/100000000 %>'></input>
-							<span class='input-group-addon hidden-xs'>BTC</span>
-							<span class='input-group-btn'>
-								<button type='button' name='btn-feemode' class='btn <%= (feeMode == 'auto') ? 'btn-primary':'btn-danger'%> btn-feemode'>Fee: <%=feeMode%></button>
-							</span>
+						<div class='form-group'>
+							<label for='total'>Total</label>	
+							<div class='input-group col-xs-12' style='width:200px'>
+								<input type='text' name='total' class='form-control' id='total' readonly></input>
+								<span class='input-group-addon'>BTC</span>
+							</div>
 						</div>
 					</div>
 
-					<div class='row col-xs-12 form-group'>
-						<label for='total'>Total</label>	
-						<div class='input-group col-xs-8 col-sm-3'>
-							<input type='text' name='total' class='form-control' id='total' readonly></input>
-							<span class='input-group-addon'>BTC</span>
-						</div>
-					</div>
 				</div>
 
-			</div>
-
-			<div class='col-xs-12' name='signature'>
-				<legend class='legend'>Signature</legend>
-				
-
-				<div class='col-xs-12'>
-					<h5 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Step 3 : Disconnect from internet, make sure no communication is possible with the computer.
-					</h5>
-				</div>
-
-				<div class='col-xs-12'>
-					<h5 class='bg-info guidance <%= guidance != 'dedicated' && 'hidden' %>'>Step 3 : Click Export into QRCodes now, then open this page on your dedicated offline computer and import those QRCodes. (The next steps have to be done on the same offline computer)
-					</h5>
-				</div>
-				
-				<div class='col-xs-12'>
-					<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 4 : Enter your warp wallet passphrase & Salt (you can also enter a regular private key).
-					</h5>
-				</div>
-
-				
-					<label for='passphrase'>
-						Passphrase
-					</label>
-					<input type='text' class='form-control' name='passphrase' placeholder='Passphrase' />
-				
-
-				
-					<label for='salt' style='margin-top:10px'>
-						Salt
-					</label>
-					<input type='text' class='form-control' name='salt' placeholder='Email / Salt' />
-				
+				<div class='col-xs-12' name='signature'>
+					<legend class='legend'>Signature</legend>
 					
-				<div class='col-xs-12'>
-					<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 5 : Click on Sign Transaction 
-						</h5>
-				</div>
 
-				<div class='col-xs-12'>
-					<div class='button-group col-sm-9 col-xs-12'>
+	
+						<h5 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Step 3 : Disconnect from internet, make sure no communication is possible with the computer.
+						</h5>
+
+
+
+						<h5 class='bg-info guidance <%= guidance != 'dedicated' && 'hidden' %>'>Step 3 : Click Export into QRCodes now, then open this page on your dedicated offline computer and import those QRCodes. (The next steps have to be done on the same offline computer)
+						</h5>
+
+					
+	
+						<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 4 : Enter your warp wallet passphrase & Salt (you can also enter a regular private key).
+						</h5>
+
+
+					
+						<label for='passphrase'>
+							Passphrase
+						</label>
+						<input type='text' class='form-control' name='passphrase' placeholder='Passphrase' />
+					
+
+					
+						<label for='salt' style='margin-top:10px'>
+							Salt
+						</label>
+						<input type='text' class='form-control' name='salt' placeholder='Email / Salt' />
+					
+						
+
+						<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 5 : Click on Sign Transaction 
+							</h5>
+
+
+					
+					<div class='button-group'>
 						<button type='button' class='btn btn-primary' name='btn-sign' style='font-size:14px;white-space: normal ; margin-top:20px'>Sign Transaction (Might take few seconds, it will not be pushed)</button>
 					</div>
-				</div>
-				<div class='col-xs-12'>
-					<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 6 : Scan the QR code from another device (a smartphone for instance)
-					</h5>
-				</div>
 				
-					<% if (qrcode) {%>
-						<div class='text-left col-xs-12' name='label-qrcode'>
-							<h4 class='control-label'>Raw Transaction</h4>
-						</div>
-						<div class='col-xs-12' name='qrcode' id='qrcode'>
-						</div>
-						<div class='col-xs-12' name='rawtx'>
-							<textarea class='form-control' rows='3'><%=qrcode%></textarea>
-						</div>
-					<%}%>
-
-				<div class='col-xs-12'>
-					<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 7 : Use a website like <a href=http://btc.blockr.io/tx/push>blockr.io</a> to verify and push the transaction</a>
-					</h5>
+					<div class=''>
+						<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 6 : Scan the QR code from another device (a smartphone for instance)
+						</h5>
+					</div>
+					
+						<% if (qrcode) {%>
+							<div class='text-left' name='label-qrcode'>
+								<h4 class='control-label'>Raw Transaction</h4>
+							</div>
+							<div class='' name='qrcode' id='qrcode'>
+							</div>
+							<div class='' name='rawtx'>
+								<textarea class='form-control' rows='3'><%=qrcode%></textarea>
+							</div>
+						<%}%>
+						<h5 class='bg-info guidance <%= guidance == false && 'hidden' %>'>Step 7 : Use a website like <a href=http://btc.blockr.io/tx/push>blockr.io</a> to verify and push the transaction</a>
+						</h5>
+						<h5 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Step 8 : DO NOT go back online ! Turn off the computer
+						</h5>
+						<br>
+					
 				</div>
-
-				<div class='col-xs-12'>
-					<h5 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Step 8 : DO NOT go back online ! Turn off the computer
-					</h5>
+				<div>
+				<h6>You can use <a href=http://btc.blockr.io/tx/push>blockr.io</a> for pushing</h6>
+				<h6>Open source ! View on <a href='http://www.github.com/xorq/easybtc'>github</a></h6>
+				<h6>Use at your own risks, if you find this application useful or want to support its developpment, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>
 				</div>
-				<div class='col-xs-12'>
-					<h4 style='display:none'>You can use <a href=http://btc.blockr.io/tx/push>blockr.io</a> for pushing</h4>
-					<h6>Use at your own risks, if you find this application useful or want to support its developpment, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>
-
-					<h6>Totally open source ! View on <a href='http://www.github.com/xorq/easybtc'>github</a></h6>
-				</div>
-			</div>
+			</form>
 		</script>
 		
 	</body>

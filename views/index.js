@@ -16,8 +16,8 @@ define([
     template: _.template($('#indexViewTemplate').text()),
     events: {
       'click button[name=btn-guidance]': 'guidanceToggle',
-      'click button[name=btn-export]': 'export',
-      'click button[name=btn-import]': 'import',
+      'click li[name=btn-export]': 'export',
+      'click li[name=btn-import]': 'import',
       'click button[name=nextQr]': 'nextQr',
       'click button[name=previousQr]': 'previousQr',
       'click div[name=qrcodeExport]': 'clearExport',
@@ -309,6 +309,7 @@ define([
 
     updateFee: function () {
 
+      console.log('updating fee');
       if (this.model.feeMode == 'auto') {
         $('input[name=fee]', this.$el).val(this.model.getFee() / 100000000 );
       }
@@ -370,11 +371,12 @@ define([
 
           if (ev.currentTarget.name == 'from') {
 
-            master.model.updateBalance().done(function() {  
+            master.model.updateBalance().done(function() {
+            console.log('balance updated');  
             master.renderFrom();
             master.updateFee();
+            }).fail(function() {console.log('problem')});
 
-            });
 
           };
 
