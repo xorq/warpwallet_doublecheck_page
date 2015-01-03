@@ -1,7 +1,10 @@
 .nav {
 	margin-top: 0px;
+    font-weight: bold;
 }
+
 #contents {
+    font-weight: bold;
     padding-top: 10px;
 	padding-left: 20px;
     padding-right: 0px;
@@ -23,7 +26,8 @@
 }
 
 .has-feedback .form-control{
-    padding-right:5px
+    padding-right:5px;
+    font-weight:bold;
 }
 
 
@@ -66,5 +70,3 @@
 .input-group{
     padding-left:10px;
 }
-
-

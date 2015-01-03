@@ -13,14 +13,13 @@ define([
 		template: "\
 			<form role='form col-xs-12' style='margin-right: 20px;'>\
 				<div class='form-group'>\
-						<label for='passphrase'>Passphrase or Private Key</label>\
-						<input type='text' class='form-control' name='passphrase' id='passphrase' placeholder='Type your passphrase here' />\
+						<label for='passphrase'>Passphrase</label>\
+						<input type='text' style='font-weight:bold' class='form-control' name='passphrase' id='passphrase' placeholder='Type your passphrase here' />\
 					</div>\
-				</div>\
-				<div class='form-group row col-xs-12'>\
-					<div class='row col-xs-12'>\
-					<label for='count_words'>Random words generator</label>\
-					<select class='form-control' style='width:100px' name='count_words'>\
+				<div class='row col-xs-12'>\
+				<label for='count_words'>Random words generator</label>\
+				<div>\
+					<select class='form-control col-xs-3' style='width:100px' name='count_words'>\
 						<option value='1'>1</option>\
 						<option value='2'>2</option>\
 						<option value='3'>3</option>\
@@ -30,16 +29,16 @@ define([
 						<option value='7'>7</option>\
 						<option value='8'>8</option>\
 					</select>\
-					<button type='button' class='btn btn-primary btn-random' style='margin-top:20px'>Random Words</button>\
-					</div>\
-					</div>\
+					<button type='button' class='col-xs-6 btn btn-primary btn-random' style='width:140px;margin-left:10px'>Random Words</button>\
 				</div>\
-				<div class='form-group'>\
-					<label for='email'>Email</label>\
+				</div>\
+				<div class='form-group' style='margin-top:90px'>\
+					<label for='email'>Email (Optional)</label>\
 					<input type='text' class='form-control' name='email' placeholder='Enter your email/salt here' />\
 				</div>\
-				<div class='button-group col-xs-12'>\
-					<button type='button' class='btn btn-primary btn-generate' style='font-size:14px;white-space: normal ; margin-top:20px'>Generate vault, this will take few seconds on a normal computer</button>\
+				<div id='pleaseWait'></div>\
+				<div class='button-group'>\
+					<button type='button' class='btn btn-primary btn-generate' style='font-size:14px;white-space: normal ; margin-top:20px'>Generate vault</button>\
 					<br>\
 				<br>\
 				</div>\
@@ -56,7 +55,7 @@ define([
 								<div class='col-xs-11'>\
 				<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and it is recommended to be used offline.</h5>\
 				<h5>Also think to register your bitcoin address at <a href='http://onename.io/'>onename.io</a> for easier use.</h5>\
-				<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> words from a ~10,000 words list</h5>\
+				<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose words from a ~10,000 words list</h5>\
 				<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>\
 			</div>\
 				</div>\
@@ -65,8 +64,8 @@ define([
 		", 
 		events: {
 
-			'click .btn-random': 'random', 
-			'click .btn-generate': 'generate', 
+			'click .btn-random': 'random',
+			'click .btn-generate': 'pleaseWait', 
 			'keyup input[name=passphrase]': 'deleteIfChanged', 
 			'keyup input[name=email]': 'deleteIfChanged'
 
@@ -108,21 +107,34 @@ define([
 
 		}, 
 
-		generate: function() {
+		pleaseWait: function() {
+			var master = this;
+			var text = ($('h3[id=pleaseWait]').text() == '') ? '..........Please wait, this should take few seconds on a normal computer..........' : '';
 
-			this.passphraseMemory = $('input[name=passphrase]', this.$el).val()
-			this.saltMemory = $('input[name=passphrase]', this.$el).val()
+			$('div[id=pleaseWait]', this.$el).html('<h3 id="pleaseWait" style="text-center">' + text + '</h3>');
+			$('div[id=pleaseWait]', this.$el).show();
 
-			if (cryptoscrypt.validPkey(this.passphraseMemory)) { return };
+			setTimeout(function () {
+				master.generate(master)
+			},100);
+		},
 
-			this.deleteResults()
+		generate: function(master) {
+
+			master = master ? master : this;
+
+			master.passphraseMemory = $('input[name=passphrase]', master.$el).val()
+			master.saltMemory = $('input[name=passphrase]', master.$el).val()
+
+			if (cryptoscrypt.validPkey(master.passphraseMemory)) { return };
+			master.deleteResults()
 
 			var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160,correctLevel : QRCode.CorrectLevel.L});
 			var qrcode2 = new QRCode("qrcode-privkey-image", {width: 160, height: 160, correctLevel : QRCode.CorrectLevel.L});
 
 			var result = cryptoscrypt.warp(
-				$('input[name=passphrase]', this.$el).val(), 
-				$('input[name=email]', this.$el).val()
+				$('input[name=passphrase]', master.$el).val(), 
+				$('input[name=email]', master.$el).val()
 			);    
 
 			qrcode.makeCode(result[1]);
@@ -132,7 +144,8 @@ define([
 			$('div[id=label-privkey]').text(result[0]);
 			$('div[id=text-address]').text("Address");
 			$('div[id=text-privatekey]').text("Private Key");
-
+			
+			$('div[id=pleaseWait]', master.$el).html('')
 		}
 	});
 

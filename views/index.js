@@ -156,18 +156,34 @@ define([
 
     },
 
-
     sign: function() {
-      var master = this;
-      this.model.sign($('input[name=passphrase]', this.$el).val(), $('input[name=salt]', this.$el).val());
-        if (this.model.from == this.model.signAddress) {
-          master.render();
-        } else {
-          alert("the signature is invalid");
-          master.render();
-        }
-    },
 
+      var master = this;
+
+      dosign = function() {
+        
+        master.model.sign($('input[name=passphrase]', master.$el).val(), $('input[name=salt]', master.$el).val());
+          if (master.model.from == master.model.signAddress) {
+            master.render();
+          } else {
+            alert("the signature is invalid");
+            master.render();
+          }
+
+      };
+
+      var text = '..........Please wait, this should take few seconds on a normal computer..........';
+      $('div[id=please-wait]', this.$el).html('<h3 id="please-wait" style="text-center">' + text + '</h3>');
+
+      setTimeout(
+        dosign
+      ,100);
+      setTimeout(
+        function() {
+          $('div[id=please-wait]', this.$el).html('')
+        }
+      ,200);
+    },
      //   end of html5_qrcode
 
     render: function() {
