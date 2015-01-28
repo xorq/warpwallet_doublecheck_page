@@ -2,11 +2,13 @@ define([
   'backbone',
   'underscore',
   'jquery',
-  'qrcode',
-  'models/transaction'
-], function(Backbone, _, $, Transaction){
+  'models/transaction',
+  'qrcode'
+], function(Backbone, _, $, Transaction, html5_qrcode){
+  
   var qrSize = 300;
   var qrShown = 0;
+  var checking = false;
   var IndexView = Backbone.View.extend({
     el: $('#contents'),
     model: Transaction,
@@ -15,35 +17,77 @@ define([
     templateToThumb: _.template($('#indexViewToThumbTemplate').text()),
     template: _.template($('#indexViewTemplate').text()),
     events: {
-      'click button[name=btn-guidance]': 'guidanceToggle',
-      'click li[name=btn-export]': 'export',
-      'click li[name=btn-import]': 'import',
-      'click button[name=nextQr]': 'nextQr',
-      'click button[name=previousQr]': 'previousQr',
-      'click div[name=qrcodeExport]': 'clearExport',
-      'click .btn-feemode': 'changeFeeMode',
-      'click .btn-add-recipient': 'addOutput',
-      'click button[name=btn-sign]': 'sign',
-      'blur input[name^=to]': 'lookup',
-      'click button[name^=btn-remove]': 'removeOutput',
-      'blur input[name=from]': 'lookup',
-      'keyup input[name^=amount]': 'updateAmount',
-      'keyup input[name^=to]': 'updateAddress',
-      'keyup input[name=passphrase]': 'updatePassphrase',
-      'keyup input[name=salt]': 'updateSalt',
-      'click button[name^=btn-all]': 'putAll',
-      'blur input[name=fee]': 'updateFee',
-      'click select[name=qrSize]': 'renderQrCode',
-      'click li[name=guidance-tails]': 'guidanceTails',
-      'click li[name=guidance-dedicated]': 'guidanceDediated',
-      'click li[name=guidance-off]': 'guidanceOff'
+      'click video' : 'import',
+      'click button[name=btn-guidance]' : 'guidanceToggle',
+      'click li[name=btn-export]' : 'export',
+      'click li[name=btn-import]' : 'import',
+      'click button[name=nextQr]' : 'nextQr',
+      'click button[name=btn-scan]' : 'import',
+      'click button[name=previousQr]' : 'previousQr',
+      'click div[name=qrcodeExport]' : 'clearExport',
+      'click .btn-feemode' : 'changeFeeMode',
+      'click .btn-add-recipient' : 'addOutput',
+      'click button[name=btn-sign]' : 'sign',
+      'blur input[name=to]' : 'lookup',
+      'click button[name^=btn-remove]' : 'removeOutput',
+      'blur input[name=sender]' : 'lookup',
+      'keyup input[name^=amount]' : 'updateAmount',
+      'keyup input[name=to]' : 'updateAddress',
+      'keyup input[name=passphrase]' : 'updatePassphrase',
+      'keyup input[name=salt]' : 'updateSalt',
+      'click button[name^=btn-all]' : 'putAll',
+      'blur input[name=fee]' : 'updateFee',
+      'click select[name=qrSize]' : 'renderQrCode',
+      'click li[name=guidance-tails]' : 'guidanceTails',
+      'click li[name=guidance-dedicated]' : 'guidanceDediated',
+      'click li[name=guidance-off]' : 'guidanceOff',
+      'focus input[name=passphrase]' : 'internetChecker'
+    },
+
+    internetSingleCheck: function() {
+      var iCheckDefer = $.Deferred();
+      cryptoscrypt.internetCheck(iCheckDefer)
+      .done
+    },
+
+    internetChecker: function() {
+      var master = this;
+      goodpage = function() {
+       return ($('Title').html() == ('EasyBTC Send Bitcoin')) 
+     }
+      iCheck = function() {
+
+        if (!this.goodpage()) {
+          return
+        }
+        if (checking == true) {
+          setTimeout(this.iCheck, 4000);
+        };
+
+        var iCheckDefer = $.Deferred();
+        cryptoscrypt.internetCheck(iCheckDefer)
+        .done(function(data) {
+          if((data.result=='yes') & goodpage()) {
+          $('div[id=contents]').css('border','5px solid red');
+          $('div[id=warning]').html('<h3 style=color:red>You are online! You should never expose your secret passphrase while online, if you are unsure of what you are doing, please check the guidance</h3>')
+        }
+        })
+        .fail(function() {
+          if(goodpage()) {
+            $('div[id=contents]').css('border','5px solid green');
+            $('div[id=warning]').html('<h3 style=color:darkgreen>You seem to be offline, good !</h3>')
+          }
+        });
+      }
+      console.log(checking)
+      if (checking == false) {
+        checking = true 
+        iCheck();
+      }    
     },
 
     guidanceToggle: function() {
-//'<%= showImportQR || 'display: none;'
       this.model.guidance = this.model.guidance == false && true;
-      //this.model.guidance = this.model.guidance=='Show' ? 'Hide' : 'Show';
-
       this.render();
 
     },
@@ -64,30 +108,22 @@ define([
     },
 
     export: function() {
-
-
       $('button[name=btn-export]', this.$el).toggleClass('btn-danger');
       $('button[name=btn-export]', this.$el).toggleClass('btn-primary');
 
       if (($('div[name=exportQrcode]', this.$el)).attr('style') == 'display:none') {
         data = this.model.export();
-        i=0;
+        i = 0;
         this.drawExportQrcode(i);
-      
-      $('div[name=exportQrcode]', this.$el).attr('style','dislpay:true');
-
+        $('div[name=exportQrcode]', this.$el).attr('style','dislpay:true');
       } else {
-
         this.clearExport();
-
       }
-
     },
 
 
     drawExportQrcode: function(a) {
-
-      data = this.model.export();
+      var data = this.model.export();
       $('div[name=qrcodeExport]',this.$el).children().remove();
       $('h5[name=titleQrcode]', this.$el).html('QRcode '+ ( 1 + a ).toString()+' / '+data.length.toString());
 
@@ -98,44 +134,54 @@ define([
       });
       this.qrShown = a;
       qrcode.makeCode( data[a] );
-
     },
 
 
     clearExport: function() {
-
       $('div[name=exportQrcode]', this.$el).attr('style','dislpay:none');
       this.render();
     },
 
 
     previousQr: function() {
-
       if (this.qrShown) {
         this.drawExportQrcode(this.qrShown - 1);
       }
-
     },
 
 
     nextQr: function() {
-
       if (this.qrShown < this.model.export().length-1) {
         this.drawExportQrcode(this.qrShown + 1);
       }
-
     },
 
 
-    import: function() {
+    import: function(ev) {
+      this.model.expectedField = $(ev.currentTarget).parents('.addressTo').attr('dataId')
       this.model.showImportQR = !this.model.showImportQR;
       this.render();
+      if (!this.model.showImportQR) {
+        return
+      };
+      var master = this;
+      this.model.newImport();
+      $('.qr-reader').html5_qrcode(
+        function(code) {
+          if (master.model.import(code, expectedField)) {
+            master.model.showImportQR = false;
+            master.render();
+          } else {
+            console.log($('.qr-status', master.el));
+            $('.qr-status', master.el).html("Got " + master.model.qrParts + ' out of ' + master.model.qrTotal + ' codes.');
+          }
+        }, function(error) {
+          console.log('error');
+        }, function(error) {
+          console.log('error');
+        }
+      );
 
-      /*
-      data = window.prompt("Enter the string here", '');
-      //data = '{"recipients":[{"address":"19hamcVvuHyG8KoQvS5ekHCfr4MZrNs17L","amount":10000000},{"address":"1MadcatHTGAZTJwNaTSnko15sbrPTBdBv3","amount":12000000}],"from":"1Xorq87adKn12bheqPFuwLZgZi5TyUTBq","balance":25324003,"unspent":[{"transaction_hash":"f658c8df61b375cd020ccc9516f505d1886dfeb1c090f3455aaf5b5a3f557a46","value":5838198,"transaction_index":1},{"transaction_hash":"7996f19fec1d6488befc70c573827457add2676fac312e6f31d258a8e2e46721","value":31321,"transaction_index":1},{"transaction_hash":"480216e2312caa8a02344799d4b0fb5d65655da40c141be463744483c33b902f","value":8000000,"transaction_index":1},{"transaction_hash":"f70d979f4474b8775b3f66d8642726f29a367388250baed1f23a04fe583f1691","value":11454484,"transaction_index":1}]}'
-      this.model.import(data);
-      this.render();*/
     },
 
 
@@ -149,11 +195,9 @@ define([
 
 
     changeFeeMode: function() {
-
       this.model.changeFeeMode();
       this.updateFee();
       this.render();
-
     },
 
     sign: function() {
@@ -187,9 +231,10 @@ define([
      //   end of html5_qrcode
 
     render: function() {
-      
-      console.log(navigator.userAgent);
+      //function (base58Key, passphrase, compressed, callback)
 
+      $('Title').html('EasyBTC Send Bitcoin');
+      this.model.checking = false;
       if (typeof(localMediaStream) != 'undefined' && localMediaStream) {
         localMediaStream.stop();
         localMediaStream.src = null;
@@ -202,24 +247,9 @@ define([
       this.renderQrCode();
       this.updateTotal();
 
-      if (this.model.showImportQR) {
-        this.model.newImport();
-        $('.qr-reader').html5_qrcode(
-          function(code) {
-            if (master.model.import(code)) {
-              master.model.showImportQR = false;
-              master.render();
-            } else {
-              console.log($('.qr-status', master.el));
-              $('.qr-status', master.el).html("Got " + master.model.qrParts + ' out of ' + master.model.qrTotal + ' codes.');
-            }
-          }, function(error) {
-          //  console.log(error);
-          }, function(error) {
-            //console.log(error);
-          }
-        );
-      }
+//      if (this.model.showImportQR) {
+//      }
+      $('div[id=contents]').css('border','5px solid black');
     }, 
 
 
@@ -325,7 +355,6 @@ define([
 
     updateFee: function () {
 
-      console.log('updating fee');
       if (this.model.feeMode == 'auto') {
         $('input[name=fee]', this.$el).val(this.model.getFee() / 100000000 );
       }
@@ -358,7 +387,7 @@ define([
 
       //Initialize if nothing is entered
 
-      if ((fieldValue == '') & (fieldName == 'from')) {
+      if ((fieldValue == '') & (fieldName == 'sender')) {
         this.model.from = '';
         this.model.thumbFrom = '';
         this.model.balance = '';
@@ -375,7 +404,7 @@ define([
       };
 
       //Initialize if something is entered
-      if (fieldName == 'from') {
+      if (fieldName == 'sender') {
         this.model.from = fieldValue;
       };
 
@@ -385,14 +414,12 @@ define([
 
       this.model.lookup(fieldName,recipientId,fieldEntry).done(function(){
 
-          if (ev.currentTarget.name == 'from') {
+          if (ev.currentTarget.name == 'sender') {
 
             master.model.updateBalance().done(function() {
-            console.log('balance updated');  
             master.renderFrom();
             master.updateFee();
             }).fail(function() {console.log('problem')});
-
 
           };
 
@@ -404,6 +431,7 @@ define([
 
       }).fail(function(){
         master.render()
+        $('div[id=iStatus]').html('<h4 style="color:red">You have to be online to fill the sending address field</h4>')
       })
     },
 

@@ -19,6 +19,7 @@
 		this.feeMode = 'auto';
 		this.showImportQR = false;
 		this.signAddress = "";
+		this.expectedField = undefined;
 		
 		this.getJSONrequest = function(url,success,fail) {
 			return $.ajax({
@@ -28,7 +29,6 @@
 				error: fail
 			});
 		}
-
 
 		this.changeFeeMode = function() {
 			var modes = [ 'auto', 'custom' ];
@@ -94,7 +94,7 @@
 
 			unspentExport = [];
 			this.unspent.forEach(function(v){ 
-			unspentExport.push(_.pick(v,'transaction_hash','value','transaction_index'));
+				unspentExport.push(_.pick(v,'transaction_hash','value','transaction_index'));
 			});
 
 			data = {
@@ -112,14 +112,20 @@
 			chunkLength = Math.ceil(data.length / numChunks);
 
 			var chunks = [];
-			for (var i = 0; i < data.length; i += chunkLength) {
-				chunks.push(JSON.stringify({
-					i: Math.floor(i / chunkLength), // index
-					t: numChunks, // total
-					d: data.substr(i, chunkLength), // data
-					c: fullCheck // checksum
-				}));
-			}
+
+			_.times(Math.ceil(data.length/chunkLength), function(i) {
+				chunks.push(
+					JSON.stringify(
+						{
+							i: i,
+							t: numChunks,
+							d: data.substr(i * chunkLength, chunkLength),
+							c: fullCheck
+						}
+					)
+				)
+			});
+
 			return chunks
 		}
 
@@ -131,7 +137,12 @@
 		},
 
 		this.import = function(data) {
-			console.log('import called width ' + data);
+			var master = this;
+			isAddress = cryptoscrypt.validAddress(data);
+			if (isAddress) {
+				master.recipients[master.expectedField].address = data;
+				return true;
+			}
 			try {
 				var qrData = JSON.parse(data);
 				console.log('parse OK');
@@ -268,7 +279,7 @@
 			//Create the QR code
 
 			this.qrcode = tx[0].toHex().toString();
-			console.log(this.qrcode);
+
 			// Show the signed transaction Hex
 
 			console.log(tx[0].toHex());
@@ -353,14 +364,14 @@
 
 			// Stop function if nothing has changed
 
-			check = (field == 'from') ? this.checkedFrom : master.recipients[dataId].checkedAddress;
+			check = (field == 'sender') ? this.checkedFrom : master.recipients[dataId].checkedAddress;
 			if (inputValue == check) {
 				return $().promise();
 			}
 
 			//reset values if anything changed
 
-			if (field == 'from') {
+			if (field == 'sender') {
 				this.balance = '';
 				//this.from = inputValue; this is already done on keydown
 				this.thumbFrom = '';
@@ -390,13 +401,13 @@
 			}
 			// If not valid address, lookup on onename.io
 
-			return $.getJSON('https://onename.io/' + inputValue + '.json', function(data) {
+			return $.getJSON('https://onename.com/' + inputValue + '.json', function(data) {
 
 				address = data.bitcoin.address ? data.bitcoin.address : '';
 
 				if (data.avatar) {
 
-					if (field == 'from') {
+					if (field == 'sender') {
 					master.thumbFrom = data.avatar.url
 					} else {
 					master.recipients[dataId].thumb = data.avatar.url
@@ -407,7 +418,7 @@
 				// Double check that whatever onename.io sent is valid
 
 				if (cryptoscrypt.validAddress(address) == true) {
-					if (field == 'from'){
+					if (field == 'sender'){
 						master.from = address;
 						master.checkedFrom = address;
 					};

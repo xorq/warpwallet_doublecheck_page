@@ -1,0 +1,507 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node',
+1 verbose cli   '/Users/Dandan/.npm-packages/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   'secp256k1' ]
+2 info using npm@2.1.10
+3 info using node@v0.10.23
+4 warn package.json easybtc@0.1.0 No repository field.
+5 silly cache add args [ 'secp256k1', null ]
+6 verbose cache add spec secp256k1
+7 silly cache add parsed spec { raw: 'secp256k1',
+7 silly cache add   scope: null,
+7 silly cache add   name: 'secp256k1',
+7 silly cache add   rawSpec: '',
+7 silly cache add   spec: '*',
+7 silly cache add   type: 'range' }
+8 verbose addNamed secp256k1@*
+9 silly addNamed semver.valid null
+10 silly addNamed semver.validRange *
+11 silly addNameRange { name: 'secp256k1', range: '*', hasData: false }
+12 silly mapToRegistry name secp256k1
+13 silly mapToRegistry using default registry
+14 silly mapToRegistry registry https://registry.npmjs.org/
+15 silly mapToRegistry uri https://registry.npmjs.org/secp256k1
+16 verbose addNameRange registry:https://registry.npmjs.org/secp256k1 not in flight; fetching
+17 verbose request uri https://registry.npmjs.org/secp256k1
+18 verbose request no auth needed
+19 info attempt registry request try #1 at 14:17:07
+20 verbose request id db277caac9d2b3ef
+21 verbose etag "E7KB8GZWFB63LPN4V8A305DWO"
+22 http request GET https://registry.npmjs.org/secp256k1
+23 http 304 https://registry.npmjs.org/secp256k1
+24 silly get cb [ 304,
+24 silly get   { date: 'Sat, 10 Jan 2015 07:17:08 GMT',
+24 silly get     server: 'Apache',
+24 silly get     via: '1.1 varnish',
+24 silly get     'last-modified': 'Sat, 10 Jan 2015 07:17:08 GMT',
+24 silly get     'cache-control': 'max-age=60',
+24 silly get     etag: '"E7KB8GZWFB63LPN4V8A305DWO"',
+24 silly get     age: '0',
+24 silly get     'x-served-by': 'cache-sjc3121-SJC',
+24 silly get     'x-cache': 'HIT',
+24 silly get     'x-cache-hits': '1',
+24 silly get     'x-timer': 'S1420874228.552923,VS0,VE355',
+24 silly get     vary: 'Accept',
+24 silly get     'content-length': '0',
+24 silly get     'keep-alive': 'timeout=10, max=50',
+24 silly get     connection: 'Keep-Alive' } ]
+25 verbose etag https://registry.npmjs.org/secp256k1 from cache
+26 silly addNameRange number 2 { name: 'secp256k1', range: '*', hasData: true }
+27 silly addNameRange versions [ 'secp256k1',
+27 silly addNameRange   [ '0.0.1',
+27 silly addNameRange     '0.0.2',
+27 silly addNameRange     '0.0.3',
+27 silly addNameRange     '0.0.4',
+27 silly addNameRange     '0.0.5',
+27 silly addNameRange     '0.0.6',
+27 silly addNameRange     '0.0.7',
+27 silly addNameRange     '0.0.8',
+27 silly addNameRange     '0.0.9',
+27 silly addNameRange     '0.0.10',
+27 silly addNameRange     '0.0.11',
+27 silly addNameRange     '0.0.12',
+27 silly addNameRange     '0.0.13' ] ]
+28 verbose addNamed secp256k1@0.0.13
+29 silly addNamed semver.valid 0.0.13
+30 silly addNamed semver.validRange 0.0.13
+31 silly cache afterAdd secp256k1@0.0.13
+32 verbose afterAdd /Users/Dandan/.npm/secp256k1/0.0.13/package/package.json not in flight; writing
+33 verbose afterAdd /Users/Dandan/.npm/secp256k1/0.0.13/package/package.json written
+34 silly install resolved [ { name: 'secp256k1',
+34 silly install resolved     version: '0.0.13',
+34 silly install resolved     description: 'This module provides native bindings to ecdsa secp256k1 functions',
+34 silly install resolved     main: 'index.js',
+34 silly install resolved     scripts:
+34 silly install resolved      { test: './node_modules/mocha/bin/mocha --reporter spec ./test/',
+34 silly install resolved        install: 'node-gyp rebuild' },
+34 silly install resolved     dependencies: { bindings: '^1.2.1', nan: '^1.4.1' },
+34 silly install resolved     devDependencies:
+34 silly install resolved      { bigi: '^1.3.0',
+34 silly install resolved        coinkey: '^1.3.0',
+34 silly install resolved        ecdsa: '^0.6.0',
+34 silly install resolved        mocha: '^1.21.4',
+34 silly install resolved        'secure-random': '^1.1.1' },
+34 silly install resolved     repository:
+34 silly install resolved      { type: 'git',
+34 silly install resolved        url: 'https://github.com/wanderer/secp256k1-node.git' },
+34 silly install resolved     keywords: [ 'secp256k1', 'ecdsa', 'ec' ],
+34 silly install resolved     author: { name: 'martin becze', email: 'mjbecze@gmail.com' },
+34 silly install resolved     license: 'MIT',
+34 silly install resolved     bugs: { url: 'https://github.com/wanderer/secp256k1-node/issues' },
+34 silly install resolved     gypfile: true,
+34 silly install resolved     gitHead: '59eddf5285203c0b9aec6a1918988c0e69cedec6',
+34 silly install resolved     homepage: 'https://github.com/wanderer/secp256k1-node',
+34 silly install resolved     _id: 'secp256k1@0.0.13',
+34 silly install resolved     _shasum: '9eef86df63d8d68d8ccae025e95244e15f716118',
+34 silly install resolved     _from: 'secp256k1@*',
+34 silly install resolved     _npmVersion: '1.4.28',
+34 silly install resolved     _npmUser: { name: 'null_radix', email: 'mjbecze@gmail.com' },
+34 silly install resolved     maintainers: [ [Object] ],
+34 silly install resolved     dist:
+34 silly install resolved      { shasum: '9eef86df63d8d68d8ccae025e95244e15f716118',
+34 silly install resolved        tarball: 'http://registry.npmjs.org/secp256k1/-/secp256k1-0.0.13.tgz' },
+34 silly install resolved     directories: {},
+34 silly install resolved     _resolved: 'https://registry.npmjs.org/secp256k1/-/secp256k1-0.0.13.tgz',
+34 silly install resolved     readme: 'ERROR: No README data found!' } ]
+35 info install secp256k1@0.0.13 into /Users/Dandan/Dropbox/easybtc/e
+36 info installOne secp256k1@0.0.13
+37 verbose installOne of secp256k1 to /Users/Dandan/Dropbox/easybtc/e not in flight; installing
+38 verbose lock using /Users/Dandan/.npm/_locks/secp256k1-566b2b3f72058d8a.lock for /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+39 silly install write writing secp256k1 0.0.13 to /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+40 silly cache addNamed cb secp256k1@0.0.13
+41 verbose unbuild node_modules/secp256k1
+42 verbose gentlyRm vacuuming /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+43 verbose tar unpack /Users/Dandan/.npm/secp256k1/0.0.13/package.tgz
+44 verbose tar unpacking to /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+45 verbose gentlyRm vacuuming /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+46 silly gunzTarPerm modes [ '755', '644' ]
+47 silly gunzTarPerm extractEntry package.json
+48 silly gunzTarPerm extractEntry .npmignore
+49 silly gunzTarPerm extractEntry README.md
+50 silly gunzTarPerm extractEntry index.js
+51 silly gunzTarPerm extractEntry test.js
+52 silly gunzTarPerm extractEntry .travis.yml
+53 silly gunzTarPerm extractEntry binding.gyp
+54 silly gunzTarPerm extractEntry grep
+55 silly gunzTarPerm extractEntry .gitmodules
+56 silly gunzTarPerm extractEntry .secp256k1.cc.swo
+57 silly gunzTarPerm extractEntry secp256k1-src/.npmignore
+58 silly gunzTarPerm extractEntry secp256k1-src/README.md
+59 silly gunzTarPerm extractEntry secp256k1-src/COPYING
+60 silly gunzTarPerm extractEntry secp256k1-src/Makefile.am
+61 silly gunzTarPerm extractEntry secp256k1-src/src/field_5x52_int128_impl.h
+62 silly gunzTarPerm extractEntry secp256k1-src/src/bench.h
+63 silly gunzTarPerm extractEntry secp256k1-src/src/bench_recover.c
+64 silly gunzTarPerm extractEntry secp256k1-src/src/bench_sign.c
+65 silly gunzTarPerm extractEntry secp256k1-src/src/bench_verify.c
+66 silly gunzTarPerm extractEntry secp256k1-src/src/ecdsa.h
+67 silly gunzTarPerm extractEntry secp256k1-src/src/ecdsa_impl.h
+68 silly gunzTarPerm extractEntry secp256k1-src/src/eckey.h
+69 silly gunzTarPerm extractEntry secp256k1-src/src/eckey_impl.h
+70 silly gunzTarPerm extractEntry secp256k1-src/src/ecmult.h
+71 silly gunzTarPerm extractEntry secp256k1-src/src/ecmult_gen.h
+72 silly gunzTarPerm extractEntry secp256k1-src/src/ecmult_gen_impl.h
+73 silly gunzTarPerm extractEntry secp256k1-src/src/ecmult_impl.h
+74 silly gunzTarPerm extractEntry secp256k1-src/src/field.h
+75 silly gunzTarPerm extractEntry secp256k1-src/src/field_10x26.h
+76 silly gunzTarPerm extractEntry secp256k1-src/src/field_10x26_impl.h
+77 silly gunzTarPerm extractEntry secp256k1-src/src/field_5x52.h
+78 silly gunzTarPerm extractEntry secp256k1-src/src/field_5x52_asm_impl.h
+79 silly gunzTarPerm extractEntry secp256k1-src/src/field_5x52_impl.h
+80 silly gunzTarPerm extractEntry secp256k1-src/src/bench_inv.c
+81 silly gunzTarPerm extractEntry secp256k1-src/src/field_impl.h
+82 silly gunzTarPerm extractEntry secp256k1-src/src/group.h
+83 silly gunzTarPerm extractEntry secp256k1-src/src/group_impl.h
+84 silly gunzTarPerm extractEntry secp256k1-src/src/java/org/bitcoin/NativeSecp256k1.java
+85 silly gunzTarPerm extractEntry secp256k1-src/src/java/org_bitcoin_NativeSecp256k1.c
+86 silly gunzTarPerm extractEntry secp256k1-src/src/java/org_bitcoin_NativeSecp256k1.h
+87 silly gunzTarPerm extractEntry secp256k1-src/src/num.h
+88 silly gunzTarPerm extractEntry secp256k1-src/src/num_gmp.h
+89 silly gunzTarPerm extractEntry secp256k1-src/src/num_gmp_impl.h
+90 silly gunzTarPerm extractEntry secp256k1-src/src/num_impl.h
+91 silly gunzTarPerm extractEntry secp256k1-src/src/scalar.h
+92 silly gunzTarPerm extractEntry secp256k1-src/src/scalar_4x64.h
+93 silly gunzTarPerm extractEntry secp256k1-src/src/scalar_4x64_impl.h
+94 silly gunzTarPerm extractEntry secp256k1-src/src/scalar_8x32.h
+95 silly gunzTarPerm extractEntry secp256k1-src/src/scalar_8x32_impl.h
+96 silly gunzTarPerm extractEntry secp256k1-src/src/scalar_impl.h
+97 silly gunzTarPerm extractEntry secp256k1-src/src/secp256k1.c
+98 silly gunzTarPerm extractEntry secp256k1-src/src/testrand.h
+99 silly gunzTarPerm extractEntry secp256k1-src/src/testrand_impl.h
+100 silly gunzTarPerm extractEntry secp256k1-src/src/tests.c
+101 silly gunzTarPerm extractEntry secp256k1-src/src/util.h
+102 silly gunzTarPerm extractEntry secp256k1-src/TODO
+103 silly gunzTarPerm extractEntry secp256k1-src/.travis.yml
+104 silly gunzTarPerm extractEntry secp256k1-src/configure.ac
+105 silly gunzTarPerm extractEntry secp256k1-src/include/secp256k1.h
+106 silly gunzTarPerm extractEntry secp256k1-src/libsecp256k1.pc.in
+107 silly gunzTarPerm extractEntry secp256k1-src/obj/.npmignore
+108 silly gunzTarPerm extractEntry secp256k1-src/autogen.sh
+109 silly gunzTarPerm extractEntry secp256k1.cc
+110 silly gunzTarPerm extractEntry test/index.js
+111 silly gunzTarPerm extractEntry test/build/config.gypi
+112 silly gunzTarPerm extractEntry utils/has_lib.sh
+113 info preinstall secp256k1@0.0.13
+114 silly prepareForInstallMany adding bindings@^1.2.1 from secp256k1 dependencies
+115 silly prepareForInstallMany adding nan@^1.4.1 from secp256k1 dependencies
+116 silly cache add args [ 'bindings@^1.2.1', null ]
+117 verbose cache add spec bindings@^1.2.1
+118 silly cache add args [ 'nan@^1.4.1', null ]
+119 verbose cache add spec nan@^1.4.1
+120 silly cache add parsed spec { raw: 'bindings@^1.2.1',
+120 silly cache add   scope: null,
+120 silly cache add   name: 'bindings',
+120 silly cache add   rawSpec: '^1.2.1',
+120 silly cache add   spec: '>=1.2.1 <2.0.0',
+120 silly cache add   type: 'range' }
+121 verbose addNamed bindings@>=1.2.1 <2.0.0
+122 silly addNamed semver.valid null
+123 silly addNamed semver.validRange >=1.2.1 <2.0.0
+124 silly addNameRange { name: 'bindings', range: '>=1.2.1 <2.0.0', hasData: false }
+125 silly mapToRegistry name bindings
+126 silly mapToRegistry using default registry
+127 silly mapToRegistry registry https://registry.npmjs.org/
+128 silly mapToRegistry uri https://registry.npmjs.org/bindings
+129 verbose addNameRange registry:https://registry.npmjs.org/bindings not in flight; fetching
+130 silly cache add parsed spec { raw: 'nan@^1.4.1',
+130 silly cache add   scope: null,
+130 silly cache add   name: 'nan',
+130 silly cache add   rawSpec: '^1.4.1',
+130 silly cache add   spec: '>=1.4.1 <2.0.0',
+130 silly cache add   type: 'range' }
+131 verbose addNamed nan@>=1.4.1 <2.0.0
+132 silly addNamed semver.valid null
+133 silly addNamed semver.validRange >=1.4.1 <2.0.0
+134 silly addNameRange { name: 'nan', range: '>=1.4.1 <2.0.0', hasData: false }
+135 silly mapToRegistry name nan
+136 silly mapToRegistry using default registry
+137 silly mapToRegistry registry https://registry.npmjs.org/
+138 silly mapToRegistry uri https://registry.npmjs.org/nan
+139 verbose addNameRange registry:https://registry.npmjs.org/nan not in flight; fetching
+140 verbose request uri https://registry.npmjs.org/bindings
+141 verbose request no auth needed
+142 info attempt registry request try #1 at 14:17:09
+143 verbose etag "6SJRISMK25A1UDWM33HHCDB3Q"
+144 http request GET https://registry.npmjs.org/bindings
+145 verbose request uri https://registry.npmjs.org/nan
+146 verbose request no auth needed
+147 info attempt registry request try #1 at 14:17:09
+148 verbose etag "BASL4AHUZL2X9BYWJN23MGK84"
+149 http request GET https://registry.npmjs.org/nan
+150 http 304 https://registry.npmjs.org/nan
+151 silly get cb [ 304,
+151 silly get   { date: 'Sat, 10 Jan 2015 07:17:10 GMT',
+151 silly get     server: 'Apache',
+151 silly get     via: '1.1 varnish',
+151 silly get     'last-modified': 'Sat, 10 Jan 2015 07:17:10 GMT',
+151 silly get     'cache-control': 'max-age=60',
+151 silly get     etag: '"BASL4AHUZL2X9BYWJN23MGK84"',
+151 silly get     age: '31',
+151 silly get     'x-served-by': 'cache-sjc3135-SJC',
+151 silly get     'x-cache': 'HIT',
+151 silly get     'x-cache-hits': '1',
+151 silly get     'x-timer': 'S1420874230.501404,VS0,VE0',
+151 silly get     vary: 'Accept',
+151 silly get     'content-length': '0',
+151 silly get     'keep-alive': 'timeout=10, max=50',
+151 silly get     connection: 'Keep-Alive' } ]
+152 verbose etag https://registry.npmjs.org/nan from cache
+153 silly addNameRange number 2 { name: 'nan', range: '>=1.4.1 <2.0.0', hasData: true }
+154 silly addNameRange versions [ 'nan',
+154 silly addNameRange   [ '0.3.0-wip',
+154 silly addNameRange     '0.3.0-wip2',
+154 silly addNameRange     '0.3.0',
+154 silly addNameRange     '0.3.1',
+154 silly addNameRange     '0.3.2',
+154 silly addNameRange     '0.4.0',
+154 silly addNameRange     '0.4.1',
+154 silly addNameRange     '0.4.2',
+154 silly addNameRange     '0.4.3',
+154 silly addNameRange     '0.4.4',
+154 silly addNameRange     '0.5.0',
+154 silly addNameRange     '0.5.1',
+154 silly addNameRange     '0.5.2',
+154 silly addNameRange     '0.6.0',
+154 silly addNameRange     '0.7.0',
+154 silly addNameRange     '0.7.1',
+154 silly addNameRange     '0.8.0',
+154 silly addNameRange     '1.0.0',
+154 silly addNameRange     '1.1.0',
+154 silly addNameRange     '1.1.1',
+154 silly addNameRange     '1.1.2',
+154 silly addNameRange     '1.2.0',
+154 silly addNameRange     '1.3.0',
+154 silly addNameRange     '1.4.0',
+154 silly addNameRange     '1.4.1' ] ]
+155 verbose addNamed nan@1.4.1
+156 silly addNamed semver.valid 1.4.1
+157 silly addNamed semver.validRange 1.4.1
+158 silly cache afterAdd nan@1.4.1
+159 verbose afterAdd /Users/Dandan/.npm/nan/1.4.1/package/package.json not in flight; writing
+160 verbose afterAdd /Users/Dandan/.npm/nan/1.4.1/package/package.json written
+161 http 304 https://registry.npmjs.org/bindings
+162 silly get cb [ 304,
+162 silly get   { date: 'Sat, 10 Jan 2015 07:17:11 GMT',
+162 silly get     server: 'Apache',
+162 silly get     via: '1.1 varnish',
+162 silly get     'last-modified': 'Sat, 10 Jan 2015 07:17:11 GMT',
+162 silly get     'cache-control': 'max-age=60',
+162 silly get     etag: '"6SJRISMK25A1UDWM33HHCDB3Q"',
+162 silly get     age: '28',
+162 silly get     'x-served-by': 'cache-sjc3135-SJC',
+162 silly get     'x-cache': 'HIT',
+162 silly get     'x-cache-hits': '1',
+162 silly get     'x-timer': 'S1420874231.417546,VS0,VE0',
+162 silly get     vary: 'Accept',
+162 silly get     'content-length': '0',
+162 silly get     'keep-alive': 'timeout=10, max=50',
+162 silly get     connection: 'Keep-Alive' } ]
+163 verbose etag https://registry.npmjs.org/bindings from cache
+164 silly addNameRange number 2 { name: 'bindings', range: '>=1.2.1 <2.0.0', hasData: true }
+165 silly addNameRange versions [ 'bindings',
+165 silly addNameRange   [ '0.0.1',
+165 silly addNameRange     '0.1.0',
+165 silly addNameRange     '0.1.1',
+165 silly addNameRange     '0.2.0',
+165 silly addNameRange     '0.2.1',
+165 silly addNameRange     '0.2.2',
+165 silly addNameRange     '0.2.3',
+165 silly addNameRange     '0.2.4',
+165 silly addNameRange     '0.3.0',
+165 silly addNameRange     '0.4.0',
+165 silly addNameRange     '1.0.0',
+165 silly addNameRange     '1.1.0',
+165 silly addNameRange     '1.1.1',
+165 silly addNameRange     '1.2.0',
+165 silly addNameRange     '1.2.1' ] ]
+166 verbose addNamed bindings@1.2.1
+167 silly addNamed semver.valid 1.2.1
+168 silly addNamed semver.validRange 1.2.1
+169 silly cache afterAdd bindings@1.2.1
+170 verbose afterAdd /Users/Dandan/.npm/bindings/1.2.1/package/package.json not in flight; writing
+171 verbose afterAdd /Users/Dandan/.npm/bindings/1.2.1/package/package.json written
+172 silly install resolved [ { name: 'nan',
+172 silly install resolved     version: '1.4.1',
+172 silly install resolved     description: 'Native Abstractions for Node.js: C++ header for Node 0.8->0.12 compatibility',
+172 silly install resolved     main: 'include_dirs.js',
+172 silly install resolved     repository: { type: 'git', url: 'git://github.com/rvagg/nan.git' },
+172 silly install resolved     scripts:
+172 silly install resolved      { test: 'tap --gc test/js/*-test.js',
+172 silly install resolved        'rebuild-tests': 'node-gyp rebuild --directory test' },
+172 silly install resolved     contributors: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
+172 silly install resolved     devDependencies:
+172 silly install resolved      { bindings: '~1.2.1',
+172 silly install resolved        'node-gyp': '~1.0.2',
+172 silly install resolved        tap: '~0.4.13',
+172 silly install resolved        xtend: '~4.0.0' },
+172 silly install resolved     license: 'MIT',
+172 silly install resolved     bugs: { url: 'https://github.com/rvagg/nan/issues' },
+172 silly install resolved     homepage: 'https://github.com/rvagg/nan',
+172 silly install resolved     _id: 'nan@1.4.1',
+172 silly install resolved     _shasum: '0a2bb562c558b440005b1f7eb8b31ccbdb565d5f',
+172 silly install resolved     _from: 'nan@>=1.4.1 <2.0.0',
+172 silly install resolved     _npmVersion: '1.4.9',
+172 silly install resolved     _npmUser: { name: 'kkoopa', email: 'bbyholm@abo.fi' },
+172 silly install resolved     maintainers: [ [Object], [Object] ],
+172 silly install resolved     dist:
+172 silly install resolved      { shasum: '0a2bb562c558b440005b1f7eb8b31ccbdb565d5f',
+172 silly install resolved        tarball: 'http://registry.npmjs.org/nan/-/nan-1.4.1.tgz' },
+172 silly install resolved     directories: {},
+172 silly install resolved     _resolved: 'https://registry.npmjs.org/nan/-/nan-1.4.1.tgz',
+172 silly install resolved     readme: 'ERROR: No README data found!' },
+172 silly install resolved   { name: 'bindings',
+172 silly install resolved     description: 'Helper module for loading your native module\'s .node file',
+172 silly install resolved     keywords: [ 'native', 'addon', 'bindings', 'gyp', 'waf', 'c', 'c++' ],
+172 silly install resolved     version: '1.2.1',
+172 silly install resolved     author:
+172 silly install resolved      { name: 'Nathan Rajlich',
+172 silly install resolved        email: 'nathan@tootallnate.net',
+172 silly install resolved        url: 'http://tootallnate.net' },
+172 silly install resolved     repository:
+172 silly install resolved      { type: 'git',
+172 silly install resolved        url: 'git://github.com/TooTallNate/node-bindings.git' },
+172 silly install resolved     main: './bindings.js',
+172 silly install resolved     bugs: { url: 'https://github.com/TooTallNate/node-bindings/issues' },
+172 silly install resolved     homepage: 'https://github.com/TooTallNate/node-bindings',
+172 silly install resolved     license: 'MIT',
+172 silly install resolved     gitHead: 'e404152ee27f8478ccbc7122ee051246e8e5ec02',
+172 silly install resolved     _id: 'bindings@1.2.1',
+172 silly install resolved     scripts: {},
+172 silly install resolved     _shasum: '14ad6113812d2d37d72e67b4cacb4bb726505f11',
+172 silly install resolved     _from: 'bindings@>=1.2.1 <2.0.0',
+172 silly install resolved     _npmVersion: '1.4.14',
+172 silly install resolved     _npmUser: { name: 'tootallnate', email: 'nathan@tootallnate.net' },
+172 silly install resolved     maintainers: [ [Object], [Object] ],
+172 silly install resolved     dist:
+172 silly install resolved      { shasum: '14ad6113812d2d37d72e67b4cacb4bb726505f11',
+172 silly install resolved        tarball: 'http://registry.npmjs.org/bindings/-/bindings-1.2.1.tgz' },
+172 silly install resolved     directories: {},
+172 silly install resolved     _resolved: 'https://registry.npmjs.org/bindings/-/bindings-1.2.1.tgz',
+172 silly install resolved     readme: 'ERROR: No README data found!' } ]
+173 info install nan@1.4.1 into /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+174 info install bindings@1.2.1 into /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+175 info installOne nan@1.4.1
+176 verbose installOne of nan to /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1 not in flight; installing
+177 info installOne bindings@1.2.1
+178 verbose installOne of bindings to /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1 not in flight; installing
+179 verbose lock using /Users/Dandan/.npm/_locks/nan-8764df99057120d1.lock for /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/nan
+180 silly install write writing nan 1.4.1 to /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/nan
+181 silly cache addNamed cb nan@1.4.1
+182 verbose unbuild node_modules/secp256k1/node_modules/nan
+183 verbose lock using /Users/Dandan/.npm/_locks/bindings-8e3e055128bb80bc.lock for /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/bindings
+184 silly install write writing bindings 1.2.1 to /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/bindings
+185 silly cache addNamed cb bindings@1.2.1
+186 verbose unbuild node_modules/secp256k1/node_modules/bindings
+187 verbose gentlyRm vacuuming /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/nan
+188 verbose tar unpack /Users/Dandan/.npm/nan/1.4.1/package.tgz
+189 verbose tar unpacking to /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/nan
+190 verbose gentlyRm vacuuming /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/nan
+191 verbose gentlyRm vacuuming /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/bindings
+192 silly gunzTarPerm modes [ '755', '644' ]
+193 verbose tar unpack /Users/Dandan/.npm/bindings/1.2.1/package.tgz
+194 verbose tar unpacking to /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/bindings
+195 verbose gentlyRm vacuuming /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/bindings
+196 silly gunzTarPerm modes [ '755', '644' ]
+197 silly gunzTarPerm extractEntry package.json
+198 silly gunzTarPerm modified mode [ 'package.json', 436, 420 ]
+199 silly gunzTarPerm extractEntry package.json
+200 silly gunzTarPerm extractEntry include_dirs.js
+201 silly gunzTarPerm modified mode [ 'include_dirs.js', 436, 420 ]
+202 silly gunzTarPerm extractEntry appveyor.yml
+203 silly gunzTarPerm modified mode [ 'appveyor.yml', 436, 420 ]
+204 silly gunzTarPerm extractEntry README.md
+205 silly gunzTarPerm extractEntry bindings.js
+206 silly gunzTarPerm extractEntry CHANGELOG.md
+207 silly gunzTarPerm modified mode [ 'CHANGELOG.md', 436, 420 ]
+208 silly gunzTarPerm extractEntry LICENSE.md
+209 silly gunzTarPerm modified mode [ 'LICENSE.md', 436, 420 ]
+210 silly gunzTarPerm extractEntry .nan.h.un~
+211 silly gunzTarPerm modified mode [ '.nan.h.un~', 436, 420 ]
+212 silly gunzTarPerm extractEntry build/config.gypi
+213 silly gunzTarPerm modified mode [ 'build/config.gypi', 436, 420 ]
+214 silly gunzTarPerm extractEntry .dntrc
+215 silly gunzTarPerm modified mode [ '.dntrc', 436, 420 ]
+216 silly gunzTarPerm extractEntry nan.h
+217 silly gunzTarPerm modified mode [ 'nan.h', 436, 420 ]
+218 silly gunzTarPerm extractEntry nan.h.orig
+219 silly gunzTarPerm modified mode [ 'nan.h.orig', 436, 420 ]
+220 info preinstall bindings@1.2.1
+221 silly install resolved []
+222 verbose about to build /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/bindings
+223 info build /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/bindings
+224 verbose linkStuff [ false,
+224 verbose linkStuff   false,
+224 verbose linkStuff   false,
+224 verbose linkStuff   '/Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules' ]
+225 info linkStuff bindings@1.2.1
+226 verbose linkBins bindings@1.2.1
+227 verbose linkMans bindings@1.2.1
+228 verbose rebuildBundles bindings@1.2.1
+229 info install bindings@1.2.1
+230 info postinstall bindings@1.2.1
+231 verbose unlock done using /Users/Dandan/.npm/_locks/bindings-8e3e055128bb80bc.lock for /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/bindings
+232 info preinstall nan@1.4.1
+233 silly install resolved []
+234 verbose about to build /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/nan
+235 info build /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/nan
+236 verbose linkStuff [ false,
+236 verbose linkStuff   false,
+236 verbose linkStuff   false,
+236 verbose linkStuff   '/Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules' ]
+237 info linkStuff nan@1.4.1
+238 verbose linkBins nan@1.4.1
+239 verbose linkMans nan@1.4.1
+240 verbose rebuildBundles nan@1.4.1
+241 info install nan@1.4.1
+242 info postinstall nan@1.4.1
+243 verbose unlock done using /Users/Dandan/.npm/_locks/nan-8764df99057120d1.lock for /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1/node_modules/nan
+244 verbose about to build /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+245 info build /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+246 verbose linkStuff [ false,
+246 verbose linkStuff   false,
+246 verbose linkStuff   false,
+246 verbose linkStuff   '/Users/Dandan/Dropbox/easybtc/e/node_modules' ]
+247 info linkStuff secp256k1@0.0.13
+248 verbose linkBins secp256k1@0.0.13
+249 verbose linkMans secp256k1@0.0.13
+250 verbose rebuildBundles secp256k1@0.0.13
+251 verbose rebuildBundles [ 'bindings', 'nan' ]
+252 info install secp256k1@0.0.13
+253 verbose unsafe-perm in lifecycle true
+254 info secp256k1@0.0.13 Failed to exec install script
+255 verbose unlock done using /Users/Dandan/.npm/_locks/secp256k1-566b2b3f72058d8a.lock for /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+256 verbose stack Error: secp256k1@0.0.13 install: `node-gyp rebuild`
+256 verbose stack Exit status 1
+256 verbose stack     at EventEmitter.<anonymous> (/Users/Dandan/.npm-packages/lib/node_modules/npm/lib/utils/lifecycle.js:212:16)
+256 verbose stack     at EventEmitter.emit (events.js:98:17)
+256 verbose stack     at ChildProcess.<anonymous> (/Users/Dandan/.npm-packages/lib/node_modules/npm/lib/utils/spawn.js:14:12)
+256 verbose stack     at ChildProcess.EventEmitter.emit (events.js:98:17)
+256 verbose stack     at maybeClose (child_process.js:735:16)
+256 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:802:5)
+257 verbose pkgid secp256k1@0.0.13
+258 verbose cwd /Users/Dandan/Dropbox/easybtc/e
+259 error Darwin 14.0.0
+260 error argv "node" "/Users/Dandan/.npm-packages/bin/npm" "install" "secp256k1"
+261 error node v0.10.23
+262 error npm  v2.1.10
+263 error code ELIFECYCLE
+264 error secp256k1@0.0.13 install: `node-gyp rebuild`
+264 error Exit status 1
+265 error Failed at the secp256k1@0.0.13 install script 'node-gyp rebuild'.
+265 error This is most likely a problem with the secp256k1 package,
+265 error not with npm itself.
+265 error Tell the author that this fails on your system:
+265 error     node-gyp rebuild
+265 error You can get their info via:
+265 error     npm owner ls secp256k1
+265 error There is likely additional logging output above.
+266 verbose exit [ 1, true ]
+267 verbose unbuild node_modules/secp256k1
+268 info preuninstall secp256k1@0.0.13
+269 info uninstall secp256k1@0.0.13
+270 verbose unbuild rmStuff secp256k1@0.0.13 from /Users/Dandan/Dropbox/easybtc/e/node_modules
+271 info postuninstall secp256k1@0.0.13
+272 verbose gentlyRm vacuuming /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+273 silly gentlyRm purging /Users/Dandan/Dropbox/easybtc/e/node_modules/secp256k1
+274 silly gentlyRm quitting because other entries in /Users/Dandan/Dropbox/easybtc/e/node_modules

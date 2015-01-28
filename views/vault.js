@@ -7,81 +7,66 @@ define([
 	'models/qrcode',
 	'models/bitcoin',
 ], function($, _, Backbone, WordList, crypto, qrcode, Bitcoin){
-
+	var checking = false;
 	var VaultView = Backbone.View.extend({
 		el: $('#contents'), 
-		template: "\
-			<form role='form col-xs-12' style='margin-right: 20px;'>\
-				<div class='form-group'>\
-						<label for='passphrase'>Passphrase</label>\
-						<input type='text' style='font-weight:bold' class='form-control' name='passphrase' id='passphrase' placeholder='Type your passphrase here' />\
-					</div>\
-				<div class='row col-xs-12'>\
-				<label for='count_words'>Random words generator</label>\
-				<div>\
-					<select class='form-control col-xs-3' style='width:100px' name='count_words'>\
-						<option value='1'>1</option>\
-						<option value='2'>2</option>\
-						<option value='3'>3</option>\
-						<option selected value='4'>4</option>\
-						<option value='5'>5</option>\
-						<option value='6'>6</option>\
-						<option value='7'>7</option>\
-						<option value='8'>8</option>\
-					</select>\
-					<button type='button' class='col-xs-6 btn btn-primary btn-random' style='width:140px;margin-left:10px'>Random Words</button>\
-				</div>\
-				</div>\
-				<div class='form-group' style='margin-top:90px'>\
-					<label for='email'>Email (Optional)</label>\
-					<input type='text' class='form-control' name='email' placeholder='Enter your email/salt here' />\
-				</div>\
-				<div id='pleaseWait'></div>\
-				<div class='button-group'>\
-					<button type='button' class='btn btn-primary btn-generate' style='font-size:14px;white-space: normal ; margin-top:20px'>Generate vault</button>\
-					<br>\
-				<br>\
-				</div>\
-				<div class='row text-center'>\
-					<div class='col-xs-12 col-ms-6 h3' id='text-address'></div>\
-					<div class='col-xs-12 col-ms-6' id='qrcode-address-image'></div>\
-					<div class='text-center' id='label-address'></div>\
-					<br>\
-					<div class='col-xs-12 col-ms-6 h3' id='text-privatekey'></div>\
-					<div class='col-xs-12 col-ms-6' id='qrcode-privkey-image'></div>\
-					<div class='text-center' id='label-privkey'></div>\
-					<br>\
-					<br>\
-								<div class='col-xs-11'>\
-				<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and it is recommended to be used offline.</h5>\
-				<h5>Also think to register your bitcoin address at <a href='http://onename.io/'>onename.io</a> for easier use.</h5>\
-				<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose words from a ~10,000 words list</h5>\
-				<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>\
-			</div>\
-				</div>\
- 				</div>\
-			</form>\
-		", 
+		//el: $('#contents'),
+	  //template: _.template($('#vaultViewTemplate').text()),
+		template: _.template($('#vaultViewTemplate').text()), 
 		events: {
 
-			'click .btn-random': 'random',
-			'click .btn-generate': 'pleaseWait', 
-			'keyup input[name=passphrase]': 'deleteIfChanged', 
-			'keyup input[name=email]': 'deleteIfChanged'
+			'click .btn-random' : 'random',
+			'click .btn-generate' : 'pleaseWait',
+			'keyup input[name=passphrase]' : 'deleteIfChanged', 
+			'keyup input[name=email]' : 'deleteIfChanged',
+			'focus input[id=passphrase]' : 'internetChecker'
 
 		}, 
 
+		internetChecker: function() {
+			var master = this;
+			goodpage = function() { return ($('Title').html() == 'EasyBTC Vault Creator') }
+			iCheck = function() {
+				if (this.goodpage() == false) {
+					return
+				}
+				if (checking == true)  {
+					setTimeout(this.iCheck,4000);
+				};
+
+				var iCheckDefer = $.Deferred();
+				cryptoscrypt.internetCheck(iCheckDefer)
+				.done(function(data){
+					if((data.result=='yes') & goodpage()) {
+						$('div[id=contents]').css('border','5px solid red');
+						$('div[id=vault-warning]').html('<h3 style=color:red>You are online! You should never create a vault while online, if you are unsure of what you are doing, please check the guidance</h3>')
+					}
+				})
+				.fail(function(){
+					$('div[id=contents]').css('border','5px solid green');
+					$('div[id=vault-warning]').html('<h3 style=color:darkgreen>You seem to be offline, good ... but DO NOT go back online after you created the vault!</h3>')
+					});
+			}
+			if (checking == false) {
+				checking = true 
+				iCheck();
+			} 
+		},
+
 		render: function() {
-			
-			this.$el.html(_.template(this.template));
+
+			$('Title').html('EasyBTC Vault Creator');
+			this.$el.html(this.template());
+			$('div[id=contents]').css('border','5px solid black');
+			checking = false;
 
 		}, 
 
 		random: function() {
-
-				$('input[name=passphrase]', this.$el).val(
-					WordList.random($('select[name=count_words]', this.$el).val())
-				);
+			this.internetChecker();
+			$('input[name=passphrase]', this.$el).val(
+				WordList.random($('select[name=count_words]', this.$el).val())
+			);
 
 		}, 
 
@@ -108,6 +93,7 @@ define([
 		}, 
 
 		pleaseWait: function() {
+			this.internetChecker()
 			var master = this;
 			var text = ($('h3[id=pleaseWait]').text() == '') ? '..........Please wait, this should take few seconds on a normal computer..........' : '';
 

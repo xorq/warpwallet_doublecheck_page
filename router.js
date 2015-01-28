@@ -27,7 +27,7 @@ define([
       if (this.currentView) {
         this.currentView.undelegateEvents();
       }
-      this.currentView = new VaultView();
+      this.currentView = new VaultView({ });
       this.currentView.render();
       $('.nav > li').removeClass('active').filter('[name=vault]').addClass('active');
     },

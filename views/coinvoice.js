@@ -10,12 +10,12 @@ define([
 	$.createCache = function( requestFunction ) {
 		var cache = {};
 		return function(key, callback) {
-		if (!cache[ key ]) {
-			cache[key] = $.Deferred(function(defer) {
-			requestFunction(defer, key);
-			}).promise();
-		}
-		return cache[key].done(callback);
+			if (!cache[ key ]) {
+				cache[key] = $.Deferred(function(defer) {
+					requestFunction(defer, key);
+				}).promise();
+			}
+			return cache[key].done(callback);
 		};
 	};
 
@@ -26,12 +26,13 @@ define([
 		}
 		defer.then(cleanUp, cleanUp);
 		image.onload = function() {
-		defer.resolve(url);
+			defer.resolve(url);
 		};
 		image.onerror = defer.reject;
 		image.src = url;
 	});
-	var currencies = [{'code':'BTC','name':'Bitcoin','symbol':'Ƀ'},{'code':'ALL','name':'Albania Lek','symbol':'Lek'},{'code':'AFN','name':'Afghanistan Afghani','symbol':'؋'},{'code':'ARS','name':'Argentina Peso','symbol':'$'},{'code':'AWG','name':'Aruba Guilder','symbol':'ƒ'},{'code':'AUD','name':'Australia Dollar','symbol':'$'},{'code':'AZN','name':'Azerbaijan New Manat','symbol':'ман'},{'code':'BSD','name':'Bahamas Dollar','symbol':'$'},{'code':'BBD','name':'Barbados Dollar','symbol':'$'},{'code':'BYR','name':'Belarus Ruble','symbol':'p.'},{'code':'BZD','name':'Belize Dollar','symbol':'BZ$'},{'code':'BMD','name':'Bermuda Dollar','symbol':'$'},{'code':'BOB','name':'Bolivia Boliviano','symbol':'$b'},{'code':'BAM','name':'Bosnia Marka','symbol':'KM'},{'code':'BWP','name':'Botswana Pula','symbol':'P'},{'code':'BGN','name':'Bulgaria Lev','symbol':'лв'},{'code':'BRL','name':'Brazil Real','symbol':'R$'},{'code':'BND','name':'Brunei Darussalam Dollar','symbol':'$'},{'code':'KHR','name':'Cambodia Riel','symbol':'៛'},{'code':'CAD','name':'Canada Dollar','symbol':'$'},{'code':'KYD','name':'Cayman Islands Dollar','symbol':'$'},{'code':'CLP','name':'Chile Peso','symbol':'$'},{'code':'CNY','name':'China Yuan Renminbi','symbol':'¥'},{'code':'COP','name':'Colombia Peso','symbol':'$'},{'code':'CRC','name':'Costa Rica Colon','symbol':'₡'},{'code':'HRK','name':'Croatia Kuna','symbol':'kn'},{'code':'CUP','name':'Cuba Peso','symbol':'₱'},{'code':'CZK','name':'Czech Republic Koruna','symbol':'Kč'},{'code':'DKK','name':'Denmark Krone','symbol':'kr'},{'code':'DOP','name':'Dominican Republic Peso','symbol':'RD$'},{'code':'XCD','name':'East Caribbean Dollar','symbol':'$'},{'code':'EGP','name':'Egypt Pound','symbol':'£'},{'code':'SVC','name':'El Salvador Colon','symbol':'$'},{'code':'EEK','name':'Estonia Kroon','symbol':'kr'},{'code':'EUR','name':'Euro Member Countries','symbol':'€'},{'code':'FKP','name':'Falkland Islands (Malvinas) Pound','symbol':'£'},{'code':'FJD','name':'Fiji Dollar','symbol':'$'},{'code':'GHC','name':'Ghana Cedi','symbol':'¢'},{'code':'GIP','name':'Gibraltar Pound','symbol':'£'},{'code':'GTQ','name':'Guatemala Quetzal','symbol':'Q'},{'code':'GGP','name':'Guernsey Pound','symbol':'£'},{'code':'GYD','name':'Guyana Dollar','symbol':'$'},{'code':'HNL','name':'Honduras Lempira','symbol':'L'},{'code':'HKD','name':'Hong Kong Dollar','symbol':'$'},{'code':'HUF','name':'Hungary Forint','symbol':'Ft'},{'code':'ISK','name':'Iceland Krona','symbol':'kr'},{'code':'INR','name':'India Rupee','symbol':''},{'code':'IDR','name':'Indonesia Rupiah','symbol':'Rp'},{'code':'IRR','name':'Iran Rial','symbol':'﷼'},{'code':'IMP','name':'Isle of Man Pound','symbol':'£'},{'code':'ILS','name':'Israel Shekel','symbol':'₪'},{'code':'JMD','name':'Jamaica Dollar','symbol':'J$'},{'code':'JPY','name':'Japan Yen','symbol':'¥'},{'code':'JEP','name':'Jersey Pound','symbol':'£'},{'code':'KZT','name':'Kazakhstan Tenge','symbol':'лв'},{'code':'KPW','name':'Korea (North) Won','symbol':'₩'},{'code':'KRW','name':'Korea (South) Won','symbol':'₩'},{'code':'KGS','name':'Kyrgyzstan Som','symbol':'лв'},{'code':'LAK','name':'Laos Kip','symbol':'₭'},{'code':'LVL','name':'Latvia Lat','symbol':'Ls'},{'code':'LBP','name':'Lebanon Pound','symbol':'£'},{'code':'LRD','name':'Liberia Dollar','symbol':'$'},{'code':'LTL','name':'Lithuania Litas','symbol':'Lt'},{'code':'MKD','name':'Macedonia Denar','symbol':'ден'},{'code':'MYR','name':'Malaysia Ringgit','symbol':'RM'},{'code':'MUR','name':'Mauritius Rupee','symbol':'₨'},{'code':'MXN','name':'Mexico Peso','symbol':'$'},{'code':'MNT','name':'Mongolia Tughrik','symbol':'₮'},{'code':'MZN','name':'Mozambique Metical','symbol':'MT'},{'code':'NAD','name':'Namibia Dollar','symbol':'$'},{'code':'NPR','name':'Nepal Rupee','symbol':'₨'},{'code':'ANG','name':'Netherlands Antilles Guilder','symbol':'ƒ'},{'code':'NZD','name':'New Zealand Dollar','symbol':'$'},{'code':'NIO','name':'Nicaragua Cordoba','symbol':'C$'},{'code':'NGN','name':'Nigeria Naira','symbol':'₦'},{'code':'KPW','name':'Korea (North) Won','symbol':'₩'},{'code':'NOK','name':'Norway Krone','symbol':'kr'},{'code':'OMR','name':'Oman Rial','symbol':'﷼'},{'code':'PKR','name':'Pakistan Rupee','symbol':'₨'},{'code':'PAB','name':'Panama Balboa','symbol':'B/.'},{'code':'PYG','name':'Paraguay Guarani','symbol':'Gs'},{'code':'PEN','name':'Peru Nuevo Sol','symbol':'S/.'},{'code':'PHP','name':'Philippines Peso','symbol':'₱'},{'code':'PLN','name':'Poland Zloty','symbol':'zł'},{'code':'QAR','name':'Qatar Riyal','symbol':'﷼'},{'code':'RON','name':'Romania New Leu','symbol':'lei'},{'code':'RUB','name':'Russia Ruble','symbol':'руб'},{'code':'SHP','name':'Saint Helena Pound','symbol':'£'},{'code':'SAR','name':'Saudi Arabia Riyal','symbol':'﷼'},{'code':'RSD','name':'Serbia Dinar','symbol':'Дин.'},{'code':'SCR','name':'Seychelles Rupee','symbol':'₨'},{'code':'SGD','name':'Singapore Dollar','symbol':'$'},{'code':'SBD','name':'Solomon Islands Dollar','symbol':'$'},{'code':'SOS','name':'Somalia Shilling','symbol':'S'},{'code':'ZAR','name':'South Africa Rand','symbol':'R'},{'code':'KRW','name':'Korea (South) Won','symbol':'₩'},{'code':'LKR','name':'Sri Lanka Rupee','symbol':'₨'},{'code':'SEK','name':'Sweden Krona','symbol':'kr'},{'code':'CHF','name':'Switzerland Franc','symbol':'CHF'},{'code':'SRD','name':'Suriname Dollar','symbol':'$'},{'code':'SYP','name':'Syria Pound','symbol':'£'},{'code':'TWD','name':'Taiwan New Dollar','symbol':'NT$'},{'code':'THB','name':'Thailand Baht','symbol':'฿'},{'code':'TTD','name':'Trinidad and Tobago Dollar','symbol':'TT$'},{'code':'TRL','name':'Turkey Lira','symbol':'₤'},{'code':'TVD','name':'Tuvalu Dollar','symbol':'$'},{'code':'UAH','name':'Ukraine Hryvnia','symbol':'₴'},{'code':'GBP','name':'United Kingdom Pound','symbol':'£'},{'code':'USD','name':'United States Dollar','symbol':'$'},{'code':'UYU','name':'Uruguay Peso','symbol':'$U'},{'code':'UZS','name':'Uzbekistan Som','symbol':'лв'},{'code':'VEF','name':'Venezuela Bolivar','symbol':'Bs'},{'code':'VND','name':'Viet Nam Dong','symbol':'₫'},{'code':'YER','name':'Yemen Rial','symbol':'﷼'},{'code':'ZWD','name':'Zimbabwe Dollar','symbol':'Z$'}];
+	
+	var currencies = [{'code':'BTC','name':'Bitcoin','symbol':'Ƀ'},{'code':'ALL','name':'Albania Lek','symbol':'Lek'},{'code':'AFN','name':'Afghanistan Afghani','symbol':'؋'},{'code':'ARS','name':'Argentina Peso','symbol':'$'},{'code':'AWG','name':'Aruba Guilder','symbol':'ƒ'},{'code':'AUD','name':'Australia Dollar','symbol':'$'},{'code':'AZN','name':'Azerbaijan New Manat','symbol':'ман'},{'code':'BSD','name':'Bahamas Dollar','symbol':'$'},{'code':'BBD','name':'Barbados Dollar','symbol':'$'},{'code':'BYR','name':'Belarus Ruble','symbol':'p.'},{'code':'BZD','name':'Belize Dollar','symbol':'BZ$'},{'code':'BMD','name':'Bermuda Dollar','symbol':'$'},{'code':'BOB','name':'Bolivia Boliviano','symbol':'$b'},{'code':'BAM','name':'Bosnia Marka','symbol':'KM'},{'code':'BWP','name':'Botswana Pula','symbol':'P'},{'code':'BGN','name':'Bulgaria Lev','symbol':'лв'},{'code':'BRL','name':'Brazil Real','symbol':'R$'},{'code':'BND','name':'Brunei Darussalam Dollar','symbol':'$'},{'code':'KHR','name':'Cambodia Riel','symbol':'៛'},{'code':'CAD','name':'Canada Dollar','symbol':'$'},{'code':'KYD','name':'Cayman Islands Dollar','symbol':'$'},{'code':'CLP','name':'Chile Peso','symbol':'$'},{'code':'CNY','name':'China Yuan Renminbi','symbol':'¥'},{'code':'COP','name':'Colombia Peso','symbol':'$'},{'code':'CRC','name':'Costa Rica Colon','symbol':'₡'},{'code':'HRK','name':'Croatia Kuna','symbol':'kn'},{'code':'CUP','name':'Cuba Peso','symbol':'₱'},{'code':'CZK','name':'Czech Republic Koruna','symbol':'Kč'},{'code':'DKK','name':'Denmark Krone','symbol':'kr'},{'code':'DOP','name':'Dominican Republic Peso','symbol':'RD$'},{'code':'XCD','name':'East Caribbean Dollar','symbol':'$'},{'code':'EGP','name':'Egypt Pound','symbol':'£'},{'code':'SVC','name':'El Salvador Colon','symbol':'$'},{'code':'EEK','name':'Estonia Kroon','symbol':'kr'},{'code':'EUR','name':'Euro Member Countries','symbol':'€'},{'code':'FKP','name':'Falkland Islands Pound','symbol':'£'},{'code':'FJD','name':'Fiji Dollar','symbol':'$'},{'code':'GHC','name':'Ghana Cedi','symbol':'¢'},{'code':'GIP','name':'Gibraltar Pound','symbol':'£'},{'code':'GTQ','name':'Guatemala Quetzal','symbol':'Q'},{'code':'GGP','name':'Guernsey Pound','symbol':'£'},{'code':'GYD','name':'Guyana Dollar','symbol':'$'},{'code':'HNL','name':'Honduras Lempira','symbol':'L'},{'code':'HKD','name':'Hong Kong Dollar','symbol':'$'},{'code':'HUF','name':'Hungary Forint','symbol':'Ft'},{'code':'ISK','name':'Iceland Krona','symbol':'kr'},{'code':'INR','name':'India Rupee','symbol':''},{'code':'IDR','name':'Indonesia Rupiah','symbol':'Rp'},{'code':'IRR','name':'Iran Rial','symbol':'﷼'},{'code':'IMP','name':'Isle of Man Pound','symbol':'£'},{'code':'ILS','name':'Israel Shekel','symbol':'₪'},{'code':'JMD','name':'Jamaica Dollar','symbol':'J$'},{'code':'JPY','name':'Japan Yen','symbol':'¥'},{'code':'JEP','name':'Jersey Pound','symbol':'£'},{'code':'KZT','name':'Kazakhstan Tenge','symbol':'лв'},{'code':'KPW','name':'Korea (North) Won','symbol':'₩'},{'code':'KRW','name':'Korea (South) Won','symbol':'₩'},{'code':'KGS','name':'Kyrgyzstan Som','symbol':'лв'},{'code':'LAK','name':'Laos Kip','symbol':'₭'},{'code':'LVL','name':'Latvia Lat','symbol':'Ls'},{'code':'LBP','name':'Lebanon Pound','symbol':'£'},{'code':'LRD','name':'Liberia Dollar','symbol':'$'},{'code':'LTL','name':'Lithuania Litas','symbol':'Lt'},{'code':'MKD','name':'Macedonia Denar','symbol':'ден'},{'code':'MYR','name':'Malaysia Ringgit','symbol':'RM'},{'code':'MUR','name':'Mauritius Rupee','symbol':'₨'},{'code':'MXN','name':'Mexico Peso','symbol':'$'},{'code':'MNT','name':'Mongolia Tughrik','symbol':'₮'},{'code':'MZN','name':'Mozambique Metical','symbol':'MT'},{'code':'NAD','name':'Namibia Dollar','symbol':'$'},{'code':'NPR','name':'Nepal Rupee','symbol':'₨'},{'code':'ANG','name':'Netherlands Antilles Guilder','symbol':'ƒ'},{'code':'NZD','name':'New Zealand Dollar','symbol':'$'},{'code':'NIO','name':'Nicaragua Cordoba','symbol':'C$'},{'code':'NGN','name':'Nigeria Naira','symbol':'₦'},{'code':'KPW','name':'Korea (North) Won','symbol':'₩'},{'code':'NOK','name':'Norway Krone','symbol':'kr'},{'code':'OMR','name':'Oman Rial','symbol':'﷼'},{'code':'PKR','name':'Pakistan Rupee','symbol':'₨'},{'code':'PAB','name':'Panama Balboa','symbol':'B/.'},{'code':'PYG','name':'Paraguay Guarani','symbol':'Gs'},{'code':'PEN','name':'Peru Nuevo Sol','symbol':'S/.'},{'code':'PHP','name':'Philippines Peso','symbol':'₱'},{'code':'PLN','name':'Poland Zloty','symbol':'zł'},{'code':'QAR','name':'Qatar Riyal','symbol':'﷼'},{'code':'RON','name':'Romania New Leu','symbol':'lei'},{'code':'RUB','name':'Russia Ruble','symbol':'руб'},{'code':'SHP','name':'Saint Helena Pound','symbol':'£'},{'code':'SAR','name':'Saudi Arabia Riyal','symbol':'﷼'},{'code':'RSD','name':'Serbia Dinar','symbol':'Дин.'},{'code':'SCR','name':'Seychelles Rupee','symbol':'₨'},{'code':'SGD','name':'Singapore Dollar','symbol':'$'},{'code':'SBD','name':'Solomon Islands Dollar','symbol':'$'},{'code':'SOS','name':'Somalia Shilling','symbol':'S'},{'code':'ZAR','name':'South Africa Rand','symbol':'R'},{'code':'KRW','name':'Korea (South) Won','symbol':'₩'},{'code':'LKR','name':'Sri Lanka Rupee','symbol':'₨'},{'code':'SEK','name':'Sweden Krona','symbol':'kr'},{'code':'CHF','name':'Switzerland Franc','symbol':'CHF'},{'code':'SRD','name':'Suriname Dollar','symbol':'$'},{'code':'SYP','name':'Syria Pound','symbol':'£'},{'code':'TWD','name':'Taiwan New Dollar','symbol':'NT$'},{'code':'THB','name':'Thailand Baht','symbol':'฿'},{'code':'TTD','name':'Trinidad and Tobago Dollar','symbol':'TT$'},{'code':'TRL','name':'Turkey Lira','symbol':'₤'},{'code':'TVD','name':'Tuvalu Dollar','symbol':'$'},{'code':'UAH','name':'Ukraine Hryvnia','symbol':'₴'},{'code':'GBP','name':'United Kingdom Pound','symbol':'£'},{'code':'USD','name':'United States Dollar','symbol':'$'},{'code':'UYU','name':'Uruguay Peso','symbol':'$U'},{'code':'UZS','name':'Uzbekistan Som','symbol':'лв'},{'code':'VEF','name':'Venezuela Bolivar','symbol':'Bs'},{'code':'VND','name':'Viet Nam Dong','symbol':'₫'},{'code':'YER','name':'Yemen Rial','symbol':'﷼'},{'code':'ZWD','name':'Zimbabwe Dollar','symbol':'Z$'}];
 	var currency = 'BTC';
 	var rate = 0;
 	var btcUsd = 0;
@@ -49,13 +50,13 @@ define([
 			<form role='form' style='margin-right: 20px;'>\
 				<div class='form-group'>\
 					<div class='row input-group col-xs-11' style='margin:10px;margin-left:0px'>\
-						<span class='form-control-feedback input-group-addon' id='btcSymbol' style='top:0px;width:85px;position:relative;font-weight:bold;font-size:25px'>Address</span>\
-						<input type='text' class='form-control' style='padding:10px;height:45px;font-weight:bold;font-size:20px' name='btc address' id='address' placeholder='BTC address or Onename' value='<%= address %>' />\
+						<span class='form-control-feedback input-group-addon' id='btcSymbol' style='top:0px;width:33px;position:relative;font-weight:bold;font-size:15px'>Address</span>\
+						<input type='text' class='form-control' style='padding:10px;height:45px;font-weight:bold;font-size:15px' name='btc address' id='address' placeholder='BTC address or Onename' value='<%= address %>' />\
 					</div>\
 					<div class='form-group'>\
 					<div class='row input-group col-xs-11' style='margin:10px;margin-left:0px'>\
-						<span class='form-control-feedback input-group-addon' id='currencyAddon' style='top:0px;position:relative;font-weight:bold;font-size:25px'><%=currency%></span>\
-						<input type='text' class='form-control' id='fiat' style=';padding:10px;height:45px;font-weight:bold;font-size:20px' placeholder='Currency amount'></input>\
+						<span class='form-control-feedback input-group-addon' id='currencyAddon' style='top:0px;position:relative;font-weight:bold;font-size:15px'><%=currency%></span>\
+						<input type='text' class='form-control' id='fiat' style=';padding:10px;height:45px;font-weight:bold;font-size:15px' placeholder='Currency amount'></input>\
 					</div>\
 				</div>\
 				<div>\
@@ -72,7 +73,7 @@ define([
 				<div class='col-xs-6' id='qrcode-address-image'></div>\
 				<h5 id='qrcode-address-image'></h5>\
 				<div class='text col-xs-12	'>\
-				<span class='' id='rateAddon' style='position:absolute;font-weight:bold;font-size:25px'></span>\
+				<span class='' id='rateAddon' style='position:absolute;font-weight:bold;font-size:15px'></span>\
 				</div>\
 				<div id='reader' style='width:600px;height:250px'></div>\
 				<div class='text-left' id='link'></div>\
@@ -114,6 +115,7 @@ define([
 					$('input[id=address]').val(data.address);
 					master.address = data.address;
 					master.thumb = data.avatar;
+					master.updatePage();
 				});
 			};
 			this.updateRate();
@@ -197,12 +199,7 @@ define([
 			if (!ratePerBTC) {
 				return
 			};
-			var legend = this.amount + ' BTC'
-			var legend2 = '1 BTC = ' + ratePerBTC + ' ' + this.currency;
 			var symbol = _.findWhere(currencies,{code:this.currency}).symbol;
-
-			$('div[id=legend]').text(legend);
-			//$('div[id=legend2]').text(legend2);
 			$('span[id=currencyAddon]').text(symbol);
 			$('span[id=rateAddon]').text(this.amount + ' Bitcoin @ Rate: '+ ratePerBTC + ' ' + symbol + '/Ƀ');
 		},
@@ -210,7 +207,7 @@ define([
 		// Called in updatePage, updateQr
 		makeQrCode: function() {
 			var qrcode = new QRCode("qrcode-address-image", { width: 160, height: 160, correctLevel: QRCode.CorrectLevel.H });
-			var data = 'bitcoin://' + this.address + (this.amount ? '?amount=' + this.amount : '');
+			var data = 'bitcoin:' + this.address + (this.amount ? '?amount=' + this.amount : '');
 			qrcode.makeCode(data);
 			if (this.thumb) {
 				this.drawThumb();
@@ -234,7 +231,7 @@ define([
 		// Called in render, lookupFromInput
 		lookupOnename: function(onename) {
 			var def = $.Deferred();
-			$.getJSON('https://onename.io/' + this.onename + '.json')
+			$.getJSON('https://onename.com/' + this.onename + '.json')
 			.done(function(data) {
 				def.resolve({
 					address:data.bitcoin.address ? data.bitcoin.address : '',

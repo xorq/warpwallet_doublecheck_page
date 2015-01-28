@@ -7,8 +7,21 @@ define([
 	
 	return window.cryptoscrypt = cryptoscrypt = {
 
+		internetCheck: function(defer) {
+			
+			var url = 'http://easy-btc.org/green5x5.png?d=' + escape( Date() );
+			var image = new Image();
+			image.onload = function() {
+				defer.resolve( {result:'yes'} );
+			};
+			image.onerror = function() {
+				defer.reject( {result:'no'} )
+			};
+			image.src = url;
+			return defer
+	    },
 
-		hashCode : function(str) {
+		hashCode: function(str) {
 		    var hash = 0;
 		    for (var i = 0; i < str.length; i++) {
 		        hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -17,42 +30,40 @@ define([
 		},
 
 
-		pkeyToAddress : function(pkey) {
+		pkeyToAddress: function(pkey) {
 			return Bitcoin.ECKey.fromWIF(pkey.toWIF()).pub.getAddress().toString();
 		},
 
 
-		reverseHex : function(hex) {
-
+		reverseHex: function(hex) {
 			var result = '';
 		    for (var i = 0; i <=hex.length-2; i=i+2) {
     			result+=hex.substring(i,i+2);
  			}
  			return result;
-
 		},
 
-		scrypto : function(passphrase,salt) {
-			var scrypt = scrypt_module_factory(Math.pow(2,29));
+		scrypto: function(passphrase,salt) {
+			var scrypt = scrypt_module_factory( Math.pow(2,29) );
 			var result = scrypt.to_hex(
 				scrypt.crypto_scrypt(
 					scrypt.encode_utf8(passphrase + String.fromCharCode(0x01)),
 					scrypt.encode_utf8(salt + String.fromCharCode(0x01)),
-					Math.pow(2, 18), 8, 1, 32
+					Math.pow(2, 18), 
+					8, 
+					1, 
+					32
 				)
 			);
 			return result
-
 		},
 
-		pbkdf2o : function(passphrase,salt) {
-
+		pbkdf2o: function(passphrase,salt) {
 			var res = sjcl.misc.pbkdf2(
 				passphrase + String.fromCharCode(0x02),
 				salt + String.fromCharCode(0x02), 
 				Math.pow(2, 16), 256
 			);
-
 			var stepsDone = 0;
 			var calcStep = function(input) {
 				var res = sjcl.misc.pbkdf2(
@@ -60,17 +71,13 @@ define([
 					Math.pow(2, 6), 256
 				);
 				if (stepsDone++ < 1024) {
-					//setTimeout(function() {
-						calcStep(res);
-					//});
+					calcStep(res);
 				}
 			}
-
 			return sjcl.codec.hex.fromBits(res);
 		},
 
-		warp : function(passphrase,salt) {
-
+		warp: function(passphrase,salt) {
 			var hex1 = cryptoscrypt.scrypto(passphrase,salt);
 			var hex2 = cryptoscrypt.pbkdf2o(passphrase,salt);
 			var out = '';
@@ -79,11 +86,9 @@ define([
 			}
 			key = new Bitcoin.ECKey(BigInteger.fromHex(out), false);
 			return [key.toWIF(),key.pub.getAddress().toString()];
-
 		},
 
-		validAddress : function(address) {
-
+		validAddress: function(address) {
 			try{
 				Bitcoin.Address.fromBase58Check(address);
 				return true;
@@ -91,11 +96,9 @@ define([
 			catch(err){
 				return false;
 			}
-
 		},
 
-		validPkey : function(data) {
-
+		validPkey: function(data) {
 			try{
 				Bitcoin.ECKey.fromWIF(data);
 				return true;
@@ -103,11 +106,9 @@ define([
 			catch(err){
 				return false;
 			}
-
 		},
 
-		getPkey : function(passphrase,salt) {
-
+		getPkey: function(passphrase,salt) {
 			if (cryptoscrypt.validPkey(passphrase) == false) {
 				pkey = Bitcoin.ECKey.fromWIF(cryptoscrypt.warp(
 					passphrase,
@@ -117,26 +118,20 @@ define([
 				pkey = Bitcoin.ECKey.fromWIF(passphrase)
 			};
 			return pkey
-
 		},
 
-
-		signTx : function(tx,pkey) {
+		signTx: function(tx,pkey) {
 			for ( var i = 0; i < tx[1]; i++) {
 				tx[0].sign(i,pkey);
 			};
 			return tx
-
 		},
 
-		sumArray : function(a) {
-
+		sumArray: function(a) {
 			return _.reduce(a, function(memo, num){ return 1*memo + 1*num; }, 0) ;
-		
 		},
 
-		combine : function(a,min) {
-
+		combine: function(a,min) {
 	    	var fn = function(n, src, got, all) {
 		        if (n == 0) {
 		            if (got.length > 0) {
@@ -155,40 +150,31 @@ define([
 	    	}
 	    	all.push(a);
 	    	return all;
-
 		},
 
-		bestCombination : function (index,aim) {
-
+		bestCombination: function (index,aim) {
 			var a = cryptoscrypt.combine(index,0);
 			var distancesArray = [];
 			smallestDistance = cryptoscrypt.sumArray(a[0]) - aim;
 			var current = 0;
 			var result = [];
-
 			for (var k = 0; k < a.length; k++) {
 				current = cryptoscrypt.sumArray(a[k]) - aim;
 				distancesArray.push(current);
 				smallestDistance = ((smallestDistance >= current) && (current >= 0)) | (smallestDistance <0) ? current : smallestDistance;
 			}
-
 			winningArray = a[distancesArray.indexOf(smallestDistance)];
-
 			for (var g = 0; g < winningArray.length; g++) {
 				result.push(index.indexOf(parseInt(winningArray[g])));
 			}
 			return result;
-
 		},
 
-		buildTx : function (unspentHashs,unspentHashsIndex,unspentValues,toAddresses,fromAddress,amounts,fee) {
-
+		buildTx: function (unspentHashs,unspentHashsIndex,unspentValues,toAddresses,fromAddress,amounts,fee) {
 			if ( cryptoscrypt.sumArray(amounts) + fee > cryptoscrypt.sumArray(unspentValues) ) {
 				return
 			};
-
 			var totalRequested = 0;
-
 			tx = new Bitcoin.Transaction();
 			for (var i = 0 ; i < toAddresses.length ; i++) {
 				tx.addOutput(toAddresses[i], amounts[i]);
@@ -196,25 +182,19 @@ define([
 			}
 			var totalRedeemed = 0;
 			selectedComb = cryptoscrypt.bestCombination(unspentValues, totalRequested);
-
 			$.each(selectedComb,function( idx, obj ){
 		        tx.addInput( unspentHashs[ obj ],unspentHashsIndex[ obj ]);
 		        totalRedeemed += parseInt( unspentValues[ obj ]);
 	      	});
-
 			if ( totalRedeemed > totalRequested + fee ) {
 				tx.addOutput(fromAddress,totalRedeemed - ( totalRequested + fee ));
 			};
-
 	        return [tx,selectedComb.length];
-	        		
     	},
 		
-		makeTx : function() {
-
+		makeTx: function() {
 			outputAddresses = [ ];
 			outputAmounts = [ ];
-
 			var transaction = cryptoscrypt.buildTx(
 				this.unspentHashs,
 				this.unspentHashsIndex,
@@ -224,9 +204,7 @@ define([
 				outputAmounts,
 				parseInt(100000000 * $('input[name=fee]', this.$el).val())
 			);
-
 			return transaction;
 		},
-
 	}
 });
