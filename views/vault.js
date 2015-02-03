@@ -14,13 +14,11 @@ define([
 	  //template: _.template($('#vaultViewTemplate').text()),
 		template: _.template($('#vaultViewTemplate').text()), 
 		events: {
-
 			'click .btn-random' : 'random',
 			'click .btn-generate' : 'pleaseWait',
 			'keyup input[name=passphrase]' : 'deleteIfChanged', 
 			'keyup input[name=email]' : 'deleteIfChanged',
 			'focus input[id=passphrase]' : 'internetChecker'
-
 		}, 
 
 		internetChecker: function() {
@@ -115,8 +113,9 @@ define([
 			if (cryptoscrypt.validPkey(master.passphraseMemory)) { return };
 			master.deleteResults()
 
-			var qrcode = new QRCode("qrcode-address-image", {width: 160, height: 160,correctLevel : QRCode.CorrectLevel.L});
-			var qrcode2 = new QRCode("qrcode-privkey-image", {width: 160, height: 160, correctLevel : QRCode.CorrectLevel.L});
+			var qrcode = new QRCode("qrcode-address-image", {width: 260, height: 260,correctLevel : QRCode.CorrectLevel.L, colorDark : 'darkgreen'});
+			var qrcode2 = new QRCode("qrcode-privkey-image", {width: 260, height: 260, correctLevel : QRCode.CorrectLevel.L, colorDark : 'red'});
+			var qrcode3 = new QRCode("qrcode-pubkey-image", {width: 260, height: 260, correctLevel : QRCode.CorrectLevel.L, colorDark : 'darkBlue'});
 
 			var result = cryptoscrypt.warp(
 				$('input[name=passphrase]', master.$el).val(), 
@@ -125,11 +124,14 @@ define([
 
 			qrcode.makeCode(result[1]);
 			qrcode2.makeCode(result[0]);
+			qrcode3.makeCode('['+result[1]+','+result[2]+']');
 
+			$('div[id=label-pubkey]').text(result[2]);
 			$('div[id=label-address]').text(result[1]);
 			$('div[id=label-privkey]').text(result[0]);
 			$('div[id=text-address]').text("Address");
 			$('div[id=text-privatekey]').text("Private Key");
+			$('div[id=text-pubkey]').text("Public Key (for multisig)");
 			
 			$('div[id=pleaseWait]', master.$el).html('')
 		}
@@ -137,7 +139,3 @@ define([
 
 	return VaultView;
 });
-
-function jQuery(query, scope) {
-	// look for 'query' element within 'scope'
-}

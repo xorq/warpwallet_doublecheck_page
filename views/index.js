@@ -5,7 +5,6 @@ define([
   'models/transaction',
   'qrcode'
 ], function(Backbone, _, $, Transaction, html5_qrcode){
-  
   var qrSize = 300;
   var qrShown = 0;
   var checking = false;

@@ -31,12 +31,100 @@
 			<ul class='nav nav-pills' role='tablist'>
 				<li name='vault'><a href='#vault'>New Vault</a></li>
 				<li name='create' class='active'><a href='#'>Send Bitcoin</a></li>
-				<li name='easyQr'><a href='#coinvoice'>Receive Bitcoin</a></li>
+				<li name='coinvoice'><a href='#coinvoice'>Receive Bitcoin</a></li>
+				<li name='multisig'><a href='#multisig'>Create a multisig address</a></li>
 			</ul>
 			<div id='contents' class='panel panel-primary' style='background:#ddd;border-color=#044;border:5px black solid' ></div>
 		</div>
 
 		<script data-main='config.js' src='bower_components/requirejs/require.js'></script>
+
+		<script type='text/template' id='pubkeyTemplate'>
+				<div class='row input-group col-xs-12'>
+					<span class='input-group-addon' style='<%=(pubkey.pubkey!='') ? 'background-color:green;color:white' : '' %>' name='pubkeyFieldTitle' id='<%=index%>'>
+						Public Key #<%=index+1%>
+					</span>
+					<input type='text' class='form-control' id='<%=index%>' name='entryField'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
+					</input>
+					<span class='input-group-btn'>
+						<span class='input-group-btn'>
+							<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete' id='<%=index%>'></button>
+						</span>
+					</span>
+				</div>
+		</script>
+
+		<script type='text/template' id='multisigViewTemplate'>
+				<div class='form-group'>
+				<% _.each(pubkeys, function(pubkey, index) {%> 
+					<div id='<%=index%>' name='pubkeyField'>
+						<div class='row input-group col-xs-12'>
+							<span class='input-group-addon' style='<%=(pubkey.pubkey!='') ? 'background-color:green;color:white' : '' %>' name='pubkeyFieldTitle' id='<%=index%>'>
+								Public Key #<%=index+1%>
+							</span>
+							<input type='text' class='form-control' id='<%=index%>' name='entryField'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
+							</input>
+							<span class='input-group-btn'>
+								<span class='input-group-btn'>
+									<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete' id='<%=index%>'></button>
+								</span>
+							</span>
+						</div>
+					</div>
+					<h5 class='' name='pubkeyShow' id=<%=index%>></h5>
+				<%})%>
+				</div>
+			<button type='button' class='btn-default' name='btn-add' style='left-padding:40px'>ADD
+			<span class='glyphicon glyphicon-plus-sign glyphicon-align-center' style='color:green;horizontal-align:middle;vertical-align:middle;horizontal-align:middle;bottom:1px'></span>
+			</button>
+			<div>
+			<label>how many signatures needed ?</label>
+					<select class='form-control' style='width:100px' name='numberOfSignatures'>
+					<% _.each(pubkeys, function(pubkey, index) {%>
+						<option value='<%=index+1%>'><%=index+1%></option>
+					<%})%>
+					</select>
+			</div>
+			<h3 name='multisigAddress'></h3>
+			<h5>buy us a coffee !</h5>
+
+		</script>
+
+		<script type='text/template' id='coinvoiceTemplate'>
+			<form role='form' style='margin-right: 20px;'>
+				<div class='form-group'>
+					<div class='row input-group col-xs-11' style='margin:10px;margin-left:0px'>
+						<span class='form-control-feedback input-group-addon' id='btcSymbol' style='top:0px;width:33px;position:relative;font-weight:bold;font-size:15px'>Address</span>
+						<input type='text' class='form-control' style='padding:10px;height:45px;font-weight:bold;font-size:15px' name='btc address' id='address' placeholder='BTC address or Onename' value='<%= address %>' />
+					</div>
+					<div class='form-group'>
+					<div class='row input-group col-xs-11' style='margin:10px;margin-left:0px'>
+						<span class='form-control-feedback input-group-addon' id='currencyAddon' style='top:0px;position:relative;font-weight:bold;font-size:15px'><%=currency%></span>
+						<input type='text' class='form-control' id='fiat' style=';padding:10px;height:45px;font-weight:bold;font-size:15px' placeholder='Currency amount'></input>
+					</div>
+				</div>
+				<div>
+				<div class='form-group'>
+					<select id='currency' style='font-size:15px'>
+						<% _.each(currencies, function(currencyi, index) {%> 
+							<option <%=((currencyi.code || 'USD') == currency) ? 'selected=true' : ''%> value='<%=currencyi.code%>' style='font-size:15px'><%=currencyi.code%>   <%=currencyi.name%></option>
+						<%})%>
+					</select>
+				</div>
+				<div class='text-left' id='label-address'></div>
+				<div class='' id='title' style='font-weight:bold'><%=title%></div>
+				<%=title?'</br>':''%>
+				<div class='col-xs-6' id='qrcode-address-image'></div>
+				<h5 id='qrcode-address-image'></h5>
+				<div class='text col-xs-12	'>
+				<span class='' id='rateAddon' style='position:absolute;font-weight:bold;font-size:15px'></span>
+				</div>
+				<div id='reader' style='width:600px;height:250px'></div>
+				<div class='text-left' id='link'></div>
+			<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>
+			</form>
+			</div>
+		</script>
 
 		<script type='text/template' id='vaultViewTemplate'>
 			<form role='form col-xs-12' style='margin-right: 20px;'>
@@ -79,6 +167,10 @@
 					<div class='col-xs-12 col-ms-6 h3' id='text-privatekey'></div>
 					<div class='col-xs-12 col-ms-6' id='qrcode-privkey-image'></div>
 					<div class='text-center' style='word-break: break-all' id='label-privkey'></div>
+					<br>
+					<div class='col-xs-12 col-ms-6 h3' id='text-pubkey'></div>
+					<div class='col-xs-12 col-ms-6' id='qrcode-pubkey-image'></div>
+					<div class='text-center' style='word-break: break-all' id='label-pubkey'></div>
 					<br>
 					<br>
 					<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and it is recommended to be used offline.</h5>

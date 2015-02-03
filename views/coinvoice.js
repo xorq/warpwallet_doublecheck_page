@@ -3,9 +3,8 @@ define([
 	'underscore', 
 	'backbone', 
 	'models/qrcode',
-	'models/transaction',
 	'models/currencylist'
-], function($, _, Backbone, qrcode, Transaction, CurrencyList){
+], function($, _, Backbone, qrcode, CurrencyList){
 
 	$.createCache = function( requestFunction ) {
 		var cache = {};
@@ -46,41 +45,8 @@ define([
 
 	var Coinvoice = Backbone.View.extend({
 		el: $('#contents'),
-		template: _.template("\
-			<form role='form' style='margin-right: 20px;'>\
-				<div class='form-group'>\
-					<div class='row input-group col-xs-11' style='margin:10px;margin-left:0px'>\
-						<span class='form-control-feedback input-group-addon' id='btcSymbol' style='top:0px;width:33px;position:relative;font-weight:bold;font-size:15px'>Address</span>\
-						<input type='text' class='form-control' style='padding:10px;height:45px;font-weight:bold;font-size:15px' name='btc address' id='address' placeholder='BTC address or Onename' value='<%= address %>' />\
-					</div>\
-					<div class='form-group'>\
-					<div class='row input-group col-xs-11' style='margin:10px;margin-left:0px'>\
-						<span class='form-control-feedback input-group-addon' id='currencyAddon' style='top:0px;position:relative;font-weight:bold;font-size:15px'><%=currency%></span>\
-						<input type='text' class='form-control' id='fiat' style=';padding:10px;height:45px;font-weight:bold;font-size:15px' placeholder='Currency amount'></input>\
-					</div>\
-				</div>\
-				<div>\
-				<div class='form-group'>\
-					<select id='currency' style='font-size:15px'>\
-						<% _.each(currencies, function(currencyi, index) {%> \
-							<option <%=((currencyi.code || 'USD') == currency) ? 'selected=true' : ''%> value='<%=currencyi.code%>' style='font-size:15px'><%=currencyi.code%>   <%=currencyi.name%></option>\
-						<%})%>\
-					</select>\
-				</div>\
-				<div class='text-left' id='label-address'></div>\
-				<div class='' id='title' style='font-weight:bold'><%=title%></div>\
-				<%=title?'</br>':''%>\
-				<div class='col-xs-6' id='qrcode-address-image'></div>\
-				<h5 id='qrcode-address-image'></h5>\
-				<div class='text col-xs-12	'>\
-				<span class='' id='rateAddon' style='position:absolute;font-weight:bold;font-size:15px'></span>\
-				</div>\
-				<div id='reader' style='width:600px;height:250px'></div>\
-				<div class='text-left' id='link'></div>\
-			<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>\
-			</form>\
-			</div>\
-		"), 
+		//templateFrom: _.template($('#indexViewFromTemplate').text())
+		template: _.template($('#coinvoiceTemplate').text()), 
 		events: {
 			'click select[id=currency]': 'updateRate', 
 			'keyup input[id=fiat]': 'updateFiat',

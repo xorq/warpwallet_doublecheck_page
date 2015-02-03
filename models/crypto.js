@@ -34,6 +34,20 @@ define([
 			return Bitcoin.ECKey.fromWIF(pkey.toWIF()).pub.getAddress().toString();
 		},
 
+		pkeyToPubKey: function(pkey) {
+			return Bitcoin.ECKey.fromWIF(pkey.toWIF()).pub.getPubKey().toString();
+		},
+
+		pubkeyToAddress: function(pubkey) {
+			try {
+				pub =  Bitcoin.ECPubKey.fromHex(pubkey);
+			} catch(err) {
+				return ''
+			}
+			return pub.getAddress().toString()
+		},
+
+
 
 		reverseHex: function(hex) {
 			var result = '';
@@ -49,7 +63,7 @@ define([
 				scrypt.crypto_scrypt(
 					scrypt.encode_utf8(passphrase + String.fromCharCode(0x01)),
 					scrypt.encode_utf8(salt + String.fromCharCode(0x01)),
-					Math.pow(2, 18), 
+					Math.pow(2, 1), 
 					8, 
 					1, 
 					32
@@ -84,8 +98,10 @@ define([
 			for (var i = 0; i < 64; ++i) {
 				out += (parseInt(hex1[i], 16) ^ parseInt(hex2[i], 16)).toString(16);
 			}
+			console.log(BigInteger.fromHex(out));
 			key = new Bitcoin.ECKey(BigInteger.fromHex(out), false);
-			return [key.toWIF(),key.pub.getAddress().toString()];
+			cpub = 	new Bitcoin.ECPubKey(key.pub.Q,false);
+			return [key.toWIF(),key.pub.getAddress().toString(),cpub.toHex()];
 		},
 
 		validAddress: function(address) {
@@ -206,5 +222,13 @@ define([
 			);
 			return transaction;
 		},
+
+		getMultisigAddress: function(pubKeys, numberOfSignatures) {
+			var pubKeys = pubKeys.map(Bitcoin.ECPubKey.fromHex);
+ 			var redeemScript = Bitcoin.scripts.multisigOutput(numberOfSignatures, pubKeys);
+			var scriptPubKey = Bitcoin.scripts.scriptHashOutput(redeemScript.getHash());
+			var address = Bitcoin.Address.fromOutputScript(scriptPubKey).toString();
+			return address
+		}
 	}
 });
