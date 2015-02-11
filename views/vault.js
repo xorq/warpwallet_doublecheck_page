@@ -37,12 +37,12 @@ define([
 				.done(function(data){
 					if((data.result=='yes') & goodpage()) {
 						$('div[id=contents]').css('border','5px solid red');
-						$('div[id=vault-warning]').html('<h3 style=color:red>You are online! You should never create a vault while online, if you are unsure of what you are doing, please check the guidance</h3>')
+						$('div[id=vault-warning]').html('<h3 style=color:red>You are using an online computer, as a result this vault is insecure. If you are unsure of what you are doing, check the guidance</h3>')
 					}
 				})
 				.fail(function(){
 					$('div[id=contents]').css('border','5px solid green');
-					$('div[id=vault-warning]').html('<h3 style=color:darkgreen>You seem to be offline, good ... but DO NOT go back online after you created the vault!</h3>')
+					$('div[id=vault-warning]').html('<h3 style=color:darkgreen>You seem to be offline. For achieving maximum security, check the guidance.</h3>')
 					});
 			}
 			if (checking == false) {
@@ -113,7 +113,7 @@ define([
 			if (cryptoscrypt.validPkey(master.passphraseMemory)) { return };
 			master.deleteResults()
 
-			var qrcode = new QRCode("qrcode-address-image", {width: 260, height: 260,correctLevel : QRCode.CorrectLevel.L, colorDark : 'darkgreen'});
+			var qrcode = new QRCode("qrcode-address-image", {width: 260, height: 260,correctLevel : QRCode.CorrectLevel.L, colorDark : 'black'});
 			var qrcode2 = new QRCode("qrcode-privkey-image", {width: 260, height: 260, correctLevel : QRCode.CorrectLevel.L, colorDark : 'red'});
 			var qrcode3 = new QRCode("qrcode-pubkey-image", {width: 260, height: 260, correctLevel : QRCode.CorrectLevel.L, colorDark : 'darkBlue'});
 
@@ -122,9 +122,9 @@ define([
 				$('input[name=email]', master.$el).val()
 			);    
 
-			qrcode.makeCode(result[1]);
+			qrcode.makeCode('bitcoin:'+result[1]);
 			qrcode2.makeCode(result[0]);
-			qrcode3.makeCode('['+result[1]+','+result[2]+']');
+			qrcode3.makeCode(result[2]);
 
 			$('div[id=label-pubkey]').text(result[2]);
 			$('div[id=label-address]').text(result[1]);

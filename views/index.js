@@ -5,7 +5,7 @@ define([
   'models/transaction',
   'qrcode'
 ], function(Backbone, _, $, Transaction, html5_qrcode){
-  var qrSize = 300;
+  var QRSIZE = 300;
   var qrShown = 0;
   var checking = false;
   var IndexView = Backbone.View.extend({
@@ -18,10 +18,11 @@ define([
     events: {
       'click video' : 'import',
       'click button[name=btn-guidance]' : 'guidanceToggle',
+      'click button[name^=btn-scan]' : 'import',
       'click li[name=btn-export]' : 'export',
       'click li[name=btn-import]' : 'import',
       'click button[name=nextQr]' : 'nextQr',
-      'click button[name=btn-scan]' : 'import',
+      //'click button[name=btn-scan]' : 'import',
       'click button[name=previousQr]' : 'previousQr',
       'click div[name=qrcodeExport]' : 'clearExport',
       'click .btn-feemode' : 'changeFeeMode',
@@ -78,7 +79,6 @@ define([
           }
         });
       }
-      console.log(checking)
       if (checking == false) {
         checking = true 
         iCheck();
@@ -120,7 +120,6 @@ define([
       }
     },
 
-
     drawExportQrcode: function(a) {
       var data = this.model.export();
       $('div[name=qrcodeExport]',this.$el).children().remove();
@@ -157,7 +156,7 @@ define([
 
 
     import: function(ev) {
-      this.model.expectedField = $(ev.currentTarget).parents('.addressTo').attr('dataId')
+      this.model.expectedField = ev.currentTarget.name == 'btn-scan-from' ? 'from' : $(ev.currentTarget).parents('.addressTo').attr('dataId')
       this.model.showImportQR = !this.model.showImportQR;
       this.render();
       if (!this.model.showImportQR) {
@@ -167,7 +166,10 @@ define([
       this.model.newImport();
       $('.qr-reader').html5_qrcode(
         function(code) {
-          if (master.model.import(code, expectedField)) {
+          console.log(code);
+          code = cryptoscrypt.findBtcAddress(code);
+          console.log(code);
+          if (master.model.import(code, master.model.expectedField)) {
             master.model.showImportQR = false;
             master.render();
           } else {
@@ -414,7 +416,6 @@ define([
       this.model.lookup(fieldName,recipientId,fieldEntry).done(function(){
 
           if (ev.currentTarget.name == 'sender') {
-
             master.model.updateBalance().done(function() {
             master.renderFrom();
             master.updateFee();

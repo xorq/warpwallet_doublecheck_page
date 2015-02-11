@@ -86,33 +86,26 @@
 		}
 
 		this.export = function() {
-
 			recipientsExport = [];
 			this.recipients.forEach(function(v){ 
 			recipientsExport.push(_.pick(v,'address','amount'));
 			});
-
 			unspentExport = [];
 			this.unspent.forEach(function(v){ 
 				unspentExport.push(_.pick(v,'transaction_hash','value','transaction_index'));
 			});
-
 			data = {
 				recipients : recipientsExport,
 				from : this.from,
 				balance : this.balance,
 				unspent : unspentExport
 			};
-
 			data = JSON.stringify(data);
-			
 			var chunkLength = 150;
 			var fullCheck = sjcl.hash.sha256.hash(data)[0];
 			var numChunks = Math.ceil(data.length / chunkLength);
 			chunkLength = Math.ceil(data.length / numChunks);
-
 			var chunks = [];
-
 			_.times(Math.ceil(data.length/chunkLength), function(i) {
 				chunks.push(
 					JSON.stringify(
@@ -135,12 +128,19 @@
 			this.qrParts = 0;
 			this.lastQrCode = false;
 		},
+		this.importAddress = function(data) {
+			
+		},
 
 		this.import = function(data) {
 			var master = this;
 			isAddress = cryptoscrypt.validAddress(data);
 			if (isAddress) {
+				if (master.expectedField == 'from') {
+					master.from = data
+				} else {
 				master.recipients[master.expectedField].address = data;
+				}
 				return true;
 			}
 			try {
@@ -181,19 +181,14 @@
 			this.unspent = jsonCode.unspent;
 			this.balance = jsonCode.balance;
 			return true;
-
 		}
 
-
 		this.putAll = function(recipientId) {
-
 			var outputAmounts = [];
 			var master = this;
-
 			var sumAmounts = cryptoscrypt.sumArray( 
 				_.pluck(this.recipients, 'amount')
 			 );
-
 			this.recipients[recipientId][ 'amount' ] = parseInt(this.balance - sumAmounts - this.fee + this.recipients[recipientId][ 'amount' ]);
 		}
 
@@ -209,13 +204,10 @@
 
 			try {
 				master = this;
-
 				if (this.from == '') { return 0 }
-
 				if (this.feeMode == 'custom') {
 					return this.fee
 				}
-
 				if (this.unspent.length>0) {
 					var numOfInputs = cryptoscrypt.bestCombination(
 						_.pluck(this.unspent, 'transaction_index'),
@@ -223,7 +215,6 @@
 					).length;
 					this.fee = parseInt(( 140 * numOfInputs + 100 * this.recipients.length + 150 ) / 1000) * 10000 + 10000;
 				};
-
 				return this.fee;
 				//this.updateTotal();
 			} catch(err) {
@@ -267,9 +258,7 @@
 			// Calculate the private key;
 
 			pkey = cryptoscrypt.getPkey(passphrase, salt);
-
 			this.signAddress = cryptoscrypt.pkeyToAddress(pkey);
-
 			cryptoscrypt.pkeyToAddress(pkey);
 
 			// Perform the signatures
@@ -355,7 +344,7 @@
 
 			var master = this;
 			var address = inputValue;
-
+			
 			// If nothing
 
 			if (inputValue == '') {
@@ -384,7 +373,7 @@
 
 			//If address is already valid
 
-			if (cryptoscrypt.validAddress(inputValue) == true) {
+			if (cryptoscrypt.validAddress(inputValue)) {
 
 				if (field == 'from') {
 					this.from = address;
@@ -397,7 +386,7 @@
 					this.recipients[dataId].thumb = '';
 				}
 				
-				return;
+				return $().promise();
 			}
 			// If not valid address, lookup on onename.io
 
@@ -417,7 +406,7 @@
 
 				// Double check that whatever onename.io sent is valid
 
-				if (cryptoscrypt.validAddress(address) == true) {
+				if (cryptoscrypt.validAddress(address)) {
 					if (field == 'sender'){
 						master.from = address;
 						master.checkedFrom = address;

@@ -40,38 +40,46 @@
 		<script data-main='config.js' src='bower_components/requirejs/require.js'></script>
 
 		<script type='text/template' id='pubkeyTemplate'>
-				<div class='row input-group col-xs-12'>
-					<span class='input-group-addon' style='<%=(pubkey.pubkey!='') ? 'background-color:green;color:white' : '' %>' name='pubkeyFieldTitle' id='<%=index%>'>
-						Public Key #<%=index+1%>
-					</span>
-					<input type='text' class='form-control' id='<%=index%>' name='entryField'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
-					</input>
-					<span class='input-group-btn'>
-						<span class='input-group-btn'>
-							<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete' id='<%=index%>'></button>
-						</span>
-					</span>
-				</div>
+			<div class='row input-group col-xs-12'>
+				<span class='input-group-addon' style='<%=(pubkey.pubkey) ? 'background-color:green;color:white' : '' %>' name='pubkeyFieldTitle' id='<%=index%>'>
+					Address #<%=parseInt(index)+1%>
+				</span>
+				<input type='text' class='form-control' id='<%=index%>' name='entryField'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
+				</input>
+				<span class='input-group-btn'>
+					<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan' id='<%=index%>'></button>
+				</span>
+				<span class='input-group-btn'>
+					<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete' id='<%=index%>'></button>
+				</span>
+			</div>
 		</script>
 
 		<script type='text/template' id='multisigViewTemplate'>
+			<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btnImportRedeemScript'></button>
 				<div class='form-group'>
+				<div class='importQr' style='display: <%= showImportQr || 'none' %>'>
+					<p>Hold a QR Code in front of your webcam.</p>
+					<div class='qr-status'></div>
+					<div class='qr-reader' style='width: 400px; height: 300px'></div>
+				</div>
 				<% _.each(pubkeys, function(pubkey, index) {%> 
 					<div id='<%=index%>' name='pubkeyField'>
 						<div class='row input-group col-xs-12'>
-							<span class='input-group-addon' style='<%=(pubkey.pubkey!='') ? 'background-color:green;color:white' : '' %>' name='pubkeyFieldTitle' id='<%=index%>'>
-								Public Key #<%=index+1%>
+							<span class='input-group-addon' style='<%=(pubkey.pubkey && pubkey.pubkey!='unknown') ? 'background-color:green;color:white' : '' %>' name='pubkeyFieldTitle' id='<%=index%>'>
+								Address #<%=parseInt(index)+1%>
 							</span>
 							<input type='text' class='form-control' id='<%=index%>' name='entryField'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
 							</input>
 							<span class='input-group-btn'>
-								<span class='input-group-btn'>
-									<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete' id='<%=index%>'></button>
-								</span>
+								<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan' id='<%=index%>'></button>
+							</span>
+							<span class='input-group-btn'>
+								<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete' id='<%=index%>'></button>
 							</span>
 						</div>
 					</div>
-					<h5 class='' name='pubkeyShow' id=<%=index%>></h5>
+					<h5 class='' name='pubkeyShow' id='<%=index%>'></h5>
 				<%})%>
 				</div>
 			<button type='button' class='btn-default' name='btn-add' style='left-padding:40px'>ADD
@@ -80,14 +88,14 @@
 			<div>
 			<label>how many signatures needed ?</label>
 					<select class='form-control' style='width:100px' name='numberOfSignatures'>
-					<% _.each(pubkeys, function(pubkey, index) {%>
+					<% _.each(_.without(_.pluck(pubkeys,'pubkey'),'','unknown'), function(pubkey, index) {console.log(pubkey);%>
 						<option value='<%=index+1%>'><%=index+1%></option>
 					<%})%>
 					</select>
 			</div>
-			<h3 name='multisigAddress'></h3>
-			<h5>buy us a coffee !</h5>
-
+			<div name='multiAddress'>
+			</div>
+			
 		</script>
 
 		<script type='text/template' id='coinvoiceTemplate'>
@@ -189,6 +197,9 @@
 				<div class='row input-group hidden-xs' style='padding-left:15px'>
 					<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='sender' placeholder='BTC address / Onename' value='<%= from %>'></input>
 					<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-5px'></span>
+					<span class='input-group-btn'>
+						<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan-from'></button>
+					</span>
 					<span class='input-group-addon hidden-xs'>Balance: <%= balance/100000000 %></span>
 				</div>
 
@@ -318,6 +329,9 @@
 							<div class='row input-group hidden-xs' style='padding-left:15px'>
 								<input type='text' id='sendingAddr' tabindex='1' class='form-control' name='sender' placeholder='BTC address / Onename' value='<%= from %>'></input>
 								<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-5px'></span>
+								<span class='input-group-btn'>
+									<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan-from'></button>
+								</span>
 								<span class='input-group-addon hidden-xs' style='font-weight:bold'>Balance: <%= balance/100000000 %></span>
 							</div>
 
