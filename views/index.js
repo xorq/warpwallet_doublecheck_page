@@ -22,7 +22,6 @@ define([
       'click li[name=btn-export]' : 'export',
       'click li[name=btn-import]' : 'import',
       'click button[name=nextQr]' : 'nextQr',
-      //'click button[name=btn-scan]' : 'import',
       'click button[name=previousQr]' : 'previousQr',
       'click div[name=qrcodeExport]' : 'clearExport',
       'click .btn-feemode' : 'changeFeeMode',
@@ -223,11 +222,13 @@ define([
       setTimeout(
         dosign
       ,100);
+
       setTimeout(
         function() {
           $('div[id=please-wait]', this.$el).html('')
         }
       ,200);
+
     },
      //   end of html5_qrcode
 
@@ -255,9 +256,7 @@ define([
 
 
     renderFrom: function() {
-
-      $('.addressFrom', this.el).html(this.templateFrom(this.model.data()));
-
+      $('.addressFrom', this.el).html(this.templateFrom( this.model.data() ));
     },
 
 
@@ -267,31 +266,23 @@ define([
       $('[class=fieldAddressTo][dataId='+index+']').html(
         this.templateToAddressField()
       );
-
     },
 
 
     renderThumbTo: function(dataId) {
-
       recipient = this.model.recipients[dataId];
       index = dataId;
       $('[dataId=' + dataId + '] > div[name=thumb]',this.el).html(
         this.templateToThumb()
       );
-
     },
 
 
     renderQrCode: function() {
-
       if (this.model.qrcode==''){ return };
-
       $('div[name=qrcode]', this.$el).children().remove();
-
       if ($('select[name=qrSize]', this.$el).length > 0) {
-
         qrSize = parseInt($('select[name=qrSize]', this.$el).val());
-
       };
 
       qrcode = new QRCode('qrcode', { 
@@ -301,24 +292,18 @@ define([
       });
 
       qrcode.makeCode(this.model.qrcode);
-
     },
 
 
     updateTotal: function() {
-
       $('input[name=total]', this.$el).val(this.model.getTotal()/100000000);
-
     },
 
 
     updateAmount: function(ev) {
-
       var recipientId = parseInt($(ev.currentTarget).parents('.addressTo').attr('dataId'));
-
       this.model.recipients[recipientId][ 'amount' ] = parseInt(100000000 * ev.currentTarget.value);
       this.updateTotal();
-      
     },   
 
 
@@ -329,56 +314,44 @@ define([
 
 
     putAll: function(ev) {
-
       this.model.putAll($(ev.currentTarget).parents('.row.addressTo').attr('dataId'));
       this.render();
-
     }, 
 
 
     removeOutput: function(ev) { 
-
       this.model.removeRecipient(
         $(ev.currentTarget).parents('.row.addressTo').attr('dataId')
       );
       this.render();
-      
     },
 
 
     addOutput: function() {
-
       this.model.addRecipient();
       this.render();
-
     },
 
 
     updateFee: function () {
-
       if (this.model.feeMode == 'auto') {
         $('input[name=fee]', this.$el).val(this.model.getFee() / 100000000 );
       }
       if (this.model.feeMode == 'custom') {
         this.model.fee = parseInt(100000000 * parseFloat(($('input[name=fee]', this.$el).val())));
       }
-
       this.updateTotal();
-
     },
 
 
     getTotal: function() {
-
       return (cryptoscrypt.sumArray(
         (_.map($('input[name^=amount]', this.$el),function(str){return (100000000 * str['value'])/2}
         )))+parseInt(this.model.fee))/100000000    
-
     },
 
 
     lookup: function(ev) {
-
       var master = this;
       var address = ev.currentTarget.value.trim();
       var fieldName = ev.currentTarget.name;
@@ -420,11 +393,9 @@ define([
             master.renderFrom();
             master.updateFee();
             }).fail(function() {console.log('problem')});
-
           };
 
           if (ev.currentTarget.name == 'to') {
-
             master.renderAddressTo(recipientId);
             master.renderThumbTo(recipientId);
           };

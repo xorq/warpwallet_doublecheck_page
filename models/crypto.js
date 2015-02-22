@@ -1,7 +1,7 @@
 define([
 	'models/scrypt',
 	'models/pbkdf2',
-	'models/bitcoin',
+	'models/bitcoinjs.min',
 	'models/biginteger'
 ], function(Scrypt, PBKDF2, Bitcoin, BigInteger) {
 	
@@ -29,6 +29,9 @@ define([
 			return hash;
 		},
 
+		WIFToAddress: function(pkey) {
+			return Bitcoin.ECKey.fromWIF(pkey).pub.getAddress().toString();
+		},
 
 		pkeyToAddress: function(pkey) {
 			return Bitcoin.ECKey.fromWIF(pkey.toWIF()).pub.getAddress().toString();
@@ -66,7 +69,7 @@ define([
 				scrypt.crypto_scrypt(
 					scrypt.encode_utf8(passphrase + String.fromCharCode(0x01)),
 					scrypt.encode_utf8(salt + String.fromCharCode(0x01)),
-					Math.pow(2, 1), 
+					Math.pow(2, 18), 
 					8, 
 					1, 
 					32
@@ -104,6 +107,15 @@ define([
 			key = new Bitcoin.ECKey(BigInteger.fromHex(out), false);
 			cpub = 	new Bitcoin.ECPubKey(key.pub.Q,false);
 			return [key.toWIF(),key.pub.getAddress().toString(),cpub.toHex()];
+		},
+
+		validScript: function(script) {
+			try{
+				Bitcoin.Script.fromHex(script);
+				return true;
+			} catch(err){
+				return false;
+			}
 		},
 
 		validAddress: function(address) {
@@ -245,10 +257,10 @@ define([
 
 		getMultisigAddress: function(pubKeys, numberOfSignatures) {
 			var pubKeys = pubKeys.map(Bitcoin.ECPubKey.fromHex);
-			var redeemScript = Bitcoin.scripts.multisigOutput(numberOfSignatures, pubKeys);
-			var scriptPubKey = Bitcoin.scripts.scriptHashOutput(redeemScript.getHash());
+			var redeemscript = Bitcoin.scripts.multisigOutput(numberOfSignatures, pubKeys);
+			var scriptPubKey = Bitcoin.scripts.scriptHashOutput(redeemscript.getHash());
 			var address = Bitcoin.Address.fromOutputScript(scriptPubKey).toString();
-			return {address:address,redeemScript:redeemScript.toHex()}
+			return {address:address,redeemscript:redeemscript.toHex()}
 		},
 
 		getAddressesFromRedeemScript: function(redeemScript) {
@@ -288,11 +300,32 @@ define([
 			return result
 		},
 
-		trou: function(redeemScript) {
-			console.log(redeemScript);
-			//Bitcoin.Script.fromHex(redeemScript);
-			this.getAddressesFromRedeemScript(redeemScript);
-			//new Bitcoin.ECPubKey.getAddressesFromRedeemScript
+		findBtcPkey: function (str) {
+			var result = str;
+			if (str.length > 100) {
+				return result
+			}
+			var master = this;
+			_.each(str,function(chr, index){
+				if (chr == '1') {
+					for (var index2 = index + 30; (index2 < _.min([str.length, index + 70])); index2++) {
+						if (master.validPkey(str.substring(index, 1 + index2))) {
+							result = (str.substring(index, 1 + index2));
+							return result
+						}
+					}
+				}
+			})
+			return result
+		},
+
+		getJSONrequest: function(url,success,fail) {
+			return $.ajax({
+				url: url,
+				dataType: 'json',
+				success: success,
+				error: fail
+			});
 		}
 	}
 });

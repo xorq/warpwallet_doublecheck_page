@@ -5,7 +5,7 @@
 		<meta charset='utf-8'>
 		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
 		<meta name='viewport' content='width=device-width, initial-scale=1'>	
-		<title>Easy-BTC.org Expert's security made easy</title>
+		<title>Easy-BTC.org Professional security for everyone</title>
 		<script src='bower_components/jquery/dist/jquery.min.js'></script>
 		<script src='bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
 		<!-- Bootstrap -->
@@ -25,7 +25,7 @@
 	</head>
 	<body>
 		<div class='container'>
-			<h2 style=''>Easy-BTC.org</h2>
+			<h2 style=''>Easy-<span style='font-size:26px;top:2px' class='glyphicon glyphicon-bitcoin'></span>TC.org, Professional Grade Security In The Hands Of The Average Joe</h2>
 			<!--<h4>Cold Storage for everyone</h4>
 			<h6>Easy-BTC uses <a href=http://www.bitcoinjs.org/>BitcoinJS</a>, <a href='http://onename.io/'>Onename.io</a> and is compatible with <a href='https://keybase.io/warp'>Warp Wallet</a></h6>-->
 			<ul class='nav nav-pills' role='tablist'>
@@ -39,63 +39,92 @@
 
 		<script data-main='config.js' src='bower_components/requirejs/require.js'></script>
 
-		<script type='text/template' id='pubkeyTemplate'>
-			<div class='row input-group col-xs-12'>
-				<span class='input-group-addon' style='<%=(pubkey.pubkey) ? 'background-color:green;color:white' : '' %>' name='pubkeyFieldTitle' id='<%=index%>'>
-					Address #<%=parseInt(index)+1%>
-				</span>
-				<input type='text' class='form-control' id='<%=index%>' name='entryField'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
-				</input>
-				<span class='input-group-btn'>
-					<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan' id='<%=index%>'></button>
-				</span>
-				<span class='input-group-btn'>
-					<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete' id='<%=index%>'></button>
-				</span>
-			</div>
-		</script>
-
 		<script type='text/template' id='multisigViewTemplate'>
-			<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btnImportRedeemScript'></button>
-				<div class='form-group'>
-				<div class='importQr' style='display: <%= showImportQr || 'none' %>'>
+			<div class='dropdown' name='tools-button-group'>
+				<button type='button' data-toggle='dropdown' class='btn dropdown-toggle'><span class='glyphicon glyphicon-qrcode'></span> Tools <span class='caret'></span></button>
+				<ul class='dropdown-menu'>
+					<li name='btn-import-redeemscript'><a href='#multisig'>Import a Multisig Address</a></li>
+					<li name='btn-export-multisig'><a href='#Multisig'>Export a multisig Address</a></li>
+					<li class='divider'></li>
+					<li name='btn-import-tx'><a href='#Multisig'>Import Transaction</a></li>
+					<li name='btn-export-tx'><a href='#Multisig'>Export Transaction</a></li>
+				</ul>
+			</div>
+			<div id='qrcode-multisig-data'>
+			</div>
+			<div class='form-group'>
+				<div name='importQr' style='display: <%= showImportQr || 'none' %>'>
 					<p>Hold a QR Code in front of your webcam.</p>
-					<div class='qr-status'></div>
-					<div class='qr-reader' style='width: 400px; height: 300px'></div>
+					<div class='qr-status'>
+					</div>
+					<div class='qr-reader' style='width: 400px; height: 300px'>
+					</div>
 				</div>
+				</br>
+				<label style='margin-left:0px;padding-right:30px'>Addresses involved:</label>
 				<% _.each(pubkeys, function(pubkey, index) {%> 
-					<div id='<%=index%>' name='pubkeyField'>
-						<div class='row input-group col-xs-12'>
-							<span class='input-group-addon' style='<%=(pubkey.pubkey && pubkey.pubkey!='unknown') ? 'background-color:green;color:white' : '' %>' name='pubkeyFieldTitle' id='<%=index%>'>
+					<div class='col-xs-12' id='<%=index%>' name='pubkey-field' style='margin-left:30px;padding-right:30px'>
+						<div class='input-group col-xs-12' style='padding-right: 10px;'>
+							<span class='input-group-addon' style='<%=(pubkey.pubkey && pubkey.pubkey!='unknown') ? 'background-color:green;color:white' : '' %>' name='pubkey-field-title' id='<%=index%>'>
 								Address #<%=parseInt(index)+1%>
 							</span>
-							<input type='text' class='form-control' id='<%=index%>' name='entryField'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
+							<input type='text' class='form-control' id='<%=index%>' name='entry-field'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
 							</input>
 							<span class='input-group-btn'>
 								<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan' id='<%=index%>'></button>
 							</span>
 							<span class='input-group-btn'>
-								<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete' id='<%=index%>'></button>
+								<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete-pubkey' id='<%=index%>'></button>
 							</span>
 						</div>
 					</div>
-					<h5 class='' name='pubkeyShow' id='<%=index%>'></h5>
 				<%})%>
+				
+				<div class='col-xs-12' style='margin-left:30px;padding-right:50px;margin-bottom:0px'>
+				</br>
+					<button type='button' class='btn btn-default' name='btn-add' style='left-padding:40px;float:right'><span class='glyphicon glyphicon-plus-sign glyphicon-align-center' style='color:green;horizontal-align:middle;vertical-align:middle;horizontal-align:middle;bottom:1px'>
+					</span> ADD</button>
+
 				</div>
-			<button type='button' class='btn-default' name='btn-add' style='left-padding:40px'>ADD
-			<span class='glyphicon glyphicon-plus-sign glyphicon-align-center' style='color:green;horizontal-align:middle;vertical-align:middle;horizontal-align:middle;bottom:1px'></span>
-			</button>
-			<div>
-			<label>how many signatures needed ?</label>
-					<select class='form-control' style='width:100px' name='numberOfSignatures'>
-					<% _.each(_.without(_.pluck(pubkeys,'pubkey'),'','unknown'), function(pubkey, index) {console.log(pubkey);%>
-						<option value='<%=index+1%>'><%=index+1%></option>
-					<%})%>
+				</br>
+				<label>How many signatures shall be needed ?</label>
+				</br>
+				<div class='row col-xs-12' style='margin-left:30px;padding-right:30px;margin-bottom:20px'>
+					
+					<select class='form-control' style='width:100px' name='number-of-signatures'>
+						<% _.each(_.without(_.pluck(pubkeys,'pubkey'),'','unknown'), function(pubkey, index) {%>
+							<option value='<%=index+1%>'><%=index+1%></option>
+						<%})%>
 					</select>
+				</div>
+				<label>Your Multisig Address:</label>
+				<div class='row col-xs-12' style='margin-left:30px;padding-right:30px'>
 			</div>
-			<div name='multiAddress'>
+			<div class='row col-xs-12' style='margin-right: 10px'>
+				<h4 class='col-xs-7' name='label-address' style='margin-left:0px;word-break: break-all'>
+				</h4>
+				<div class='col-xs-5'>
+					<button class='btn btn-default glyphicon glyphicon-qrcode' style='margin-top:0px' name='address-button'></button>
+				</div>
 			</div>
-			
+			<div class='' id='qrcode-multisig-address' name='qrcode-multisig-address' style=''>
+			</div>
+			<div class='row col-xs-12' style=''>
+				<button class='btn btn-default <%=unspents.length > 0 ? '' : 'disabled'%>' style='font-size:20px; float: right;' name='btn-transaction'>
+				<span name='chevron-tx-button' class='glyphicon glyphicon-triangle-left'></span>
+					 Transaction Mode
+				</button>
+			</div>
+				<!--<label name='label-transaction' style='margin-left:30px'><%_.each(recipients,function(recipient, index) {if(recipient.address) {%></br><%=' ' + recipient.amount / 100000000%> BTC to <%=recipient.address%><%}})%>
+				</label>-->
+			</div>
+			<div class='col-xs-12' name='multiTransaction' style=''>
+			</div>
+			</br>
+			<div class=''>
+			</br></br></br></br></br></br>
+			<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>
+			</div>
 		</script>
 
 		<script type='text/template' id='coinvoiceTemplate'>
@@ -200,7 +229,7 @@
 					<span class='input-group-btn'>
 						<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan-from'></button>
 					</span>
-					<span class='input-group-addon hidden-xs'>Balance: <%= balance/100000000 %></span>
+					<span class='input-group-addon hidden-xs'>Balance: <%= balance/100000000 %> BTC</span>
 				</div>
 
 				<div class='row input-group visible-xs' style='padding-left:15px'>
@@ -208,7 +237,7 @@
 					<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-5px'></span>
 					</input>
 					<label class='col-xs-12'>
-						Balance: <%= balance/100000000 %>
+						Balance: <%= balance/100000000 %> BTC
 					</label>
 				</div>
 
@@ -263,7 +292,7 @@
 			%>
 			<div class = 'col-xs-12' name='content'>
 			<form role='form col-xs-12' style=''>
-				<div name='tools button-group'>
+				<div class='dropdown' name='tools button-group'>
 					<button type='button' data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Tools <span class='caret'></span></button>
 					<ul class='dropdown-menu'>
 						<li name='btn-import'><a href='#'>Import QR code(s) for a transaction</a></li>
@@ -292,13 +321,12 @@
 						</div>
 					</div>
 				</div>
-				<div class='col-xs-12' class='importQr' style='display: <%= showImportQR || 'none' %>'>
+				<div class='col-xs-12 importQr' style='display: <%= showImportQR || 'none' %>'>
 					<p>Hold a QR Code in front of your webcam.</p>
 					<div class='qr-status'></div>
 					<div class='qr-reader' style='width: 400px; height: 300px'></div>
 				</div>
 				</div>
-
 				<div class='col-xs-12'>
 					<h4 class='bg-info guidance <%= guidance != 'tails' && 'hidden' %>'>Using a computer with <a href='http://tails.boum.org/'>Tails</a></h4>
 					<img class='<%= guidance != 'tails' && 'hidden' %>' src='TailsComputer.png' style='width:625px;height:277px'>
@@ -308,7 +336,7 @@
 
 				<div class='col-xs-12' name='transaction'>
 				
-					<legend class='legend'>Transaction</legend>
+					<legend class='legend' style="">Transaction</legend>
 					<div id='iStatus'></div>
 					
 
@@ -332,7 +360,7 @@
 								<span class='input-group-btn'>
 									<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan-from'></button>
 								</span>
-								<span class='input-group-addon hidden-xs' style='font-weight:bold'>Balance: <%= balance/100000000 %></span>
+								<span class='input-group-addon hidden-xs' style='font-weight:bold'>Balance: <%= balance/100000000 %> BTC</span>
 							</div>
 
 							<div class='row input-group visible-xs' style='padding-left:15px'>
@@ -340,7 +368,7 @@
 								<span class='form-control-feedback <%= cryptoscrypt.validAddress(from) ? 'glyphicon glyphicon-ok' : from ? 'glyphicon glyphicon-remove' : ''%>' name='glyphicon' id='glyphicon' style='left:-5px'></span>
 								</input>
 								<label class='col-xs-12'>
-									Balance: <%= balance/100000000 %>
+									Balance: <%= balance/100000000 %> BTC
 								</label>
 							</div>
 

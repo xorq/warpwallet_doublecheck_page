@@ -1,25 +1,23 @@
-/* ==
- * Bootstrap: button.js v3.2.0
+/* ========================================================================
+ * Bootstrap: button.js v3.1.1
  * http://getbootstrap.com/javascript/#buttons
- * ==
+ * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * == */
+ * ======================================================================== */
 
 
 +function ($) {
   'use strict';
 
   // BUTTON PUBLIC CLASS DEFINITION
-  // ==
+  // ==============================
 
   var Button = function (element, options) {
     this.$element  = $(element)
     this.options   = $.extend({}, Button.DEFAULTS, options)
     this.isLoading = false
   }
-
-  Button.VERSION  = '3.2.0'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -33,9 +31,9 @@
 
     state = state + 'Text'
 
-    if (data.resetText == null) $el.data('resetText', $el[val]())
+    if (!data.resetText) $el.data('resetText', $el[val]())
 
-    $el[val](data[state] == null ? this.options[state] : data[state])
+    $el[val](data[state] || this.options[state])
 
     // push to event loop to allow forms to submit
     setTimeout($.proxy(function () {
@@ -67,9 +65,11 @@
 
 
   // BUTTON PLUGIN DEFINITION
-  // ===
+  // ========================
 
-  function Plugin(option) {
+  var old = $.fn.button
+
+  $.fn.button = function (option) {
     return this.each(function () {
       var $this   = $(this)
       var data    = $this.data('bs.button')
@@ -82,14 +82,11 @@
     })
   }
 
-  var old = $.fn.button
-
-  $.fn.button             = Plugin
   $.fn.button.Constructor = Button
 
 
   // BUTTON NO CONFLICT
-  // ====
+  // ==================
 
   $.fn.button.noConflict = function () {
     $.fn.button = old
@@ -98,12 +95,12 @@
 
 
   // BUTTON DATA-API
-  // =
+  // ===============
 
-  $(document).on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
+  $(document).on('click.bs.button.data-api', '[data-toggle^=button]', function (e) {
     var $btn = $(e.target)
     if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
-    Plugin.call($btn, 'toggle')
+    $btn.button('toggle')
     e.preventDefault()
   })
 
