@@ -4,6 +4,7 @@ require.config({
   },
   paths: {
   	jquery: "bower_components/jquery/dist/jquery.min",
+    jqueryui: "bower_components/jquery-ui/jquery-ui",
   	underscore: "bower_components/underscore/underscore",
     backbone: "bower_components/backbone/backbone",
     bootstrap: "bower_components/bootstrap/dist/js/bootstrap",

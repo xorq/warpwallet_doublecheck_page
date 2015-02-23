@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang='en'>
 
+
+<div id="dialog1" title="Dialog Title" hidden="hidden">I'm a dialog</div>
+
 	<head>
 		<meta charset='utf-8'>
 		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
@@ -13,7 +16,7 @@
 
 		<link rel="stylesheet" href="easybtc.css" type="text/css" media="screen" />
 		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="screen" />
-		
+		<link href="bower_components/jquery-ui/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
 
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -40,15 +43,18 @@
 		<script data-main='config.js' src='bower_components/requirejs/require.js'></script>
 
 		<script type='text/template' id='multisigViewTemplate'>
-			<div class='dropdown' name='tools-button-group'>
-				<button type='button' data-toggle='dropdown' class='btn dropdown-toggle'><span class='glyphicon glyphicon-qrcode'></span> Tools <span class='caret'></span></button>
-				<ul class='dropdown-menu'>
-					<li name='btn-import-redeemscript'><a href='#multisig'>Import a Multisig Address</a></li>
-					<li name='btn-export-multisig'><a href='#Multisig'>Export a multisig Address</a></li>
-					<li class='divider'></li>
-					<li name='btn-import-tx'><a href='#Multisig'>Import Transaction</a></li>
-					<li name='btn-export-tx'><a href='#Multisig'>Export Transaction</a></li>
-				</ul>
+			<div class='row form-group col-xs-12'>
+				<div class='col-xs-6 dropdown' name='tools-button-group'>
+					<button type='button' data-toggle='dropdown' class='btn dropdown-toggle'><span class='glyphicon glyphicon-qrcode'></span> Tools <span class='caret'></span></button>
+					<ul class='dropdown-menu'>
+						<li name='btn-import-redeemscript'><a href='#multisig'>Import a Multisig Address</a></li>
+						<li name='btn-export-multisig'><a href='#Multisig'>Export a multisig Address</a></li>
+						<li class='divider'></li>
+						<li name='btn-import-tx'><a href='#Multisig'>Import Transaction</a></li>
+						<li name='btn-export-tx'><a href='#Multisig'>Export Transaction</a></li>
+					</ul>
+				</div>
+				<button class='btn btn-primary' style='float:right' name='data-link'>Data Link</button>
 			</div>
 			<div id='qrcode-multisig-data'>
 			</div>
@@ -93,7 +99,7 @@
 					
 					<select class='form-control' style='width:100px' name='number-of-signatures'>
 						<% _.each(_.without(_.pluck(pubkeys,'pubkey'),'','unknown'), function(pubkey, index) {%>
-							<option value='<%=index+1%>'><%=index+1%></option>
+							<option value='<%=index + 1%>' <%=numberOfSignatures==index+1 ? 'selected' : ''%>><%=index+1%></option>
 						<%})%>
 					</select>
 				</div>
@@ -125,6 +131,7 @@
 			</br></br></br></br></br></br>
 			<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>
 			</div>
+			<div id=dialogs></div>
 		</script>
 
 		<script type='text/template' id='coinvoiceTemplate'>

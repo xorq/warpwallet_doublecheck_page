@@ -47,7 +47,7 @@ define([
         this.currentView.undelegateEvents();
       }
       this.currentView = new MultisigView({ model: new Multisig });
-      this.currentView.render();
+      this.currentView.init();
       $('.nav > li').removeClass('active').filter('[name=multisig]').addClass('active');
     } 
   });

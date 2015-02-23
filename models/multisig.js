@@ -20,7 +20,7 @@
 		this.numberOfSignatures = 1;
 		//this.redeemscript = '';
 		this.fee = 10000;
-		this.recipients = [ { address : '', amount : '', signature : '', checkedAddress : '', thumb : '' } ];
+		this.recipients = [ { address : '', amount : '', checkedAddress : '', thumb : '' } ];
 		
 		
 		this.rawTx = '';
@@ -187,9 +187,6 @@
 
 			var code = _.reduce(this.qrPartials, function(code, chunk) { return code + chunk.d; }, '');
 			var check = sjcl.hash.sha256.hash(code);
-			console.log(code);
-			console.log(qrData.c);
-			console.log(check[0])
 			if (check[0] != qrData.c) {
 				console.log('invalid code checksum or missing pieces');
 				return;
@@ -207,6 +204,45 @@
 			this.qrTotal = 0;
 			this.qrParts = 0;
 			this.lastQrCode = false;
+		},
+
+		this.importData = function(code) {
+			master = this;
+			var jsonCode = JSON.parse(code);
+			//jsonCode = JSON.parse(jsonCode);
+			console.log(jsonCode);
+			if (jsonCode.recipients) { this.recipients = jsonCode.recipients};
+			if (jsonCode.unspent) { this.unspent = jsonCode.unspent};
+			if (jsonCode.redeemscript) {
+				this.multisig.redeemscript = jsonCode.redeemscript;
+				this.loadRedeemscript(jsonCode.redeemscript);
+			}
+			if (jsonCode.signatures) {
+				_.each(this.pubkeys, function(pubkey,index) {
+					master.pubkeys[index].signature = jsonCode.signatures[index];
+				});
+			}
+			this.balance = cryptoscrypt.sumArray(_.pluck(jsonCode.unspent, 'value'));
+		},
+
+		this.exportData = function() {
+			this.findAddress();
+			master = this;
+			var recipientsExport = [];
+			this.recipients.forEach(function(v){ 
+				recipientsExport.push(_.pick(v,'address','amount'));
+			});
+			var unspentExport = [];
+			this.unspents.forEach(function(v){ 
+				unspentExport.push(_.pick(v,'transaction_hash','value','transaction_index'));
+			});
+			data = {
+				recipients : recipientsExport,
+				unspents : unspentExport,
+				redeemscript : master.multisig.redeemscript,
+				signatures: _.pluck(master.pubkeys, 'signatures')
+			};
+			return JSON.stringify(data);
 		},
 
 		this.exportTransaction = function() {
@@ -293,7 +329,7 @@
 
 		this.addEntry = function() {
 			if (this.pubkeys.length < 15) {
-			this.pubkeys.push({ address:'', pubkey:'', thumb:'', onename:'', avatar:'' })
+			this.pubkeys.push({ address:'', pubkey:'', signature:'', thumb:'', onename:'', avatar:'' })
 			} else {
 				window.alert('You cannot have more than 15 addresses for one multisig address')
 			}
@@ -340,14 +376,15 @@
 			})
 		},
 
-		this.resolveOnename = function(input, field, array) {
+		this.resolveOnename = function(input, field) {
+			master = this;
 			return $.getJSON('https://onename.com/' + input + '.json', function(data) {
 				var address = data.bitcoin.address ? data.bitcoin.address : '';
 				if (data.avatar) {
-					array[field].avatar = data.avatar;
+					master.pubkeys[field].avatar = data.avatar;
 				};
 				if (cryptoscrypt.validAddress(address)) {
-						array[field].address = address;
+						master.pubkeys[field].address = address;
 					};
 				}
 			)
@@ -357,9 +394,11 @@
 			pubkeys = _.without(_.pluck(this.pubkeys,'pubkey'),'','unknown');
 			if (_.contains(_.pluck(this.pubkeys,'pubkey'),'unknown')) {
 				this.multisig['address'] = '';
+				console.log('some addresses are unknown');
 				return ;
 			}
 			if (pubkeys.length>1) {
+
 				this.multisig = cryptoscrypt.getMultisigAddress(pubkeys, parseInt(this.numberOfSignatures))
 			} else {
 				this.multisig = '';

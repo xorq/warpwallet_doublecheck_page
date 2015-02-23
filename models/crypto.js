@@ -249,8 +249,8 @@ define([
 			return r;
 		},
 
-		getMultisigAddressFromRedeemScript: function(redeemScript) {
-			var script = Bitcoin.Script.fromHex(redeemScript);
+		getMultisigAddressFromRedeemscript: function(redeemscript) {
+			var script = Bitcoin.Script.fromHex(redeemscript);
 			script = Bitcoin.scripts.scriptHashOutput(script.getHash())
 			return Bitcoin.Address.fromOutputScript(script).toString()
 		},
@@ -263,13 +263,13 @@ define([
 			return {address:address,redeemscript:redeemscript.toHex()}
 		},
 
-		getAddressesFromRedeemScript: function(redeemScript) {
-			var script = Bitcoin.Script.fromHex(redeemScript);
+		getAddressesFromRedeemscript: function(redeemscript) {
+			var script = Bitcoin.Script.fromHex(redeemscript);
 			return _.map(script.chunks.slice(1, script.chunks.length - 2), this.pubKeyByteArrayToAddress);
 		},
 
-		getNumberOfSignaturesFromRedeemScript: function(redeemScript) {
-			var script = Bitcoin.Script.fromHex(redeemScript);
+		getNumberOfSignaturesFromRedeemscript: function(redeemscript) {
+			var script = Bitcoin.Script.fromHex(redeemscript);
 			return script.chunks[0] - 80;
 		},
 
