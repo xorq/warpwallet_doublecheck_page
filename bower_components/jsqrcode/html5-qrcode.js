@@ -1524,8 +1524,8 @@ function QRCodeDataBlockReader(d, a, c) {
         });
         var k = function() {
             if (localMediaStream) {
-                j.drawImage(h, 0, 0, 307, 250);
                 try {
+                    j.drawImage(h, 0, 0, 307, 250);
                     qrcode.decode()
                 } catch (a) {
                     c(a)

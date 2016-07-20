@@ -8,7 +8,7 @@
 		<meta charset='utf-8'>
 		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
 		<meta name='viewport' content='width=device-width, initial-scale=1'>	
-		<title>Easy-BTC.org Professional security for everyone</title>
+		<title>WARPWALLET CONFIRMATION CENTER</title>
 		<script src='bower_components/jquery/dist/jquery.min.js'></script>
 		<script src='bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
 		<!-- Bootstrap -->
@@ -28,14 +28,11 @@
 	</head>
 	<body>
 		<div class='container'>
-			<h2 style=''>Easy-<span style='font-size:26px;top:2px' class='glyphicon glyphicon-bitcoin'></span>TC.org, Professional Grade Security In The Hands Of The Average Joe</h2>
+			<h2 style=''>WARPWALLET CONFIRMATION</h2>
 			<!--<h4>Cold Storage for everyone</h4>
 			<h6>Easy-BTC uses <a href=http://www.bitcoinjs.org/>BitcoinJS</a>, <a href='http://onename.io/'>Onename.io</a> and is compatible with <a href='https://keybase.io/warp'>Warp Wallet</a></h6>-->
 			<ul class='nav nav-pills' role='tablist'>
 				<li name='vault'><a href='#vault'>New Vault</a></li>
-				<li name='create' class='active'><a href='#'>Send Bitcoin</a></li>
-				<li name='coinvoice'><a href='#coinvoice'>Receive Bitcoin</a></li>
-				<li name='multisig'><a href='#multisig'>Create a multisig address</a></li>
 			</ul>
 			<div id='contents' class='panel panel-primary' style='background:#ddd;border-color=#044;border:5px black solid' ></div>
 		</div>
@@ -44,28 +41,22 @@
 
 		<script type='text/template' id='multisigViewTemplate'>
 			<div class='row form-group col-xs-12'>
-				<div class='col-xs-6 dropdown' name='tools-button-group'>
+				<div class='col-xs-3 dropdown' name='tools-button-group'>
 					<button type='button' data-toggle='dropdown' class='btn dropdown-toggle'><span class='glyphicon glyphicon-qrcode'></span> Tools <span class='caret'></span></button>
 					<ul class='dropdown-menu'>
 						<li name='btn-import-redeemscript'><a href='#multisig'>Import a Multisig Address</a></li>
 						<li name='btn-export-multisig'><a href='#Multisig'>Export a multisig Address</a></li>
 						<li class='divider'></li>
-						<li name='btn-import-tx'><a href='#Multisig'>Import Transaction</a></li>
-						<li name='btn-export-tx'><a href='#Multisig'>Export Transaction</a></li>
+						<li name='btn-import-data'><a href='#Multisig'>Import Data</a></li>
+						<!--<li name='btn-export-tx'><a href='#Multisig'>Export Transaction</a></li>-->
 					</ul>
 				</div>
-				<button class='btn btn-primary' style='float:right' name='data-link'>Data Link</button>
+				<button class='btn btn-primary' style='float:right' name='data-link'>Data Transfer</button>
+				<a href=<%=window.location.pathname + '?data='%>{%22recipients%22:[{%22address%22:%221Xorq87adKn12bheqPFuwLZgZi5TyUTBq%22,%22amount%22:89133535}],%22unspents%22:[{%22transaction_hash%22:%22fa2021dff72c0b08ad8f4056c9ea3515c2e034c32359f6e09b169033c7a6a6cb%22,%22value%22:990000,%22transaction_index%22:0},{%22transaction_hash%22:%22e2f038a256d71b6c32cb3bb5b4f63d2b91aeae7dc9ca50ac3e45d66606847cb1%22,%22value%22:1990000,%22transaction_index%22:1},{%22transaction_hash%22:%22acb4637d140ca8e94dee6f2d67cc3f810f68a49de282c2bb5712d3f90f4395d2%22,%22value%22:10719535,%22transaction_index%22:1},{%22transaction_hash%22:%22267c037f8c1c9113e91768a74c6f44e37043a962a2c8e6250214d2b96caa4520%22,%22value%22:74144000,%22transaction_index%22:23},{%22transaction_hash%22:%220a11b09a638b79e2753c8844dd00b79a315f4d3d3ded47c5fe697fef682e39c4%22,%22value%22:1300000,%22transaction_index%22:0}],%22redeemscript%22:%22524104dedf0b95880044bec816c25404ce7dbac265bb79f73a0880e1d1237200f28c57c5d13975f3a045be6f6c6db984ecfbe20c62d12203de7f483fd482e2435e2f224104567be2411c1ef05b252c0cf3b37f74e5a88b4088192007d4599dbbf35974ebb1026b54152c430ceebc12d6c3f3ac2b04055b3639a6f7b7d63f3011dc3879fc0e41040e7f8b80cc21fb9b30aacfe96fad7d2c2211a17a554d1050262d759e09b8012f7d60bdbc3cb5d99825a9eaaa7fed65f48de7dec157c5d97cd75315c11992546b53ae%22,%22signatures%22:{%220%22:[%22304402203edbb257eb70a65363cbcc4e3342c5032cf5eeb00bdc1f0e3b256830fe5727850220679000b82524a306ea47e7ba5d797bd16dc8ecb5e974871317086c0344ff9101%22,%223045022100d93c7b92a99444fb06231afb3edee82f5db6756ad4ae3c0bdaa8a83c0402eb62022018b45e451b698b9661b7ba7071e541cd0f9642c64114ec6e60da6c3001cb6998%22,%223045022100a844d3104558085ee762a8e84def9f30e10dc443b138343df7b3b852a29d9bf7022033d7551d6755963a1a04635f5e376700d4d31b2fe6e01f56be287c0006134806%22,%22304502210092dce55a1a4b6bcf65def1eff61d4fa0646ef63dc9f091114690b701f790f39e022068d3dfcc1d1d170ba17a38f9b9d2bfba7efa5740e761aa88285cd6005f099e20%22,%22304402203a9696547d9a38c674f40032a189960a0c22db28dd6b35dc9b4596263ba2bb80022069657baae8e1d3f599c20ca8ac57aed330e1c62e5cbdac0d74c03da3cd5ecae6%22]}}#Multisig class='btn btn-warning' style='float:right; margin-right:30px' name='data-link'>Test out with fake data</a>
 			</div>
 			<div id='qrcode-multisig-data'>
 			</div>
 			<div class='form-group'>
-				<div name='importQr' style='display: <%= showImportQr || 'none' %>'>
-					<p>Hold a QR Code in front of your webcam.</p>
-					<div class='qr-status'>
-					</div>
-					<div class='qr-reader' style='width: 400px; height: 300px'>
-					</div>
-				</div>
 				</br>
 				<label style='margin-left:0px;padding-right:30px'>Addresses involved:</label>
 				<% _.each(pubkeys, function(pubkey, index) {%> 
@@ -74,13 +65,13 @@
 							<span class='input-group-addon' style='<%=(pubkey.pubkey && pubkey.pubkey!='unknown') ? 'background-color:green;color:white' : '' %>' name='pubkey-field-title' id='<%=index%>'>
 								Address #<%=parseInt(index)+1%>
 							</span>
-							<input type='text' class='form-control' id='<%=index%>' name='entry-field'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
+							<input type='text' class='form-control form1' id='<%=index%>' name='entry-field'  placeholder='Enter Address, Onename, or Public Key' value='<%=pubkey.address%>'>
 							</input>
 							<span class='input-group-btn'>
-								<button class='btn btn-default glyphicon glyphicon-camera' type='button' name='btn-scan' id='<%=index%>'></button>
+								<button class='btn btn-default glyphicon glyphicon-camera form1' type='button' name='btn-scan' id='<%=index%>'></button>
 							</span>
 							<span class='input-group-btn'>
-								<button class='btn btn-default glyphicon glyphicon-trash' type='button' name='btn-delete-pubkey' id='<%=index%>'></button>
+								<button class='btn btn-default glyphicon glyphicon-trash form1' type='button' name='btn-delete-pubkey' id='<%=index%>'></button>
 							</span>
 						</div>
 					</div>
@@ -88,7 +79,7 @@
 				
 				<div class='col-xs-12' style='margin-left:30px;padding-right:50px;margin-bottom:0px'>
 				</br>
-					<button type='button' class='btn btn-default' name='btn-add' style='left-padding:40px;float:right'><span class='glyphicon glyphicon-plus-sign glyphicon-align-center' style='color:green;horizontal-align:middle;vertical-align:middle;horizontal-align:middle;bottom:1px'>
+					<button type='button' class='btn btn-default form1' name='btn-add' style='left-padding:40px;float:right'><span class='glyphicon glyphicon-plus-sign glyphicon-align-center' style='color:green;horizontal-align:middle;vertical-align:middle;horizontal-align:middle;bottom:1px'>
 					</span> ADD</button>
 
 				</div>
@@ -97,7 +88,7 @@
 				</br>
 				<div class='row col-xs-12' style='margin-left:30px;padding-right:30px;margin-bottom:20px'>
 					
-					<select class='form-control' style='width:100px' name='number-of-signatures'>
+					<select class='form-control form1' style='width:100px' name='number-of-signatures'>
 						<% _.each(_.without(_.pluck(pubkeys,'pubkey'),'','unknown'), function(pubkey, index) {%>
 							<option value='<%=index + 1%>' <%=numberOfSignatures==index+1 ? 'selected' : ''%>><%=index+1%></option>
 						<%})%>
@@ -107,11 +98,13 @@
 				<div class='row col-xs-12' style='margin-left:30px;padding-right:30px'>
 			</div>
 			<div class='row col-xs-12' style='margin-right: 10px'>
-				<h4 class='col-xs-7' name='label-address' style='margin-left:0px;word-break: break-all'>
+				<h4 class='col-xs-10' name='label-address' style='margin-left:0px;word-break: break-all'>
 				</h4>
-				<div class='col-xs-5'>
-					<button class='btn btn-default glyphicon glyphicon-qrcode' style='margin-top:0px' name='address-button'></button>
+				<div class='col-xs-2'>
+					<button class='btn btn-default glyphicon glyphicon-qrcode' style='margin-top:0px;float:right' name='address-button'></button>
 				</div>
+				<h4 class='col-xs-12' name='label-balance' style='margin-left:0px'>
+				</h4>
 			</div>
 			<div class='' id='qrcode-multisig-address' name='qrcode-multisig-address' style=''>
 			</div>
@@ -124,14 +117,13 @@
 				<!--<label name='label-transaction' style='margin-left:30px'><%_.each(recipients,function(recipient, index) {if(recipient.address) {%></br><%=' ' + recipient.amount / 100000000%> BTC to <%=recipient.address%><%}})%>
 				</label>-->
 			</div>
-			<div class='col-xs-12' name='multiTransaction' style=''>
+			<div class='form-group' name='multiTransaction' style=''>
 			</div>
-			</br>
 			<div class=''>
 			</br></br></br></br></br></br>
 			<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>
-			</div>
 			<div id=dialogs></div>
+			</div>
 		</script>
 
 		<script type='text/template' id='coinvoiceTemplate'>
@@ -218,9 +210,8 @@
 					<br>
 					<br>
 					<h5>This tool will give the exact same output as a <a href='https://keybase.io/warp'>warp wallet</a> and it is recommended to be used offline.</h5>
-					<h5>Also think to register your bitcoin address at <a href='http://onename.com/'>onename.com</a> for easier use.</h5>
 					<h5>The <a href='https://developer.mozilla.org/en-US/docs/Web/API/RandomSource.getRandomValues'>random</a> button choose words from a ~10,000 words list</h5>
-					<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1LPUpS4nc2mo63GvgBxrUSJ6y3xumqzWSW</h6>
+					<h6>Use at your own risks, if you find this application useful, you can buy us a coffee at 1Xorq87adKn12bheqPFuwLZgZi5TyUTBq</h6>
 				</div>
 			</form>
 		</script>

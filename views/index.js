@@ -279,6 +279,7 @@ define([
 
 
     renderQrCode: function() {
+      var qrSize = 600
       if (this.model.qrcode==''){ return };
       $('div[name=qrcode]', this.$el).children().remove();
       if ($('select[name=qrSize]', this.$el).length > 0) {

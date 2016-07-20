@@ -7,6 +7,17 @@ define([
 	
 	return window.cryptoscrypt = cryptoscrypt = {
 
+		stringToChunks: function(data, maxLength) {
+			var numChunks = Math.ceil(data.length / maxLength);
+			maxLength = Math.ceil(data.length / numChunks);
+			var chunks = [];
+			_.times(Math.ceil(data.length/maxLength), function(i) {
+				var toPush = data.substr(i * maxLength, maxLength)
+				chunks.push( toPush )
+			})
+			return chunks
+		},
+
 		internetCheck: function(defer) {
 			
 			var url = 'http://easy-btc.org/green5x5.png?d=' + escape( Date() );
@@ -64,12 +75,23 @@ define([
 		},
 
 		scrypto: function(passphrase, salt) {
-			var scrypt = scrypt_module_factory( Math.pow(2,29) );
+			try {
+				var scrypt = scrypt_module_factory( Math.pow(2,29) );
+				var n = Math.pow(2, 18)
+			} catch(err) {
+				try {
+					var scrypt = scrypt_module_factory( Math.pow(2,22) );
+					console.log('switched to a weaker n = 2^10 instead of 2^18');
+					var n = Math.pow(2, 10)
+				} catch(err) {
+					console.log('your device seem to be too weak for any decent key stretching')
+				}
+			}
 			var result = scrypt.to_hex(
 				scrypt.crypto_scrypt(
 					scrypt.encode_utf8(passphrase + String.fromCharCode(0x01)),
 					scrypt.encode_utf8(salt + String.fromCharCode(0x01)),
-					Math.pow(2, 18), 
+					n, 
 					8, 
 					1, 
 					32
@@ -201,6 +223,17 @@ define([
 		},
 
 		buildTx: function (unspentHashs, unspentHashsIndex, unspentValues, toAddresses, fromAddress, amounts, fee) {
+			
+			/*
+			console.log(unspentHashs);
+			console.log(unspentHashsIndex);
+			console.log(unspentValues);
+			console.log(toAddresses);
+			console.log(fromAddress);
+			console.log(amounts);
+			console.log(fee);
+			*/
+
 			if ( cryptoscrypt.sumArray(amounts) + fee > cryptoscrypt.sumArray(unspentValues) ) {
 				return
 			};
@@ -325,6 +358,20 @@ define([
 				dataType: 'json',
 				success: success,
 				error: fail
+			});
+		},
+
+		pushTx: function(tx_hex) {
+			$.ajax({
+				url: "https://btc.blockr.io/api/v1/tx/push",
+				type: 'post',
+				data: {hex: tx_hex},
+				success: function(response) {
+					window.alert(response);
+				},
+				error: function(err) {
+					window.alert('The pushing to blockr.io failed, did you use valid signatures ? Eventually try pushing the data manually on another website');
+				}
 			});
 		}
 	}

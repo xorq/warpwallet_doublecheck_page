@@ -76,7 +76,9 @@ define([
 			$('div[id=label-privkey]').text('');
 			$('div[id=text-address]').text('');
 			$('div[id=text-privatekey]').text('');
-
+			$('div[id=qrcode-pubkey-image]').text('');
+			$('div[id=text-pubkey]').text('');
+			$('div[id=label-pubkey]').text('');
 		}, 
 
 		deleteIfChanged: function() {
